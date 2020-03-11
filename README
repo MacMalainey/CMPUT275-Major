@@ -1,0 +1,25 @@
+Mackenzie Malainey, 1570494
+CMPUT 275 Wintere 2020
+Weekly Exercise #2 Restaurants and Pointers
+
+Description:
+This exercise uses the SD card reader and the tft display to demonstrate the benefits of loading
+data from the filesystem with caching enabled compared to not caching the data beforehand.
+
+Included files:
+  - get_restaurant.cpp
+  - MakeFile
+
+Wiring Instructions:
+  LCD Display Shield -> insert into arduino, line up power ports (3V, 5V, and GND pins)
+
+Compiling and Running Instructions:
+  1. Open folder containing source code and makefile in bash
+  2. Place lcd_image.cpp and lcd_image.h in folder
+  3. Connect Arduino via USB
+  4. Run make upload
+  5. Once user interface loads use the stylus to touch the two buttons to run the
+     two different implementations of the restaurant reader
+
+References:
+Some of the code in this assignment was provided in the assignment template
