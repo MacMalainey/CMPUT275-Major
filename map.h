@@ -1,51 +1,43 @@
 #include <MCUFRIEND_kbv.h>
 
-typedef char Pellets; // Typedef to make compiler happy until code is made
-typedef char Player;
-
-class Path; // Forward declare for the paths class
-
-class Map {
-    private:
-    Path** _paths;
-    uint8_t _n;
-
-    public:
-    Path** paths();
-    void draw(MCUFRIEND_kbv canvas);
-
-    Map(Path** paths, uint16_t n);
+enum Orientation {
+    NORTH,
+    SOUTH,
+    EAST,
+    WEST,
+    N_ORIENT
 };
 
 class Junction {
-    private:
-    int _x;
-    int _y;
+    // We could create getters instead of using a friend class
+    // But this is easier
+    friend class Map;
 
-    Path** _paths;
-    uint8_t _n;
+    private:
+    uint16_t x;
+    uint16_t y;
+
+    Junction** adjacent;
+    uint8_t id; // Used for hashing default set to 255 to mark invalid ID
 
     public:
-    uint8_t numPaths();
-    Path** paths();
+    Junction(uint16_t x, uint16_t y);
 
-    int x();
-    int y();
+    Junction* next(Orientation d);
+    Orientation link(Junction* j);
 };
 
-// Unlike normal graphs where "paths" aren't usually actual objects, we use the paths as containers for
-// other objects as well as storing any junctions that lie on the path
-class Path {
+class Map {
     private:
-    Pellets** _pellets;
-    Player** _players;
-
-    Junction** _junctions; // Ordered left to right or top to bottom
-    uint8_t _n;
+    Junction** nodes;
+    uint8_t n;
 
     public:
-    Junction** juncts();
-    uint8_t numJuncts();
+    Map(Junction** nodes, uint8_t n);
+    ~Map();
 
-    // TODO: add code to get access to players and pellets
+    void draw(MCUFRIEND_kbv canva, uint16_t color);
+
 };
+
+Map* buildDemoMap();

@@ -9,13 +9,13 @@
 #include <MCUFRIEND_kbv.h>
 
 #include "assets.h"
+#include "map.h"
 
 // physical dimensions of the tft display (# of pixels)
 #define DISPLAY_WIDTH  480
 #define DISPLAY_HEIGHT 320
 
 #define RAND_SEED_LENGTH 32
-
 
 MCUFRIEND_kbv tft;
 
@@ -30,7 +30,7 @@ void setup() {
   unsigned long seed = 0;
 
   // Generate a new random seed at start (gotta keep things *fresh*)
-  for (int i = 0; i < 32; i++) {
+  for (int i = 0; i < RAND_SEED_LENGTH; i++) {
     seed |= (analogRead(A11) & 1) << i;
   }
   randomSeed(seed);
@@ -42,6 +42,16 @@ void setup() {
 
 int main() {
   setup();
+
+  uint16_t color = genNeonColor();
+
+  tft.drawLine(0, 30, 480, 30, color);
+
+  // Its the map, its the map, its the map, its the map...
+  Map* itsTheMap = buildDemoMap();
+  itsTheMap->draw(tft, color);
+
+  delete itsTheMap;
 
   Serial.end();
 

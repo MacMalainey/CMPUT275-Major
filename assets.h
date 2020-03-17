@@ -1,1 +1,1 @@
-int genNeonColor();
+uint16_t genNeonColor();
