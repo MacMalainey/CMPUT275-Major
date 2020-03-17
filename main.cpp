@@ -27,7 +27,7 @@ void setup() {
   uint16_t ID = tft.readID();
   tft.begin(ID);
 
-  unsigned long seed = 0;
+  uint32_t seed = 0;
 
   // Generate a new random seed at start (gotta keep things *fresh*)
   for (int i = 0; i < RAND_SEED_LENGTH; i++) {
