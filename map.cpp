@@ -6,6 +6,9 @@
 
 #define DEBUG_DRAW true
 
+uint16_t c_width = 26;
+uint16_t c_width_half = c_width/2;
+
 Map::Map(Junction** nodes, uint8_t n) {
     this->n = n;
     this->nodes = new Junction*[n];
@@ -47,13 +50,88 @@ void Map::draw(MCUFRIEND_kbv canvas, uint16_t color) {
                 }
 
                 #if (DEBUG_DRAW)
-                Serial.print(j->id);
-                Serial.print(", ");
-                Serial.print(a->id);
-                Serial.print(", ");
-                Serial.println(i);
-                canvas.drawLine(j->x, j->y, a->x, a->y, color);
+                // Serial.print(j->id);
+                // Serial.print(", ");
+                // Serial.print(a->id);
+                // Serial.print(", ");
+                // Serial.println(i);
+
+                if (j->x == a->x) { // vertical corridor
+                    uint32_t x_j0 = j->x - c_width_half;
+                    uint32_t x_a0 = a->x - c_width_half;
+                    uint32_t x_j1 = j->x + c_width_half;
+                    uint32_t x_a1 = a->x + c_width_half;
+
+                    uint32_t jy = j->y;
+                    uint32_t ay = a->y;
+
+                    // make sure we're drawing in the right direction
+                    if (jy > ay) {
+                        uint32_t temp = jy;
+                        jy = ay;
+                        ay = temp;
+                    }
+
+                    uint32_t y_j = jy + c_width_half;
+                    uint32_t y_a = ay - c_width_half;
+
+                    canvas.drawLine(x_j0, y_j, x_a0, y_a, color);
+                    canvas.drawLine(x_j1, y_j, x_a1, y_a, color);
+                } else { // horizontal corridor
+                    uint32_t y_j0 = j->y - c_width_half;
+                    uint32_t y_a0 = a->y - c_width_half;
+                    uint32_t y_j1 = j->y + c_width_half;
+                    uint32_t y_a1 = a->y + c_width_half;
+
+                    uint32_t jx = j->x;
+                    uint32_t ax = a->x;
+
+                    // make sure we're drawing in the right direction
+                    if (jx > ax) {
+                        uint32_t temp = jx;
+                        jx = ax;
+                        ax = temp;
+                    }
+
+                    uint32_t x_j = jx + c_width_half;
+                    uint32_t x_a = ax - c_width_half;
+
+                    canvas.drawLine(x_j, y_j0, x_a, y_a0, color);
+                    canvas.drawLine(x_j, y_j1, x_a, y_a1, color);
+                }
+                //canvas.drawLine(j->x, j->y, a->x, a->y, color);
                 #endif
+            } else {
+                // The direction leads no where, so we need to draw a line.
+                uint32_t x0, x1, y0, y1;
+
+                if (i == NORTH) {
+                    x0 = j->x - c_width_half;
+                    x1 = j->x + c_width_half;
+
+                    y0 = j->y - c_width_half;
+                    y1 = y0; 
+                } else if (i == SOUTH) {
+                    x0 = j->x - c_width_half;
+                    x1 = j->x + c_width_half;
+
+                    y0 = j->y + c_width_half;
+                    y1 = y0; 
+                } else if (i == EAST) {
+                    x0 = j->x + c_width_half;
+                    x1 = x0;
+
+                    y0 = j->y - c_width_half;
+                    y1 = j->y + c_width_half;
+                } else if (i == WEST) {
+                    x0 = j->x - c_width_half;
+                    x1 = x0;
+
+                    y0 = j->y - c_width_half;
+                    y1 = j->y + c_width_half;
+                }
+
+                canvas.drawLine(x0, y0, x1, y1, color);
             }
         }
 
@@ -69,7 +147,6 @@ Junction::Junction(uint16_t x, uint16_t y) {
     for (uint8_t i = 0; i < N_ORIENT; i++) {
         adjacent[i] = NULL;
     }
-
 }
 
 Junction* Junction::next(Orientation d) {

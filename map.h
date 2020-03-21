@@ -36,8 +36,7 @@ class Map {
     Map(Junction** nodes, uint8_t n);
     ~Map();
 
-    void draw(MCUFRIEND_kbv canva, uint16_t color);
-
+    void draw(MCUFRIEND_kbv canvas, uint16_t color);
 };
 
 Map* buildDemoMap();

@@ -1,8 +1,13 @@
-/*
-  Mackenzie Malainey 1570494
-  CMPUT 275 Winter 2020
-  Assignment #2 Restaurants and Pointers
-*/
+/**
+ *
+ * CMPUT 275 -- Winter 2020 -- Final Project
+ *
+ * Mackenzie Malainey, 1570494
+ * Benjamin Kong, 1573684
+ * Lora Ma, 1570935
+ * Michael Kwok, 1548454
+ *
+ */
 
 #include <Arduino.h>
 #include <Adafruit_GFX.h>
@@ -10,16 +15,13 @@
 #include "assets.h"
 #include "map.h"
 
-
 // physical dimensions of the tft display (# of pixels)
 #define DISPLAY_WIDTH  480
 #define DISPLAY_HEIGHT 320
 
 #define RAND_SEED_LENGTH 32
 
-using namespace std;
 MCUFRIEND_kbv tft;
-
 
 void drawScore(String score) {
   tft.fillRect(90, 0, DISPLAY_WIDTH, 30, TFT_BLACK);
@@ -36,8 +38,6 @@ void drawLives() {
   tft.fillCircle(460, 15, 8, TFT_YELLOW);
   tft.fillTriangle(460, 15, 468, 19, 468, 11, TFT_BLACK);
 }
-
-
 
 void setup() {
   init();
@@ -73,7 +73,6 @@ void decrementLives(int currentLives) {
   else {
     tft.fillRect(450, 0, 30, 30, TFT_BLACK);
   }
-
 }
 
 int main() {
