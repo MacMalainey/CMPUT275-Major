@@ -110,13 +110,13 @@ void Map::draw(MCUFRIEND_kbv canvas, uint16_t color) {
                     x1 = j->x + c_width_half;
 
                     y0 = j->y - c_width_half;
-                    y1 = y0; 
+                    y1 = y0;
                 } else if (i == SOUTH) {
                     x0 = j->x - c_width_half;
                     x1 = j->x + c_width_half;
 
                     y0 = j->y + c_width_half;
-                    y1 = y0; 
+                    y1 = y0;
                 } else if (i == EAST) {
                     x0 = j->x + c_width_half;
                     x1 = x0;
@@ -203,6 +203,7 @@ Map::~Map() {
     delete[] nodes;
 }
 
+
 Map* buildDemoMap() {
     Junction* j1 = new Junction(20, 120);
     Junction* j2 = new Junction(50, 120);
@@ -234,4 +235,10 @@ Map* buildDemoMap() {
     Junction* copy_arr[] = {j1, j2, j3, j4, j5, j6, j7, j8, j9};
 
     return new Map(copy_arr, 9);
+}
+
+Point Map::getSpawnXY() {
+    Junction* startingNode = this->nodes[0];
+    Point startingPoint = {startingNode->x, startingNode->y};
+    return startingPoint;
 }
