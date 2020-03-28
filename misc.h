@@ -1,52 +1,49 @@
+#pragma once
 
-
-template<class T>
+template <class T>
 struct LNode {
-    T item;
-    LNode<T> * next;
+  T item;
+  LNode<T>* next;
 };
 
 // Implement queue interface using linked list
-template<class T>
+template <class T>
 class Queue {
-    private:
+ private:
+  uint16_t num = 0;
 
-    uint16_t num = 0;
+  LNode<T>* front;
+  LNode<T>* back;
 
-    LNode<T>* front;
-    LNode<T>* back;
-
-    public:
-    uint16_t push(T item) {
-        if (num > 0) {
-            back->next = new LNode<T>{item, NULL};
-            back = back->next;
-        } else {
-            front = new LNode<T>{item, NULL};
-            back = front;
-        }
-
-        return ++num;
+ public:
+  uint16_t push(T item) {
+    if (num > 0) {
+      back->next = new LNode<T>{item, NULL};
+      back = back->next;
+    } else {
+      front = new LNode<T>{item, NULL};
+      back = front;
     }
 
-    T pop() {
-        LNode<T>* n = front;
-        num--;
+    return ++num;
+  }
 
-        if (n > 0) {
-            front = front->next;
-        } else {
-            front = NULL;
-            back = NULL;
-        }
+  T pop() {
+    LNode<T>* n = front;
+    num--;
 
-        T item = n->item;
-        delete n;
-
-        return item;
-
+    if (n > 0) {
+      front = front->next;
+    } else {
+      front = NULL;
+      back = NULL;
     }
 
-    uint16_t size() {return num;}
+    T item = n->item;
+    delete n;
 
+    return item;
+  }
+
+  uint16_t size() { return num; }
 };
