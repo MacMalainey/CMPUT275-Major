@@ -7,7 +7,7 @@
 
 #define DEBUG_DRAW true
 
-uint16_t c_width = 26;
+uint16_t c_width = 20;
 uint16_t c_width_half = c_width / 2;
 
 Map::Map(Junction** nodes, uint8_t n) {
@@ -20,7 +20,7 @@ Map::Map(Junction** nodes, uint8_t n) {
   }
 }
 
-void Map::draw(MCUFRIEND_kbv canvas, uint16_t color) {
+void Map::draw(MCUFRIEND_kbv& canvas, uint16_t color) {
   // Easily can draw using a BFS
   bool touched[n] = {false};
 
@@ -41,7 +41,7 @@ void Map::draw(MCUFRIEND_kbv canvas, uint16_t color) {
 // canvas.print(j->id);
 #endif
     for (uint8_t i = 0; i < N_ORIENT; i++) {
-      if (j->next(i) != NULL) {
+      if (j->next((Orientation)i) != NULL) {
         Junction* a = j->adjacent[i];
         // Ensures this is only added to the queue once
         if (!touched[a->id]) {
@@ -200,32 +200,59 @@ Orientation Junction::link(Junction* j) {
 Map::~Map() { delete[] nodes; }
 
 Map* buildDemoMap() {
-  Junction* j1 = new Junction(20, 120);
-  Junction* j2 = new Junction(50, 120);
-  Junction* j3 = new Junction(50, 300);
-  Junction* j4 = new Junction(50, 60);
-  Junction* j5 = new Junction(120, 120);
-  Junction* j6 = new Junction(120, 300);
-  Junction* j7 = new Junction(120, 60);
-  Junction* j8 = new Junction(240, 60);
-  Junction* j9 = new Junction(240, 300);
+  // Most left is 10, top of screen is 40
+  // Most right is 469, bottom of screen is 309
+
+  Junction* j1 = new Junction(10, 40);
+  Junction* j2 = new Junction(70, 40);
+  Junction* j3 = new Junction(150, 40);
+
+  Junction* j4 = new Junction(10, 80);
+  Junction* j6 = new Junction(70, 80);
+  Junction* j8 = new Junction(150, 80);
+
+  Junction* j5 = new Junction(10, 120);
+  Junction* j7 = new Junction(70, 120);
+  Junction* j9 = new Junction(100, 120);
+
+  // Junction* j2 = new Junction(50, 120);
+  // Junction* j3 = new Junction(50, 300);
+  // Junction* j4 = new Junction(50, 40);
+  // Junction* j5 = new Junction(120, 120);
+  // Junction* j6 = new Junction(120, 300);
+  // Junction* j7 = new Junction(120, 40);
+  // Junction* j8 = new Junction(240, 40);
+  // Junction* j9 = new Junction(240, 300);
 
   j1->link(j2);
+  j1->link(j4);
 
   j2->link(j3);
-  j2->link(j4);
-  j2->link(j5);
+  j2->link(j6);
 
-  j5->link(j6);
+  j3->link(j8);
+
+  j4->link(j5);
+  j4->link(j6);
+
   j5->link(j7);
 
-  j6->link(j3);
-  j6->link(j9);
+  j6->link(j7);
+  j6->link(j8);
+  // j2->link(j3);
+  // j2->link(j4);
+  // j2->link(j5);
 
-  j7->link(j4);
-  j7->link(j8);
+  // j5->link(j6);
+  // j5->link(j7);
 
-  j8->link(j9);
+  // j6->link(j3);
+  // j6->link(j9);
+
+  // j7->link(j4);
+  // j7->link(j8);
+
+  // j8->link(j9);
 
   Junction* copy_arr[] = {j1, j2, j3, j4, j5, j6, j7, j8, j9};
 

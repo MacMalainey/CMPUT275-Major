@@ -2,7 +2,7 @@
 
 #include <MCUFRIEND_kbv.h>
 
-enum Orientation { NORTH, SOUTH, EAST, WEST, N_ORIENT };
+enum Orientation { NORTH = 0, SOUTH, EAST, WEST, N_ORIENT };
 
 class Junction {
   // We could create getters instead of using a friend class
@@ -32,7 +32,7 @@ class Map {
   Map(Junction** nodes, uint8_t n);
   ~Map();
 
-  void draw(MCUFRIEND_kbv canvas, uint16_t color);
+  void draw(MCUFRIEND_kbv& canvas, uint16_t color);
 };
 
 Map* buildDemoMap();
