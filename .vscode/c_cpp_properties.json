@@ -10,7 +10,7 @@
                 "-mmcu=atmega2560"
             ],
             "defines": [
-                "ARDUINO=160"
+                "ARDUINO=105"
             ],
             "includePath": [
                 "/usr/share/arduino/hardware/arduino/avr/cores/arduino",

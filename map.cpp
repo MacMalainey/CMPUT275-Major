@@ -1,9 +1,9 @@
-#include "map.h"
+#include "include/map.h"
 
 #include <Arduino.h>
 
-#include "assets.h"
-#include "misc.h"
+#include "include/assets.h"
+#include "include/misc.h"
 
 #define DEBUG_DRAW true
 
@@ -22,6 +22,7 @@ Map::Map(Junction** nodes, uint8_t n) {
 
 void Map::draw(MCUFRIEND_kbv& canvas, uint16_t color) {
   // Easily can draw using a BFS
+  Serial.println("In drawing map");
   bool touched[n] = {false};
 
   Queue<Junction*> events;
@@ -202,7 +203,6 @@ Map::~Map() { delete[] nodes; }
 Map* buildDemoMap() {
   // Most left is 10, top of screen is 40
   // Most right is 469, bottom of screen is 309
-
   Junction* j1 = new Junction(10, 40);
   Junction* j2 = new Junction(70, 40);
   Junction* j3 = new Junction(150, 40);
