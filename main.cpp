@@ -83,15 +83,8 @@ void setup() {
   tft.fillScreen(TFT_BLACK);
   tft.setRotation(1);
 
-<<<<<<< HEAD
   tft.setTextSize(2); tft.setCursor(14,6); tft.print("Score:");
   drawScore(0);
-=======
-  tft.setTextSize(2);
-  tft.setCursor(14, 6);
-  tft.print("Score:");
-  drawScore("0");
->>>>>>> 9b5a7dbb887b25c862b6f43a7149ecc6aaefc161
   drawLives();
   tft.fillCircle(400, 15, 8, TFT_YELLOW);
   tft.fillTriangle(400, 15, 408, 19, 408, 11, TFT_BLACK);
