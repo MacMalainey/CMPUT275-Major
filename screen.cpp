@@ -9,7 +9,6 @@ Screen::Screen() {
 }
 
 void Screen::DrawMap(Map &map, uint16_t color) {
-    Serial.println("Drawing map");
     uint16_t c_width = 10;
     uint16_t c_width_half = c_width / 2;
 
