@@ -13,6 +13,9 @@
 
 #include <Arduino.h>
 
+#define DISPLAY_WIDTH 480
+#define DISPLAY_HEIGHT 320
+
 uint16_t randomCounter = 0;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -52,13 +55,11 @@ Cell *Row::getCell(uint8_t index) {
 // Grid class
 ///////////////////////////////////////////////////////////////////////////////
 
-Grid::Grid(uint8_t divisions) {
-    this->divisions = divisions;
-    this->rows = new Row *[divisions];
-
-    for (uint8_t i = 0; i < divisions; i++) {
-        this->rows[i] = new Row(divisions);
-    }
+Grid::Grid() {
+    divisions = 0;
+    rows = nullptr;
+    sizeX = DISPLAY_WIDTH;
+    sizeY = DISPLAY_HEIGHT;
 }
 
 Grid::~Grid() {
@@ -69,6 +70,28 @@ Row *Grid::getRow(uint8_t index) {
     return this->rows[index];
 }
 
-Grid *testGrid(uint8_t divisions) {
-    return new Grid(divisions);
+uint8_t Grid::getRowIndex(uint16_t x) {
+    uint8_t index = floor((divisions * x)/DISPLAY_WIDTH);
+    return constrain(index, 0, divisions - 1);
+}
+
+uint8_t Grid::getCellIndex(uint16_t y) {
+    uint8_t index = floor((divisions * y)/DISPLAY_HEIGHT);
+    return constrain(index, 0, divisions - 1);
+}
+
+void Grid::addPellet(Pellet pellet) {
+    uint8_t rowIndex = getRowIndex(pellet.x);
+    uint8_t cellIndex = getCellIndex(pellet.y);
+
+    //rows[rowIndex]->cells[cellIndex]
+}
+
+void Grid::Generate(uint8_t divisions) {
+    this->divisions = divisions;
+    this->rows = new Row *[divisions];
+
+    for (uint8_t i = 0; i < divisions; i++) {
+        this->rows[i] = new Row(divisions);
+    }
 }
