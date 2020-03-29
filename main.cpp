@@ -15,6 +15,7 @@
 
 #include "assets.h"
 #include "map.h"
+#include "grid.h"
 
 // physical dimensions of the tft display (# of pixels)
 #define DISPLAY_WIDTH 480
@@ -111,20 +112,20 @@ void movementHandler() {
   bool down = digitalRead(BUTTON_DOWN);
 
   if (left == LOW){
-      Serial.print("I am left: ");
-      Serial.println(left);
+    //Serial.print("I am left: ");
+    //Serial.println(left);
   }
   if (up == LOW){
-      Serial.print("I am up: ");
-      Serial.println(up);
+    //Serial.print("I am up: ");
+    //Serial.println(up);
   }
   if (down == LOW){
-      Serial.print("I am down: ");
-      Serial.println(down);
+    //Serial.print("I am down: ");
+    //Serial.println(down);
   }
   if (right == LOW){
-      Serial.print("I am right: ");
-      Serial.println(right);
+    //Serial.print("I am right: ");
+    //Serial.println(right);
   }
   delay(100);
 }
@@ -145,11 +146,25 @@ int main() {
   tft.fillCircle(current_x, current_y, 8, TFT_YELLOW);
   tft.fillTriangle(current_x, current_y, current_x + 8, current_y + 4, current_x + 8, current_y - 4, TFT_BLACK);
 
+  // Test grid ////////////////////////////////////////////////////////////////
+  Grid* randomGrid = testGrid(10);
+
+  // for (int i = 0; i < 10; i++) {
+  //   for (int j = 0; j < 10; j++) {
+  //     Row* row_i = randomGrid->getRow(i);
+  //     Cell* cell_ij = row_i->getCell(j);
+  //     uint16_t id = cell_ij->getID();
+
+  //     Serial.println(id);
+  //   }
+  // }
+  // Test grid end ////////////////////////////////////////////////////////////
+
   while(true) {
     movementHandler();
   }
 
-
+  delete randomGrid;
   delete itsTheMap;
 
   Serial.end();

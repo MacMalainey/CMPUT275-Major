@@ -6,27 +6,64 @@
 #define DISPLAY_WIDTH 480
 #define DISPLAY_HEIGHT 320
 
-uint8_t DIVISIONS = 10;
-
-uint16_t cellSizeX = DISPLAY_WIDTH / DIVISIONS;
-uint16_t cellSizeY = DISPLAY_HEIGHT / DIVISIONS;
+///////////////////////////////////////////////////////////////////////////////
+// Cell class
+///////////////////////////////////////////////////////////////////////////////
 
 class Cell {
+  friend class Row;
+  friend class Grid;
+
  private:
-  Drawable Ghosts;
-  Pellet Pellets;
+  Drawable ghosts;
+  Pellet pellets;
+
+  uint16_t id;
+
+  Cell(uint16_t id);
+
+ public:
+  uint16_t getID();
 };
 
+///////////////////////////////////////////////////////////////////////////////
+// Row class
+///////////////////////////////////////////////////////////////////////////////
+
+class Row {
+  friend class Cell;
+  friend class Grid;
+
+ private:
+  Cell** cells;
+  uint8_t divisions;
+
+  Row(uint8_t divisions);
+  ~Row();
+
+ public:
+  Cell* getCell(uint8_t index);
+};
+
+///////////////////////////////////////////////////////////////////////////////
+// Grid class
+///////////////////////////////////////////////////////////////////////////////
+
 class Grid {
+  friend class Row;
   friend class Cell;
 
  private:
-  //Cell Grid;
+  Row** rows;
+  uint8_t divisions;
 
   Point getGridPos(uint16_t x, uint16_t y);
   
  public:
-  Grid();
+  Grid(uint8_t divisions);
+  ~Grid();
+
+  Row* getRow(uint8_t index);
 
   void addGhost(Drawable ghost);
   void removeGhost(Drawable ghost);
@@ -37,3 +74,5 @@ class Grid {
 
   void update();
 };
+
+Grid* testGrid(uint8_t divisions);
