@@ -14,9 +14,6 @@ class Drawable {
 
   virtual void Draw(Screen &) = 0;
 
-  Orientation queuedMovement;
-  int immediateMovement[4];
-
   uint16_t x;
   uint16_t y;
 

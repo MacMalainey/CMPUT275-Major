@@ -1,4 +1,5 @@
 #pragma once
+#include <stdint.h>
 
 struct Point {
   uint16_t x;

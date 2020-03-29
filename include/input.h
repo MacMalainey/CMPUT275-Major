@@ -27,10 +27,10 @@ struct Joystick {
       if (down == LOW) {
           out |= 2u;
       }
-      if (left == LOW) {
+      if (right == LOW) {
           out |= 4u;
       }
-      if (right == LOW) {
+      if (left == LOW) {
           out |= 8u;
       }
 

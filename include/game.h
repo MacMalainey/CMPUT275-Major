@@ -1,5 +1,6 @@
 #pragma once
-
+#include <stdint.h>
+#include "misc.h"
 #include "screen.h"
 #include "map.h"
 #include "assets.h"
@@ -18,6 +19,12 @@ class Game {
 
   int current_lives = 3;
   uint16_t score = 0;
+  int current_x;
+  int current_y;
+
+  Junction *currentJunction;
+
+  uint8_t currentDirection;
 
   void updateScore();
   void drawLives();
