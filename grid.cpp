@@ -20,11 +20,11 @@ uint16_t randomCounter = 0;
 ///////////////////////////////////////////////////////////////////////////////
 
 Cell::Cell(uint16_t id) {
-  this->id = id;
+    this->id = id;
 }
 
 uint16_t Cell::getID() {
-  return this->id;
+    return this->id;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -32,20 +32,20 @@ uint16_t Cell::getID() {
 ///////////////////////////////////////////////////////////////////////////////
 
 Row::Row(uint8_t divisions) {
-  this->divisions = divisions;
-  this->cells = new Cell*[divisions];
+    this->divisions = divisions;
+    this->cells = new Cell *[divisions];
 
-  for (uint8_t i = 0; i < divisions; i++) {
-    this->cells[i] = new Cell(randomCounter++);
-  }
+    for (uint8_t i = 0; i < divisions; i++) {
+        this->cells[i] = new Cell(randomCounter++);
+    }
 }
 
 Row::~Row() {
-  delete[] cells;
+    delete[] cells;
 }
 
-Cell* Row::getCell(uint8_t index) {
-  return this->cells[index];
+Cell *Row::getCell(uint8_t index) {
+    return this->cells[index];
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -53,22 +53,22 @@ Cell* Row::getCell(uint8_t index) {
 ///////////////////////////////////////////////////////////////////////////////
 
 Grid::Grid(uint8_t divisions) {
-  this->divisions = divisions;
-  this->rows = new Row*[divisions];
+    this->divisions = divisions;
+    this->rows = new Row *[divisions];
 
-  for (uint8_t i = 0; i < divisions; i++) {
-    this->rows[i] = new Row(divisions);
-  }
+    for (uint8_t i = 0; i < divisions; i++) {
+        this->rows[i] = new Row(divisions);
+    }
 }
 
 Grid::~Grid() {
-  delete[] rows;
+    delete[] rows;
 }
 
-Row* Grid::getRow(uint8_t index) {
-  return this->rows[index];
+Row *Grid::getRow(uint8_t index) {
+    return this->rows[index];
 }
 
-Grid* testGrid(uint8_t divisions) {
-  return new Grid(divisions);
+Grid *testGrid(uint8_t divisions) {
+    return new Grid(divisions);
 }

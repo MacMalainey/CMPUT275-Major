@@ -14,20 +14,20 @@ void Screen::DrawMap(Map &map, uint16_t color) {
 
     bool touched[map.GetNodeCount()] = {false};
 
-    Queue<Junction*> events;
+    Queue<Junction *> events;
     events.push(map.GetStart());
     touched[0] = true;
 
     // canvas.setTextColor(color);
     // canvas.setTextSize(3);
 
-    while(events.size() > 0) {
-        Junction* j = events.pop();
+    while (events.size() > 0) {
+        Junction *j = events.pop();
 
         fillCircle(j->x, j->y, 8, color);
         for (uint8_t i = 0; i < N_ORIENT; i++) {
-            if (j->next((Orientation)i) != NULL) {
-                Junction* a = j->adjacent[i];
+            if (j->next((Orientation) i) != NULL) {
+                Junction *a = j->adjacent[i];
                 // Ensures this is only added to the queue once
                 if (!touched[a->id]) {
                     touched[a->id] = true;

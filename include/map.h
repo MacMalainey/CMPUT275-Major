@@ -3,12 +3,7 @@
 #include <MCUFRIEND_kbv.h>
 #include <Arduino.h>
 
-enum Orientation { NORTH = 0, SOUTH, EAST, WEST, N_ORIENT };
-
-struct Point {
-  uint16_t x;
-  uint16_t y;
-};
+#include "misc.h"
 
 class Junction {
 
@@ -16,30 +11,33 @@ public:
     uint16_t x;
     uint16_t y;
 
-    Junction** adjacent;
+    Junction **adjacent;
     uint8_t id;  // Used for hashing default set to 255 to mark invalid ID
 
     Junction(uint16_t x, uint16_t y);
 
-    Junction* next(Orientation d);
-    Orientation link(Junction* j);
+    Junction *next(Orientation d);
+
+    Orientation link(Junction *j);
 
 };
 
 class Map {
- private:
+private:
+
+    Junction **nodes;
+    uint8_t n = 0;
+
+public:
     Map();
 
-    Junction** nodes;
-  uint8_t n = 0;
+    Map(Junction **nodes, uint8_t n);
 
- public:
-  Map(Junction** nodes, uint8_t n);
-  ~Map();
+    ~Map();
 
-  Point getSpawnXY();
+    Point getSpawnXY();
 
-  void Generate();
+    void Generate();
 
     Junction *GetStart();
 

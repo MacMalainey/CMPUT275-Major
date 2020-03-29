@@ -11,7 +11,7 @@ Game::Game() {
     drawLives();
 
     // Its the map, its the map, its the map, its the map...
-    map = buildDemoMap();
+    map.Generate();
     map_color = genNeonColor();
     screen.drawLine(0, 30, 480, 30, map_color);
 }
@@ -57,8 +57,3 @@ void Game::Start() {
     enemy.Move(150, 200);
     enemy.Draw(screen);
 }
-
-Game::~Game() {
-    delete map;
-}
-

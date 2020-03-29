@@ -11,12 +11,9 @@
 
 #include <Arduino.h>
 
-#include "include/screen.h"
 #include "include/game.h"
 
 #define RAND_SEED_LENGTH 32
-
-MCUFRIEND_kbv tft;
 
 void setup() {
     init();

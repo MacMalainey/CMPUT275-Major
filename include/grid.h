@@ -1,10 +1,7 @@
 #pragma once
 
-#include "map.h"
 #include "entities.h"
-
-#define DISPLAY_WIDTH 480
-#define DISPLAY_HEIGHT 320
+#include "misc.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Cell class
@@ -15,8 +12,6 @@ class Cell {
   friend class Grid;
 
  private:
-  Drawable ghosts;
-  Pellet pellets;
 
   uint16_t id;
 
@@ -24,6 +19,8 @@ class Cell {
 
  public:
   uint16_t getID();
+  PlayerCharacter character;
+  Pellet pellets;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -35,16 +32,14 @@ class Row {
   friend class Grid;
 
  private:
-  Cell** cells;
+  Cell **cells;
   uint8_t divisions;
 
   Row(uint8_t divisions);
   ~Row();
 
  public:
-  Cell* getCell(uint8_t index);
-  PlayerCharacter Ghosts;
-  Pellet Pellets;
+  Cell *getCell(uint8_t index);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -56,16 +51,16 @@ class Grid {
   friend class Cell;
 
  private:
-  Row** rows;
+  Row **rows;
   uint8_t divisions;
 
   Point getGridPos(uint16_t x, uint16_t y);
-  
+
  public:
   Grid(uint8_t divisions);
   ~Grid();
 
-  Row* getRow(uint8_t index);
+  Row *getRow(uint8_t index);
 
   void addCharacter(PlayerCharacter character);
   void removeCharacter(PlayerCharacter character);
@@ -77,4 +72,4 @@ class Grid {
   void update();
 };
 
-Grid* testGrid(uint8_t divisions);
+Grid *testGrid(uint8_t divisions);
