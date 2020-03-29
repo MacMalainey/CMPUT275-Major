@@ -87,8 +87,7 @@ Map::~Map() {
     delete[] nodes;
 }
 
-Point Map::getSpawnXY() {
-    Junction *startingNode = this->nodes[0];
+Point Map::getXY(Junction *startingNode) {
     Point startingPoint = {startingNode->x, startingNode->y};
     return startingPoint;
 }

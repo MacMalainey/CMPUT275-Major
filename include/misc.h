@@ -28,10 +28,10 @@ class Queue {
  public:
   uint16_t push(T item) {
       if (num > 0) {
-          back->next = new LNode<T>{item, NULL};
+          back->next = new LNode<T>{item, nullptr};
           back = back->next;
       } else {
-          front = new LNode<T>{item, NULL};
+          front = new LNode<T>{item, nullptr};
           back = front;
       }
 
@@ -45,8 +45,8 @@ class Queue {
       if (n > 0) {
           front = front->next;
       } else {
-          front = NULL;
-          back = NULL;
+          front = nullptr;
+          back = nullptr;
       }
 
       T item = n->item;

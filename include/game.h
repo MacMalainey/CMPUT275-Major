@@ -25,12 +25,13 @@ class Game {
 
   Junction *currentJunction;
 
-  uint8_t currentDirection;
+  uint8_t currentDirection = 0;
+  uint8_t validDirections = 0;
 
   void updateScore();
   void drawLives();
   void decrementLives();
-
+  void movePacman();
   void testGrid();
 
   Map map;
