@@ -1,13 +1,14 @@
-#include "map.h"
-#include "assets.h"
-#include "misc.h"
+#include "include/map.h"
+
+#include "include/assets.h"
+#include "include/misc.h"
 
 #include <Arduino.h>
 
 #define DEBUG_DRAW true
 
-uint16_t c_width = 26;
-uint16_t c_width_half = c_width/2;
+uint16_t c_width = 10;
+uint16_t c_width_half = c_width / 2;
 
 Map::Map(Junction** nodes, uint8_t n) {
     this->n = n;

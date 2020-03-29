@@ -31,7 +31,7 @@ class Junction {
 class Map {
  private:
   Junction** nodes;
-  uint8_t n;
+  uint8_t n = 0;
 
  public:
   Map(Junction** nodes, uint8_t n);

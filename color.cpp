@@ -1,7 +1,7 @@
 #include <math.h>
 #include <Arduino.h>
 
-#include "assets.h"
+#include "include/assets.h"
 
 using namespace std;
 

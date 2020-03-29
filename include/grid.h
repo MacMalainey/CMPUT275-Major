@@ -43,6 +43,8 @@ class Row {
 
  public:
   Cell* getCell(uint8_t index);
+  PlayerCharacter Ghosts;
+  Pellet Pellets;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -65,9 +67,9 @@ class Grid {
 
   Row* getRow(uint8_t index);
 
-  void addGhost(Drawable ghost);
-  void removeGhost(Drawable ghost);
-  void ghostMoved(Drawable ghost);
+  void addCharacter(PlayerCharacter character);
+  void removeCharacter(PlayerCharacter character);
+  void characterMoved(PlayerCharacter character);
 
   void addPellet(Pellet pellet);
   void removePellet(Pellet pellet);
