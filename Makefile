@@ -1,6 +1,15 @@
 ######################################################
 # Arduino UA Child Makefile (UPDATED: 31/07/2017)
 #
+# This Makefile hooks into the unofficial Arduino Makefile (https://www.github.com/sudar/Arduino-Makefile)
+# installed which is instaled through the package manager. It sets the default preferences for this VM as well
+# uses custom made scripts to be able to select the Arduino Port for uploading and monitoring.
+#
+# Usage:
+# 	make upload (defaults to first port found)
+# 	make upload-[0/1] (uploads to user defined ports)
+# 	make serial-[0/1] || serial-mon-[0/1] (opens serial communications to user defined ports)
+#
 
 # Arduino UA Directory
 ifndef ARDUINO_UA_DIR
@@ -78,3 +87,4 @@ serial-1:	$(HOME)/.arduino_port_1 upload_1_set upload_check
 
 check-hex: $(TARGET_HEX)
 	$(ARDUINO_UA_DIR)/bin/check-hex-file $(TARGET_HEX)
+

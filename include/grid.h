@@ -1,0 +1,82 @@
+#pragma once
+
+#include "entities.h"
+#include "misc.h"
+
+///////////////////////////////////////////////////////////////////////////////
+// Cell class
+///////////////////////////////////////////////////////////////////////////////
+
+class Cell {
+  friend class Row;
+  friend class Grid;
+
+ private:
+
+  uint16_t id;
+
+  Cell(uint16_t id);
+
+ public:
+  uint16_t getID();
+
+  PlayerCharacter ghosts;
+  Pellet pellets;
+};
+
+///////////////////////////////////////////////////////////////////////////////
+// Row class
+///////////////////////////////////////////////////////////////////////////////
+
+class Row {
+  friend class Cell;
+  friend class Grid;
+
+ private:
+  Cell **cells;
+  uint8_t divisions;
+
+  Row(uint8_t divisions);
+  ~Row();
+
+ public:
+  Cell *getCell(uint8_t index);
+};
+
+///////////////////////////////////////////////////////////////////////////////
+// Grid class
+///////////////////////////////////////////////////////////////////////////////
+
+class Grid {
+  friend class Row;
+  friend class Cell;
+
+ private:
+  Row **rows;
+
+  Point getGridPos(uint16_t x, uint16_t y);
+
+ public:
+  Grid();
+  ~Grid();
+
+  uint16_t sizeX;
+  uint16_t sizeY;
+  uint8_t divisions;
+
+  void Generate(uint8_t divisions);
+
+  Row *getRow(uint8_t index);
+
+  uint8_t getRowIndex(uint16_t x);
+  uint8_t getCellIndex(uint16_t y);
+
+  void addCharacter(PlayerCharacter character);
+  void removeCharacter(PlayerCharacter character);
+  void characterMoved(PlayerCharacter character);
+
+  void addPellet(Pellet pellet);
+  void removePellet(Pellet pellet);
+
+  void update();
+};

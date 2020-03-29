@@ -1,88 +1,40 @@
-#include "map.h"
-#include "assets.h"
-#include "misc.h"
+#include "include/map.h"
 
-#include <Arduino.h>
-
-#define DEBUG_DRAW true
-
-Map::Map(Junction** nodes, uint8_t n) {
-    this->n = n;
-    this->nodes = new Junction*[n];
-    for (uint8_t i = 0; i < n; i++) {
-        this->nodes[i] = nodes[i];
-        this->nodes[i]->id = i; // Set id to make certain all Junctions have unique values
-    }
+Map::Map() {
+    n = 0;
+    nodes = nullptr;
 }
 
-void Map::draw(MCUFRIEND_kbv canvas, uint16_t color) {
-    // Easily can draw using a BFS
-    bool touched[n] = {false};
+Junction *Map::GetStart() {
+    return nodes[0];
+}
 
-    Queue<Junction*> events;
-    events.push(nodes[0]);
-    touched[0] = true;
-
-    // canvas.setTextColor(color);
-    // canvas.setTextSize(3);
-
-    while(events.size() > 0) {
-        Junction* j = events.pop();
-        Serial.print("POPPED: ");
-        Serial.println(j->id);
-        #if (DEBUG_DRAW)
-        canvas.fillCircle(j->x, j->y, 8, color);
-        // canvas.setCursor(j->x, j->y);
-        // canvas.print(j->id);
-        #endif
-        for (uint8_t i = 0; i < N_ORIENT; i++) {
-            if (j->next(i) != NULL) {
-                Junction* a = j->adjacent[i];
-                // Ensures this is only added to the queue once
-                if (!touched[a->id]) {
-                    touched[a->id] = true;
-                    events.push(a);
-                    Serial.print("PUSHED: ");
-                    Serial.println(a->id);
-                }
-
-                #if (DEBUG_DRAW)
-                Serial.print(j->id);
-                Serial.print(", ");
-                Serial.print(a->id);
-                Serial.print(", ");
-                Serial.println(i);
-                canvas.drawLine(j->x, j->y, a->x, a->y, color);
-                #endif
-            }
-        }
-
-    }
+uint8_t Map::GetNodeCount() {
+    return n;
 }
 
 Junction::Junction(uint16_t x, uint16_t y) {
     this->x = x;
     this->y = y;
 
-    adjacent = new Junction*[N_ORIENT];
+    adjacent = new Junction *[N_ORIENT];
 
     for (uint8_t i = 0; i < N_ORIENT; i++) {
-        adjacent[i] = NULL;
+        adjacent[i] = nullptr;
     }
-
 }
 
-Junction* Junction::next(Orientation d) {
+Junction *Junction::next(Orientation d) {
     return adjacent[d];
 }
 
-Orientation Junction::link(Junction* j) {
+Orientation Junction::link(Junction *j) {
 
     int16_t dx = j->x - x;
     int16_t dy = j->y - y;
 
-    Orientation d;
-    Orientation op;
+    auto d = (Orientation) 0;
+    auto op = (Orientation) 0;
 
     if ((dx != 0 && dy != 0) || (dx == 0 && dy == 0)) {
         // Either a diagonal addition
@@ -103,8 +55,8 @@ Orientation Junction::link(Junction* j) {
     }
 
     // If this is linked with another junction we need to sever the link
-    if (adjacent[d] != NULL) {
-        adjacent[d]->adjacent[op] = NULL;
+    if (adjacent[d] != nullptr) {
+        adjacent[d]->adjacent[op] = nullptr;
     }
 
     adjacent[d] = j;
@@ -126,16 +78,22 @@ Map::~Map() {
     delete[] nodes;
 }
 
-Map* buildDemoMap() {
-    Junction* j1 = new Junction(20, 120);
-    Junction* j2 = new Junction(50, 120);
-    Junction* j3 = new Junction(50, 300);
-    Junction* j4 = new Junction(50, 60);
-    Junction* j5 = new Junction(120, 120);
-    Junction* j6 = new Junction(120, 300);
-    Junction* j7 = new Junction(120, 60);
-    Junction* j8 = new Junction(240, 60);
-    Junction* j9 = new Junction(240, 300);
+Point Map::getSpawnXY() {
+    Junction *startingNode = this->nodes[0];
+    Point startingPoint = {startingNode->x, startingNode->y};
+    return startingPoint;
+}
+
+void Map::Generate() {
+    auto j1 = new Junction(20, 120);
+    auto j2 = new Junction(50, 120);
+    auto j3 = new Junction(50, 300);
+    auto j4 = new Junction(50, 60);
+    auto j5 = new Junction(120, 120);
+    auto j6 = new Junction(120, 300);
+    auto j7 = new Junction(120, 60);
+    auto j8 = new Junction(240, 60);
+    auto j9 = new Junction(240, 300);
 
     j1->link(j2);
 
@@ -154,7 +112,12 @@ Map* buildDemoMap() {
 
     j8->link(j9);
 
-    Junction* copy_arr[] = {j1, j2, j3, j4, j5, j6, j7, j8, j9};
+    Junction *copy_arr[] = {j1, j2, j3, j4, j5, j6, j7, j8, j9};
 
-    return new Map(copy_arr, 9);
+    this->n = 9;
+    this->nodes = new Junction *[n];
+    for (uint8_t i = 0; i < n; i++) {
+        this->nodes[i] = copy_arr[i];
+        this->nodes[i]->id = i; // Set id to make certain all Junctions have unique values
+    }
 }

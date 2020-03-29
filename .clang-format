@@ -1,0 +1,6 @@
+Language:        Cpp
+BasedOnStyle:  Google
+AlignTrailingComments: true
+AlignConsecutiveMacros: true
+ColumnLimit: 80
+DerivePointerAlignment: true
