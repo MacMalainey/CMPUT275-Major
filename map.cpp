@@ -40,7 +40,7 @@ void Map::draw(MCUFRIEND_kbv canvas, uint16_t color) {
         #endif
         for (uint8_t i = 0; i < N_ORIENT; i++) {
             if (j->next(i) != NULL) {
-                Junction* a = j->adjacent[i];
+                Junction* a = j->[i];
                 // Ensures this is only added to the queue once
                 if (!touched[a->id]) {
                     touched[a->id] = true;
