@@ -7,7 +7,7 @@
 
 #define DEBUG_DRAW true
 
-uint16_t c_width = 20;
+uint16_t c_width = 10;
 uint16_t c_width_half = c_width / 2;
 
 Map::Map(Junction** nodes, uint8_t n) {

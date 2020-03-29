@@ -40,9 +40,9 @@ struct PlayerCharacter : public Drawable {
         Serial.print("Drawing character at: ");
         Serial.print(start_x + offset_x);
         if (is_pacman) {
-            screen.fillCircle(start_x + offset_x, start_y + offset_y, 8, TFT_YELLOW);
-            screen.fillTriangle(start_x + offset_x, start_y + offset_y, start_x + offset_x + 8, start_y + offset_y + 4,
-                                start_x + offset_x + 8, start_y + offset_y - 4, TFT_BLACK);
+            screen.fillCircle(start_x + offset_x, start_y + offset_y, 4, TFT_YELLOW);
+            screen.fillTriangle(start_x + offset_x, start_y + offset_y, start_x + offset_x + 4, start_y + offset_y + 2,
+                                start_x + offset_x + 4, start_y + offset_y - 2, TFT_BLACK);
         } else{
             screen.fillCircle(start_x + offset_x, start_y + offset_y, 7, TFT_RED);
         }
