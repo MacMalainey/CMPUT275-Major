@@ -4,6 +4,7 @@
 #include "map.h"
 #include "assets.h"
 #include "entities.h"
+#include "input.h"
 
 class Game {
 
@@ -25,9 +26,10 @@ private:
 
     Map* map;
     uint16_t map_color;
+
     Screen screen;
+    Joystick joy;
 
     PlayerCharacter pacman;
     PlayerCharacter enemy;
-
 };

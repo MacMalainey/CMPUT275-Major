@@ -13,7 +13,7 @@ uint16_t cellSizeY = DISPLAY_HEIGHT / DIVISIONS;
 
 class Cell {
  private:
-  Drawable Ghosts;
+  PlayerCharacter Ghosts;
   Pellet Pellets;
 };
 
@@ -28,9 +28,9 @@ class Grid {
  public:
   Grid();
 
-  void addGhost(Drawable ghost);
-  void removeGhost(Drawable ghost);
-  void ghostMoved(Drawable ghost);
+  void addCharacter(PlayerCharacter character);
+  void removeCharacter(PlayerCharacter character);
+  void characterMoved(PlayerCharacter character);
 
   void addPellet(Pellet pellet);
   void removePellet(Pellet pellet);

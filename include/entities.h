@@ -4,49 +4,56 @@
 
 #include <stdint.h>
 
-class Drawable {
+#include "screen.h"
+
+class Drawable
+{
 public:
-    Drawable(uint16_t x = 0, uint16_t y = 0) :
-    start_x(x),
-    start_y(y), offset_x(
-    0), offset_y(0) {
-
+    Drawable(uint16_t start_x = 0, uint16_t start_y = 0) : x(start_x), y(start_y)
+    {
     }
 
-    void Move(uint16_t new_x, uint16_t new_y) {
-        offset_x += new_x;
-        offset_y += new_y;
-    }
-
-    void Reset() {
-        offset_x = 0;
-        offset_y = 0;
+    void Move(uint16_t new_x, uint16_t new_y)
+    {
+        x += new_x;
+        y += new_y;
     }
 
     virtual void Draw(Screen &) = 0;
 
-    uint16_t start_x;
-    uint16_t start_y;
+    Orientation queuedMovement;
+    int immediateMovement[4];
 
-    int16_t offset_x;
-    int16_t offset_y;
+    uint16_t x;
+    uint16_t y;
 
     uint16_t color;
 };
 
-struct PlayerCharacter : public Drawable {
+struct Pellet : public Drawable
+{
+    void Draw(Screen &screen) final
+    {
+        screen.fillCircle(x, y, 1, TFT_WHITE);
+    }
 
-    void Draw(Screen &screen) final {
-        Serial.print("Drawing character at: ");
-        Serial.print(start_x + offset_x);
-        if (is_pacman) {
-            screen.fillCircle(start_x + offset_x, start_y + offset_y, 4, TFT_YELLOW);
-            screen.fillTriangle(start_x + offset_x, start_y + offset_y, start_x + offset_x + 4, start_y + offset_y + 2,
-                                start_x + offset_x + 4, start_y + offset_y - 2, TFT_BLACK);
-        } else{
-            screen.fillCircle(start_x + offset_x, start_y + offset_y, 7, TFT_RED);
+};
+
+struct PlayerCharacter : public Drawable
+{
+
+    void Draw(Screen &screen) final
+    {
+        if (is_pacman)
+        {
+            screen.fillCircle(x, y, 4, TFT_YELLOW);
+            screen.fillTriangle(x, y, x + 4, y + 2,
+                                x + 4, y - 2, TFT_BLACK);
         }
-
+        else
+        {
+            screen.fillCircle(x, y, 7, TFT_RED);
+        }
     }
 
     bool is_pacman = true;

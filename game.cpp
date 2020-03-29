@@ -1,6 +1,8 @@
 #include "include/game.h"
 
 Game::Game() {
+    // Setup functions basically go here
+
     // Generate Map
     // Determine player and enemies
     screen.setCursor(14, 6);
@@ -42,8 +44,7 @@ void Game::drawLives() {
 }
 
 void Game::Loop() {
-    millis();
-
+    // Things that happen every loop goes here.
 }
 
 void Game::Start() {
