@@ -21,7 +21,6 @@ class Grid {
   friend class Cell;
 
  private:
-  //Cell Grid;
 
   Point getGridPos(uint16_t x, uint16_t y);
   

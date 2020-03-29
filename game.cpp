@@ -48,7 +48,7 @@ void Game::Loop() {
 }
 
 void Game::Start() {
-    map->draw(screen, map_color);
+    screen.DrawMap(map, map_color);
     pacman.Move(100, 200);
     pacman.Draw(screen);
 

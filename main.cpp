@@ -29,6 +29,7 @@ void setup() {
         seed |= (analogRead(A11) & 1) << i;
     }
 
+    randomSeed(seed);
 }
 
 int main() {

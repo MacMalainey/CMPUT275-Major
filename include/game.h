@@ -24,7 +24,7 @@ private:
     void drawLives();
     void decrementLives();
 
-    Map* map;
+    Map map;
     uint16_t map_color;
 
     Screen screen;

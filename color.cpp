@@ -1,10 +1,6 @@
 #include <math.h>
 #include <Arduino.h>
 
-#include "include/assets.h"
-
-using namespace std;
-
 // https://gist.github.com/kuathadianto/200148f53616cbd226d993b400214a7fs
 uint16_t HSVtoRGB(int H, double S, double V) {
 	double C = S * V;

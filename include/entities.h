@@ -28,13 +28,18 @@ public:
     uint16_t y;
 
     uint16_t color;
+
+    bool isVisible = true;
 };
 
 struct Pellet : public Drawable
 {
+
     void Draw(Screen &screen) final
     {
-        screen.fillCircle(x, y, 1, TFT_WHITE);
+        if(isVisible) {
+            screen.fillCircle(x, y, 1, TFT_WHITE);
+        }
     }
 
 };

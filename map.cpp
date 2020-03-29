@@ -1,14 +1,12 @@
 #include "include/map.h"
 
-#include "include/assets.h"
-#include "include/misc.h"
-
-#include <Arduino.h>
-
 #define DEBUG_DRAW true
 
-uint16_t c_width = 10;
-uint16_t c_width_half = c_width / 2;
+
+Map::Map() {
+    n = 0;
+    nodes = nullptr;
+}
 
 Map::Map(Junction** nodes, uint8_t n) {
     this->n = n;
@@ -19,125 +17,15 @@ Map::Map(Junction** nodes, uint8_t n) {
     }
 }
 
-void Map::draw(MCUFRIEND_kbv canvas, uint16_t color) {
-    // Easily can draw using a BFS
-    bool touched[n] = {false};
-
-    Queue<Junction*> events;
-    events.push(nodes[0]);
-    touched[0] = true;
-
-    // canvas.setTextColor(color);
-    // canvas.setTextSize(3);
-
-    while(events.size() > 0) {
-        Junction* j = events.pop();
-        Serial.print("POPPED: ");
-        Serial.println(j->id);
-        #if (DEBUG_DRAW)
-        canvas.fillCircle(j->x, j->y, 8, color);
-        // canvas.setCursor(j->x, j->y);
-        // canvas.print(j->id);
-        #endif
-        for (uint8_t i = 0; i < N_ORIENT; i++) {
-            if (j->next((Orientation)i) != NULL) {
-                Junction* a = j->adjacent[i];
-                // Ensures this is only added to the queue once
-                if (!touched[a->id]) {
-                    touched[a->id] = true;
-                    events.push(a);
-                    Serial.print("PUSHED: ");
-                    Serial.println(a->id);
-                }
-
-                #if (DEBUG_DRAW)
-                // Serial.print(j->id);
-                // Serial.print(", ");
-                // Serial.print(a->id);
-                // Serial.print(", ");
-                // Serial.println(i);
-
-                if (j->x == a->x) { // vertical corridor
-                    uint32_t x_j0 = j->x - c_width_half;
-                    uint32_t x_a0 = a->x - c_width_half;
-                    uint32_t x_j1 = j->x + c_width_half;
-                    uint32_t x_a1 = a->x + c_width_half;
-
-                    uint32_t jy = j->y;
-                    uint32_t ay = a->y;
-
-                    // make sure we're drawing in the right direction
-                    if (jy > ay) {
-                        uint32_t temp = jy;
-                        jy = ay;
-                        ay = temp;
-                    }
-
-                    uint32_t y_j = jy + c_width_half;
-                    uint32_t y_a = ay - c_width_half;
-
-                    canvas.drawLine(x_j0, y_j, x_a0, y_a, color);
-                    canvas.drawLine(x_j1, y_j, x_a1, y_a, color);
-                } else { // horizontal corridor
-                    uint32_t y_j0 = j->y - c_width_half;
-                    uint32_t y_a0 = a->y - c_width_half;
-                    uint32_t y_j1 = j->y + c_width_half;
-                    uint32_t y_a1 = a->y + c_width_half;
-
-                    uint32_t jx = j->x;
-                    uint32_t ax = a->x;
-
-                    // make sure we're drawing in the right direction
-                    if (jx > ax) {
-                        uint32_t temp = jx;
-                        jx = ax;
-                        ax = temp;
-                    }
-
-                    uint32_t x_j = jx + c_width_half;
-                    uint32_t x_a = ax - c_width_half;
-
-                    canvas.drawLine(x_j, y_j0, x_a, y_a0, color);
-                    canvas.drawLine(x_j, y_j1, x_a, y_a1, color);
-                }
-                //canvas.drawLine(j->x, j->y, a->x, a->y, color);
-                #endif
-            } else {
-                // The direction leads no where, so we need to draw a line.
-                uint32_t x0, x1, y0, y1;
-
-                if (i == NORTH) {
-                    x0 = j->x - c_width_half;
-                    x1 = j->x + c_width_half;
-
-                    y0 = j->y - c_width_half;
-                    y1 = y0;
-                } else if (i == SOUTH) {
-                    x0 = j->x - c_width_half;
-                    x1 = j->x + c_width_half;
-
-                    y0 = j->y + c_width_half;
-                    y1 = y0;
-                } else if (i == EAST) {
-                    x0 = j->x + c_width_half;
-                    x1 = x0;
-
-                    y0 = j->y - c_width_half;
-                    y1 = j->y + c_width_half;
-                } else if (i == WEST) {
-                    x0 = j->x - c_width_half;
-                    x1 = x0;
-
-                    y0 = j->y - c_width_half;
-                    y1 = j->y + c_width_half;
-                }
-
-                canvas.drawLine(x0, y0, x1, y1, color);
-            }
-        }
-
-    }
+Junction* Map::GetStart() {
+    return nodes[0];
 }
+
+uint8_t Map::GetNodeCount() {
+    return n;
+}
+
+
 
 Junction::Junction(uint16_t x, uint16_t y) {
     this->x = x;
@@ -146,7 +34,7 @@ Junction::Junction(uint16_t x, uint16_t y) {
     adjacent = new Junction*[N_ORIENT];
 
     for (uint8_t i = 0; i < N_ORIENT; i++) {
-        adjacent[i] = NULL;
+        adjacent[i] = nullptr;
     }
 }
 
@@ -159,8 +47,8 @@ Orientation Junction::link(Junction* j) {
     int16_t dx = j->x - x;
     int16_t dy = j->y - y;
 
-    Orientation d;
-    Orientation op;
+    auto d = (Orientation)0;
+    auto op = (Orientation)0;
 
     if ((dx != 0 && dy != 0) || (dx == 0 && dy == 0)) {
         // Either a diagonal addition
@@ -181,8 +69,8 @@ Orientation Junction::link(Junction* j) {
     }
 
     // If this is linked with another junction we need to sever the link
-    if (adjacent[d] != NULL) {
-        adjacent[d]->adjacent[op] = NULL;
+    if (adjacent[d] != nullptr) {
+        adjacent[d]->adjacent[op] = nullptr;
     }
 
     adjacent[d] = j;
@@ -204,17 +92,22 @@ Map::~Map() {
     delete[] nodes;
 }
 
+Point Map::getSpawnXY() {
+    Junction* startingNode = this->nodes[0];
+    Point startingPoint = {startingNode->x, startingNode->y};
+    return startingPoint;
+}
 
-Map* buildDemoMap() {
-    Junction* j1 = new Junction(20, 120);
-    Junction* j2 = new Junction(50, 120);
-    Junction* j3 = new Junction(50, 300);
-    Junction* j4 = new Junction(50, 60);
-    Junction* j5 = new Junction(120, 120);
-    Junction* j6 = new Junction(120, 300);
-    Junction* j7 = new Junction(120, 60);
-    Junction* j8 = new Junction(240, 60);
-    Junction* j9 = new Junction(240, 300);
+void Map::Generate() {
+    auto j1 = new Junction(20, 120);
+    auto j2 = new Junction(50, 120);
+    auto j3 = new Junction(50, 300);
+    auto j4 = new Junction(50, 60);
+    auto j5 = new Junction(120, 120);
+    auto j6 = new Junction(120, 300);
+    auto j7 = new Junction(120, 60);
+    auto j8 = new Junction(240, 60);
+    auto j9 = new Junction(240, 300);
 
     j1->link(j2);
 
@@ -235,11 +128,6 @@ Map* buildDemoMap() {
 
     Junction* copy_arr[] = {j1, j2, j3, j4, j5, j6, j7, j8, j9};
 
-    return new Map(copy_arr, 9);
-}
-
-Point Map::getSpawnXY() {
-    Junction* startingNode = this->nodes[0];
-    Point startingPoint = {startingNode->x, startingNode->y};
-    return startingPoint;
+    this->nodes = copy_arr;
+    this->n = 9;
 }
