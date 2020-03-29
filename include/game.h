@@ -4,7 +4,6 @@
 #include "screen.h"
 #include "map.h"
 #include "grid.h"
-#include "assets.h"
 #include "entities.h"
 #include "input.h"
 

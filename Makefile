@@ -34,6 +34,10 @@ endif
 # Default install location of Arduino Makefile
 include /usr/share/arduino/Arduino.mk
 
+# # Because we have source code that is in subdirectories we need to add this:
+# LOCAL_CPP_SRCS += $(wildcard connectivity/*.cpp)
+# CPP_FLAGS += -Iconnectivity
+
 $(HOME)/.arduino_port_0:
 		$(ARDUINO_UA_DIR)/bin/arduino-port-select
 

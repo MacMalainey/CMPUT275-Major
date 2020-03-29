@@ -1,6 +1,8 @@
 #include <math.h>
 #include <Arduino.h>
 
+#include "include/misc.h"
+
 // https://gist.github.com/kuathadianto/200148f53616cbd226d993b400214a7fs
 uint16_t HSVtoRGB(int H, double S, double V) {
     double C = S * V;
@@ -36,12 +38,12 @@ uint16_t HSVtoRGB(int H, double S, double V) {
 
     uint16_t rgb = 0;
 
-    rgb += (Rs + m) * 255 * 65536;  // 65536 = 16 ^ 4 is hex offset to move 0xAA to 0xRR0000
-    rgb += (Gs + m) * 255 * 256; // 256 = 16 ^ 2 is hex offset to move 0xGG to 0x00GG00
-    rgb += (Bs + m) * 255; // stays at 0x0000BB
+	rgb += (uint16_t)((Rs + m) * 31) << 11;  // Bit shift to bytes 11 - 15
+	rgb += (uint16_t)((Gs + m) * 63) << 5; // Bit shift to bytes 5 - 10
+	rgb += (uint16_t)((Bs + m) * 31); // stays at bytes 0 - 4
     return rgb;
 }
 
 uint16_t genNeonColor() {
-    return HSVtoRGB(random(256), 1.0, 0.05);
+	return HSVtoRGB(random(256), 1.0, 1.0);
 }

@@ -5,15 +5,6 @@ Map::Map() {
     nodes = nullptr;
 }
 
-Map::Map(Junction **nodes, uint8_t n) {
-    this->n = n;
-    this->nodes = new Junction *[n];
-    for (uint8_t i = 0; i < n; i++) {
-        this->nodes[i] = nodes[i];
-        this->nodes[i]->id = i; // Set id to make certain all Junctions have unique values
-    }
-}
-
 Junction *Map::GetStart() {
     return nodes[0];
 }
