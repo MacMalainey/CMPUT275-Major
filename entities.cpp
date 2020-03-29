@@ -1,7 +1,7 @@
 #include "include/entities.h"
 
-Drawable::Drawable(uint16_t start_x, uint16_t start_y) : x(start_x), y(start_y) {
-}
+Drawable::Drawable(uint16_t start_x, uint16_t start_y)
+    : x(start_x), y(start_y) {}
 
 void Drawable::Move(uint16_t new_x, uint16_t new_y) {
   x += new_x;
@@ -16,12 +16,9 @@ void Pellet::Draw(Screen &screen) {
 
 void PlayerCharacter::Draw(Screen &screen) {
   if (is_pacman) {
-    screen.
-        fillCircle(x, y, 4, TFT_YELLOW);
-    screen.
-        fillTriangle(x, y, x + 4, y + 2, x + 4, y - 2, TFT_BLACK);
+    screen.fillCircle(x, y, 4, TFT_YELLOW);
+    screen.fillTriangle(x, y, x + 4, y + 2, x + 4, y - 2, TFT_BLACK);
   } else {
-    screen.
-        fillCircle(x, y, 7, TFT_RED);
+    screen.fillCircle(x, y, 7, TFT_RED);
   }
 }

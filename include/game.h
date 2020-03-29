@@ -1,13 +1,12 @@
 #pragma once
 
-#include "screen.h"
-#include "map.h"
-#include "grid.h"
 #include "entities.h"
+#include "grid.h"
 #include "input.h"
+#include "map.h"
+#include "screen.h"
 
 class Game {
-
  public:
   Game();
   void Start();
@@ -15,7 +14,6 @@ class Game {
   bool is_running = true;
 
  private:
-
   int current_lives = 3;
   uint16_t score = 0;
 

@@ -30,7 +30,6 @@ struct Pellet : public Drawable {
 };
 
 struct PlayerCharacter : public Drawable {
-
   void Draw(Screen &screen) final;
 
   bool is_pacman = true;

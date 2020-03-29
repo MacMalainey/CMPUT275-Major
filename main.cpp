@@ -9,44 +9,44 @@
  *
  */
 
-#include <Arduino.h>
-
 #include <Adafruit_GFX.h>
+#include <Arduino.h>
 #include <MCUFRIEND_kbv.h>
-#include "include/misc.h"
-#include "include/map.h"
+
 #include "include/game.h"
+#include "include/map.h"
+#include "include/misc.h"
 
 #define RAND_SEED_LENGTH 32
-#define RAND_READ_PIN A11
+#define RAND_READ_PIN    A11
 
 #define SERVER_SELECT_PIN 53
 
 void setup() {
-    init();
-    Serial.begin(9600);
+  init();
+  Serial.begin(9600);
 
-    uint32_t seed = 0;
+  uint32_t seed = 0;
 
-    //  Generate a new random seed at start (gotta keep things *fresh*)
-    for (int i = 0; i < RAND_SEED_LENGTH; i++) {
-        seed |= (analogRead(A11) & 1) << i;
-    }
+  //  Generate a new random seed at start (gotta keep things *fresh*)
+  for (int i = 0; i < RAND_SEED_LENGTH; i++) {
+    seed |= (analogRead(A11) & 1) << i;
+  }
 
-    randomSeed(seed);
+  randomSeed(seed);
 }
 
 int main() {
-    setup();
+  setup();
 
-    Game game;
-    game.Start();
+  Game game;
+  game.Start();
 
-    while (true) {
-        game.Loop();
-    }
+  while (true) {
+    game.Loop();
+  }
 
-    Serial.end();
+  Serial.end();
 
-    return 0;
+  return 0;
 }
