@@ -14,6 +14,10 @@ Game::Game() {
     map.Generate();
     map_color = genNeonColor();
     screen.drawLine(0, 30, 480, 30, map_color);
+
+    // Spatial partitioning
+    grid.Generate(10);
+    testGrid();
 }
 
 void Game::updateScore() {
@@ -30,6 +34,25 @@ void Game::decrementLives() {
     } else {
         screen.fillRect(450, 0, 30, 30, TFT_BLACK);
     }
+}
+
+void Game::testGrid() {
+    // for (uint8_t i = 0; i < grid.divisions; i++) {
+    //     for (uint8_t j = 0; j < grid.divisions; j++) {
+    //         Row *row_i = grid.getRow(i);
+    //         Cell *cell_ij = row_i->getCell(j);
+    //         uint16_t id = cell_ij->getID();
+
+    //         Serial.println(id);
+    //     }
+    // }
+
+    // Serial.println(grid.getRowIndex(0));
+    // Serial.println(grid.getRowIndex(10));
+    // Serial.println(grid.getRowIndex(100));
+    // Serial.println(grid.getRowIndex(200));
+    // Serial.println(grid.getRowIndex(300));
+    // Serial.println(grid.getRowIndex(480));
 }
 
 void Game::drawLives() {

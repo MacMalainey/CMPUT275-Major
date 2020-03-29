@@ -3,6 +3,7 @@
 #include "misc.h"
 #include "screen.h"
 #include "map.h"
+#include "grid.h"
 #include "assets.h"
 #include "entities.h"
 #include "input.h"
@@ -30,8 +31,12 @@ class Game {
   void drawLives();
   void decrementLives();
 
+  void testGrid();
+
   Map map;
   uint16_t map_color;
+
+  Grid grid;
 
   Screen screen;
   Joystick joy;
