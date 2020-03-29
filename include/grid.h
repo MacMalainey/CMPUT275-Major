@@ -19,7 +19,8 @@ class Cell {
 
  public:
   uint16_t getID();
-  PlayerCharacter character;
+
+  PlayerCharacter ghosts;
   Pellet pellets;
 };
 
@@ -52,15 +53,23 @@ class Grid {
 
  private:
   Row **rows;
-  uint8_t divisions;
 
   Point getGridPos(uint16_t x, uint16_t y);
 
  public:
-  Grid(uint8_t divisions);
+  Grid();
   ~Grid();
 
+  uint16_t sizeX;
+  uint16_t sizeY;
+  uint8_t divisions;
+
+  void Generate(uint8_t divisions);
+
   Row *getRow(uint8_t index);
+
+  uint8_t getRowIndex(uint16_t x);
+  uint8_t getCellIndex(uint16_t y);
 
   void addCharacter(PlayerCharacter character);
   void removeCharacter(PlayerCharacter character);
@@ -71,5 +80,3 @@ class Grid {
 
   void update();
 };
-
-Grid *testGrid(uint8_t divisions);
