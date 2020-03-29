@@ -9,6 +9,7 @@ Screen::Screen() {
 }
 
 void Screen::DrawMap(Map &map, uint16_t color) {
+    Serial.println("Drawing map");
     uint16_t c_width = 10;
     uint16_t c_width_half = c_width / 2;
 
@@ -24,9 +25,12 @@ void Screen::DrawMap(Map &map, uint16_t color) {
     while (events.size() > 0) {
         Junction *j = events.pop();
 
+        Serial.print("Drawing: ");
+        Serial.println(j->id);
+
         fillCircle(j->x, j->y, 8, color);
         for (uint8_t i = 0; i < N_ORIENT; i++) {
-            if (j->next((Orientation) i) != NULL) {
+            if (j->next((Orientation) i) != nullptr) {
                 Junction *a = j->adjacent[i];
                 // Ensures this is only added to the queue once
                 if (!touched[a->id]) {

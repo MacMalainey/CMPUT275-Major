@@ -123,6 +123,10 @@ void Map::Generate() {
 
     Junction *copy_arr[] = {j1, j2, j3, j4, j5, j6, j7, j8, j9};
 
-    this->nodes = copy_arr;
     this->n = 9;
+    this->nodes = new Junction *[n];
+    for (uint8_t i = 0; i < n; i++) {
+        this->nodes[i] = copy_arr[i];
+        this->nodes[i]->id = i; // Set id to make certain all Junctions have unique values
+    }
 }

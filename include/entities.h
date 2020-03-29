@@ -26,9 +26,7 @@ class Drawable {
 };
 
 struct Pellet : public Drawable {
-
   void Draw(Screen &screen) final;
-
 };
 
 struct PlayerCharacter : public Drawable {
