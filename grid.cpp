@@ -14,5 +14,5 @@
 #include <Arduino.h>
 
 Grid::Grid() {
-    this->Grid[DIVISIONS][DIVISIONS];
+    //this->Grid[DIVISIONS][DIVISIONS];
 }
