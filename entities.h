@@ -1,11 +1,14 @@
 #pragma once
 
 #include <MCUFRIEND_kbv.h>
-
+#include "map.h"
 #include "stdint.h"
 
 class Drawable {
  public:
+  Orientation queuedMovement;
+  int immediateMovement[4];
+
   void Move(uint16_t new_x, uint16_t new_y) {
     offset_x = new_x - start_x;
     offset_y = new_y - start_y;
