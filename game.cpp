@@ -71,16 +71,16 @@ void Game::movePacman() {
     screen.fillCircle(current_x, current_y, 4, TFT_BLACK);
 
     if (currentDirection == 1u ) {
-      current_y -= 2;
+      current_y -= 1;
     }
     else if (currentDirection == 2u) {
-      current_y += 2;
+      current_y += 1;
     }
     else if (currentDirection == 4u) {
-      current_x += 2;
+      current_x += 1;
     }
     else if (currentDirection == 8u) {
-      current_x -= 2;
+      current_x -= 1;
     }
     screen.fillCircle(current_x, current_y, 4, TFT_YELLOW);
     screen.fillTriangle(current_x, current_y, current_x + 4, current_y + 2, current_x + 4, current_y - 2, TFT_BLACK);
