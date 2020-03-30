@@ -1,21 +1,15 @@
 /**
- *
  * CMPUT 275 -- Winter 2020 -- Final Project
  *
  * Mackenzie Malainey, 1570494
  * Benjamin Kong, 1573684
  * Lora Ma, 1570935
  * Michael Kwok, 1548454
- *
  */
 
-#include <Adafruit_GFX.h>
 #include <Arduino.h>
-#include <MCUFRIEND_kbv.h>
 
 #include "include/game.h"
-#include "include/map.h"
-#include "include/misc.h"
 
 #define RAND_SEED_LENGTH 32
 #define RAND_READ_PIN    A11
@@ -30,7 +24,7 @@ void setup() {
 
   //  Generate a new random seed at start (gotta keep things *fresh*)
   for (int i = 0; i < RAND_SEED_LENGTH; i++) {
-    seed |= (analogRead(A11) & 1) << i;
+    seed |= (analogRead(RAND_READ_PIN) & 1) << i;
   }
 
   randomSeed(seed);
@@ -39,7 +33,9 @@ void setup() {
 int main() {
   setup();
 
-  Game game;
+
+
+  Game game(digitalRead(SERVER_SELECT_PIN) == HIGH);
   game.Start();
 
   while (true) {

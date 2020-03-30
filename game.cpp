@@ -1,18 +1,23 @@
 #include "include/game.h"
 
-Game::Game() {
+Game::Game(bool isServer) {
   // Setup functions basically go here
 
+
   // Generate Map
+  // Its the map, its the map, its the map, its the map...
+  map.Generate();
+  map_color = genNeonColor();
+
   // Determine player and enemies
+  // Player is always server
+
+
   screen.setCursor(14, 6);
   screen.print("Score:");
   updateScore();
   drawLives();
 
-  // Its the map, its the map, its the map, its the map...
-  map.Generate();
-  map_color = genNeonColor();
   screen.drawLine(0, 30, 480, 30, map_color);
 
   // Spatial partitioning
@@ -75,7 +80,7 @@ void Game::Start() {
   pacman.Move(100, 200);
   pacman.Draw(screen);
 
-  enemy.is_pacman = false;
+  enemy.isPacman = false;
 
   enemy.Move(150, 200);
   enemy.Draw(screen);

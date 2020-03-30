@@ -27,10 +27,12 @@ class Drawable {
 
 struct Pellet : public Drawable {
   void Draw(Screen &screen) final;
+
+  bool isPowerUp = false;
 };
 
 struct PlayerCharacter : public Drawable {
   void Draw(Screen &screen) final;
 
-  bool is_pacman = true;
+  bool isPacman = true;
 };

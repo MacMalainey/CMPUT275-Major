@@ -15,7 +15,7 @@ void Pellet::Draw(Screen &screen) {
 }
 
 void PlayerCharacter::Draw(Screen &screen) {
-  if (is_pacman) {
+  if (isPacman) {
     screen.fillCircle(x, y, 4, TFT_YELLOW);
     screen.fillTriangle(x, y, x + 4, y + 2, x + 4, y - 2, TFT_BLACK);
   } else {

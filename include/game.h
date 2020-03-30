@@ -5,10 +5,11 @@
 #include "input.h"
 #include "map.h"
 #include "screen.h"
+#include "comm.h"
 
 class Game {
  public:
-  Game();
+  Game(bool isServer);
   void Start();
   void Loop();
   bool is_running = true;
