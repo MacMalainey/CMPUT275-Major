@@ -69,9 +69,8 @@ Orientation Junction::link(Junction *j) {
 
 Map::~Map() { delete[] nodes; }
 
-Point Map::getSpawnXY() {
-  Junction *startingNode = this->nodes[0];
-  Point startingPoint = {startingNode->x, startingNode->y};
+Point Map::getXY(Junction *node) {
+  Point startingPoint = {node->x, node->y};
   return startingPoint;
 }
 

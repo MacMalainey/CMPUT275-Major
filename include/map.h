@@ -32,7 +32,7 @@ class Map {
 
   ~Map();
 
-  Point getSpawnXY();
+  Point getXY(Junction *startingNode);
 
   void Generate();
 
