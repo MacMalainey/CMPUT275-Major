@@ -12,7 +12,6 @@ class Cell {
   friend class Grid;
 
  private:
-
   uint16_t id;
 
   Cell(uint16_t id);

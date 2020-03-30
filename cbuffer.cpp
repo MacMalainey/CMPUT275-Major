@@ -1,4 +1,3 @@
-
 #include "include/comm.h"
 
 uint8_t CommBuffer::serialize(MsgType type, void* payload, uint8_t size, uint8_t* buffer) {
@@ -19,6 +18,7 @@ uint16_t CommBuffer::genChecksum(void* payload, uint8_t size) {
     for (uint8_t i = 0; i < size; i++) {
         checksum += bytes[i];
     }
+  }
 
     return checksum;
 }
@@ -51,7 +51,7 @@ void CommBuffer::cleanBuffer() {
     }
 }
 
-CommBuffer::CommBuffer(uint8_t select) {
+CommBuffer::CommBuffer(uint8_t select) {  // This should be created as a factory
     bufferLen = 0;
     msgReady = false;
     isWaiting = true;
@@ -72,6 +72,7 @@ CommBuffer::CommBuffer(uint8_t select) {
             return; // TODO: We should throw an exception here
             break;
     }
+  }
 
     serial->begin(9600);
 }
