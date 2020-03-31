@@ -36,7 +36,7 @@ int main() {
 
 
 
-  Game game(digitalRead(SERVER_SELECT_PIN) == HIGH);
+  Game game(false);
   game.Start();
 
   while (true) {
