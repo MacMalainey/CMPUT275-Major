@@ -2,20 +2,8 @@
 
 #include <Arduino.h>
 
-enum MsgType {
-  ACK,        // Your basic acknowledgement (because everyone deserves to be
-              // acknowledged)
-  INIT,       // Initialize communication message
-  MAP_START,  // Map sending sequence start
-  MAP_NODE,   // Map node
-  MAP_END,    // Map sending sequence end
-  STATE,      // Game state
-  P_LOC,      // Player location
-  CONFIRM,    // Signals a request for a confirm (from server)
-};
-
 struct Message {
-  MsgType type;
+  uint8_t type;
   void* payload;  // Keep watch on this.  It might cause a memory leak...
   uint8_t size;
 
@@ -62,7 +50,7 @@ private:
      * Byte 3 and 4: 16 bit checksum
      * Byte 5 to n: Payload
      */
-    uint8_t serialize(MsgType type, void* payload, uint8_t size, uint8_t* buffer);
+    uint8_t serialize(uint8_t type, void* payload, uint8_t size, uint8_t* buffer);
 
     uint16_t genChecksum(void* payload, uint8_t size);
 
@@ -89,9 +77,13 @@ public:
     CommBuffer(uint8_t select);
     ~CommBuffer();
 
-    void send(MsgType type, void* payload, uint8_t length);
+    void send(uint8_t type, void* payload, uint8_t length);
 
     void recieve();
+
+    void begin();
+
+    void end();
 
     bool hasMessage();
 

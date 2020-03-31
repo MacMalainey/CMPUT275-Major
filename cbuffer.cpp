@@ -1,6 +1,6 @@
 #include "include/comm.h"
 
-uint8_t CommBuffer::serialize(MsgType type, void* payload, uint8_t size, uint8_t* buffer) {
+uint8_t CommBuffer::serialize(uint8_t type, void* payload, uint8_t size, uint8_t* buffer) {
     uint16_t checksum = genChecksum(payload, size);
     buffer[START_BYTE] = START_FLAG; // Denote new message start
     buffer[SIZE_BYTE] = size; // The size of the message (not just meta data)
@@ -18,7 +18,6 @@ uint16_t CommBuffer::genChecksum(void* payload, uint8_t size) {
     for (uint8_t i = 0; i < size; i++) {
         checksum += bytes[i];
     }
-  }
 
     return checksum;
 }
@@ -51,7 +50,7 @@ void CommBuffer::cleanBuffer() {
     }
 }
 
-CommBuffer::CommBuffer(uint8_t select) {  // This should be created as a factory
+CommBuffer::CommBuffer(uint8_t select) {  // This should be created as a factory producing singletons
     bufferLen = 0;
     msgReady = false;
     isWaiting = true;
@@ -72,17 +71,15 @@ CommBuffer::CommBuffer(uint8_t select) {  // This should be created as a factory
             return; // TODO: We should throw an exception here
             break;
     }
-  }
-
-    serial->begin(9600);
 }
 
-void CommBuffer::send(MsgType type, void* payload, uint8_t length) {
+void CommBuffer::send(uint8_t type, void* payload, uint8_t length) {
     uint8_t wBuffer[length + HEADER_LENGTH];
     uint8_t size = serialize(type, payload, length, wBuffer);
 
     for (uint8_t i = 0; i < size; i++) {
         serial->write(wBuffer[i]);
+        Serial.print(wBuffer[i]);
     }
 
 }
@@ -101,6 +98,7 @@ void CommBuffer::recieve() {
             bytes++;
         } else {
             buffer[bufferLen + bytes] = serial->read();
+            Serial.print(buffer[bufferLen + bytes]);
             bytes++;
             if (!msgReady && bufferLen + bytes >= buffer[SIZE_BYTE] + HEADER_LENGTH) {
                 if (validate()) {
@@ -113,6 +111,14 @@ void CommBuffer::recieve() {
     }
 
     bufferLen += bytes;
+}
+
+void CommBuffer::begin() {
+    serial->begin(9600);
+}
+
+void CommBuffer::end() {
+    serial->end();
 }
 
 bool CommBuffer::hasMessage() {
@@ -129,6 +135,4 @@ Message* CommBuffer::getMessage() {
     return msg;
 }
 
-CommBuffer::~CommBuffer() {
-    serial->end();
-}
+CommBuffer::~CommBuffer() {}
