@@ -25,13 +25,16 @@ class Game {
   Junction *currentJunction;
 
   uint8_t currentDirection = 0;
-  uint8_t validDirections = 0;
+  uint8_t nextDirection = 0;
 
   void updateScore();
   void drawLives();
   void decrementLives();
   void movePacman();
   void testGrid();
+  Orientation translateToOrien(uint8_t direction);
+  uint8_t isValidDirection(uint8_t direction);
+  void moveInTunnel(uint8_t direction, uint8_t opposite);
 
   Map map;
   uint16_t map_color;

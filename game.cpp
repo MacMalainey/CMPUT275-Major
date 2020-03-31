@@ -68,95 +68,123 @@ void Game::drawLives() {
 
 
 void Game::movePacman() {
-    screen.fillCircle(current_x, current_y, 4, TFT_BLACK);
-
     if (currentDirection == 1u ) {
+      screen.fillCircle(current_x, current_y, 4, TFT_BLACK);
       current_y -= 1;
+      screen.fillCircle(current_x, current_y, 4, TFT_YELLOW);
+      screen.fillTriangle(current_x, current_y, current_x + 2 , current_y - 4, current_x - 2 , current_y - 4, TFT_BLACK);
     }
+
     else if (currentDirection == 2u) {
+      screen.fillCircle(current_x, current_y, 4, TFT_BLACK);
       current_y += 1;
+      screen.fillCircle(current_x, current_y, 4, TFT_YELLOW);
+      screen.fillTriangle(current_x, current_y, current_x + 2 , current_y + 4, current_x - 2 , current_y + 4, TFT_BLACK);
     }
+
     else if (currentDirection == 4u) {
+      screen.fillCircle(current_x, current_y, 4, TFT_BLACK);
       current_x += 1;
+      screen.fillCircle(current_x, current_y, 4, TFT_YELLOW);
+      screen.fillTriangle(current_x, current_y, current_x + 4, current_y + 2, current_x + 4, current_y - 2, TFT_BLACK);
     }
+
     else if (currentDirection == 8u) {
+      screen.fillCircle(current_x, current_y, 4, TFT_BLACK);
       current_x -= 1;
+      screen.fillCircle(current_x, current_y, 4, TFT_YELLOW);
+      screen.fillTriangle(current_x, current_y, current_x - 4, current_y + 2, current_x - 4, current_y - 2, TFT_BLACK);
     }
-    screen.fillCircle(current_x, current_y, 4, TFT_YELLOW);
-    screen.fillTriangle(current_x, current_y, current_x + 4, current_y + 2, current_x + 4, current_y - 2, TFT_BLACK);
-      currentDirection = 0;
+
+
 }
+
+Orientation Game::translateToOrien(uint8_t direction) {
+    if (direction == 1u) {
+      return (Orientation) 0;
+    }
+
+    else if (direction == 2u) {
+      return (Orientation) 1;
+    }
+
+    else if (direction == 4u) {
+      return (Orientation) 2;
+    }
+
+    else if (direction == 8u) {
+      return (Orientation) 3;
+    }
+}
+
+uint8_t Game::isValidDirection(uint8_t direction) {
+    if (currentJunction->next((Orientation) translateToOrien(direction)) != nullptr) {
+      return direction;
+    }
+
+    else {
+      return 0;
+    }
+}
+
+
+void Game::moveInTunnel(uint8_t direction, uint8_t opposite) {
+    if (currentDirection == direction) {
+      uint8_t input = joy.ReadInput();
+
+      if (input == opposite) {
+        currentDirection = opposite;
+      }
+
+      else if (input != 0) {
+        nextDirection = input;
+      }
+
+      if (map.getXY(currentJunction).x == current_x && map.getXY(currentJunction).y == current_y) {
+        if (nextDirection != 0) {
+          currentDirection = isValidDirection(nextDirection);
+          nextDirection = 0;
+        }
+
+        else {
+          currentDirection = isValidDirection(currentDirection);
+        }
+      }
+
+      else if (map.getXY(currentJunction->next(translateToOrien(currentDirection))).x == current_x && map.getXY(currentJunction->next(translateToOrien(currentDirection))).y == current_y) {
+        Serial.print("You are at a new junction!");
+        currentJunction = currentJunction->next(translateToOrien(direction));
+
+        if (nextDirection != 0) {
+          currentDirection = isValidDirection(nextDirection);
+          nextDirection = 0;
+        }
+
+        else {
+          currentDirection = isValidDirection(currentDirection);
+        }
+      }
+
+      movePacman();
+
+    }
+}
+
 
 void Game::Loop() {
     uint8_t buttonPressed = joy.ReadInput();
 
-    if (map.getXY(currentJunction).x == current_x && map.getXY(currentJunction).y == current_y) {
-      validDirections = 0;
-      if (buttonPressed == 1u) {
-        if (currentJunction->next(0) != nullptr) {
-          currentDirection |= 1u;
-          validDirections |= 3u;
-          movePacman();
-        }
-      }
-      else if (buttonPressed == 2u) {
-        if (currentJunction->next(1) != nullptr) {
-          currentDirection |= 2u;
-          validDirections |= 3u;
-          movePacman();
-        }
-      }
-      else if (buttonPressed == 4u) {
-        if (currentJunction->next(2) != nullptr) {
-          currentDirection |= 4u;
-          validDirections = 12u;
-          movePacman();
-        }
-      }
-      else if (buttonPressed == 8u) {
-        if (currentJunction->next(3) != nullptr) {
-          currentDirection |= 8u;
-          validDirections = 12u;
-          movePacman();
-        }
-      }
+    if (map.getXY(currentJunction).x == current_x && map.getXY(currentJunction).y == current_y && buttonPressed != 0) {
+      currentDirection = isValidDirection(buttonPressed);
+      movePacman();
     }
 
+    moveInTunnel(1u, 2u);
+    moveInTunnel(2u, 1u);
+    moveInTunnel(4u, 8u);
+    moveInTunnel(8u, 4u);
 
-    if (buttonPressed == 1u && validDirections == 3u) {
-        currentDirection |= 1u;
-        movePacman();
-        if (map.getXY(currentJunction->next(0)).x == current_x) {
-          currentJunction = currentJunction->next(0);
-        }
-    }
-    else if (buttonPressed == 2u && validDirections == 3u) {
-        currentDirection |= 2u;
-        movePacman();
-        if (map.getXY(currentJunction->next(1)).x == current_x) {
-          currentJunction = currentJunction->next(1);
-        }
-    }
-
-    else if (buttonPressed == 4u && validDirections == 12u) {
-        currentDirection |= 4u;
-        movePacman();
-        if (map.getXY(currentJunction->next(2)).x == current_x) {
-          currentJunction = currentJunction->next(2);
-        }
-
-    }
-    else if (buttonPressed == 8u && validDirections == 12u) {
-        currentDirection |= 8u;
-        movePacman();
-        if (map.getXY(currentJunction->next(3)).x == current_x) {
-          currentJunction = currentJunction->next(3);
-        }
-
-    }
-
-
-  delay(80);
+  delay(20);
 
 }
 
