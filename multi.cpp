@@ -1,23 +1,17 @@
 
 
-enum ComState{
-    START,
-    MAP_LOAD
-    
+enum ComState {
+  START,
+  MAP_LOAD
+
 };
 
 class Device {
-
-protected:
-    bool needAck;
-    // uint64_t timeout;
-
+ protected:
+  bool needAck;
+  // uint64_t timeout;
 };
 
-class Server : Device {
+class Server : Device {};
 
-};
-
-class Client : Device {
-
-};
+class Client : Device {};

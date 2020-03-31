@@ -1,22 +1,19 @@
 #pragma once
-#include <stdint.h>
-#include "misc.h"
-#include "screen.h"
-#include "map.h"
-#include "grid.h"
+#include "comm.h"
 #include "entities.h"
+#include "grid.h"
 #include "input.h"
+#include "map.h"
+#include "screen.h"
 
 class Game {
-
  public:
-  Game();
+  Game(bool isServer);
   void Start();
   void Loop();
   bool is_running = true;
 
  private:
-
   int current_lives = 3;
   uint16_t score = 0;
   int current_x;

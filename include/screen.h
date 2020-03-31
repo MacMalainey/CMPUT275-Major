@@ -1,7 +1,7 @@
 #pragma once
 
-#include <stdint.h>
 #include <MCUFRIEND_kbv.h>
+#include <stdint.h>
 
 #include "map.h"
 

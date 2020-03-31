@@ -1,7 +1,7 @@
 #include "include/game.h"
 #include "include/input.h"
 
-Game::Game() {
+Game::Game(bool isServer) {
     // Setup functions basically go here
     // Generate Map
     // Determine player and enemies
@@ -98,6 +98,8 @@ void Game::movePacman() {
 
 
 }
+
+// up = 0, down = 1, right = 2, left = 3
 
 Orientation Game::translateToOrien(uint8_t direction) {
     if (direction == 1u) {
@@ -200,7 +202,7 @@ void Game::Start() {
     pacman.Draw(screen);
 
 
-    enemy.is_pacman = false;
+    enemy.isPacman = false;
 
     enemy.Move(150, 200);
     enemy.Draw(screen);
