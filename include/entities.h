@@ -20,6 +20,9 @@ class Drawable {
   uint16_t color;
 
   bool isVisible = true;
+
+  // Used for the LinkedList class for checking inequality
+  bool operator!=(const Drawable &other) const;
 };
 
 struct Pellet : public Drawable {

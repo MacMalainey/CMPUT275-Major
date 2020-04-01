@@ -16,8 +16,7 @@ Game::Game(bool isServer) {
     screen.drawLine(0, 30, 480, 30, map_color);
 
     // Spatial partitioning
-    grid.Generate(10);
-    testGrid();
+    grid.Generate(10); // 10 is the number of divisions
 }
 
 void Game::updateScore() {
@@ -53,6 +52,27 @@ void Game::testGrid() {
     // Serial.println(grid.getRowIndex(200));
     // Serial.println(grid.getRowIndex(300));
     // Serial.println(grid.getRowIndex(480));
+
+    num_pellets = 100;
+    uint16_t k = 0;
+
+    for (uint16_t i = 0; i < num_pellets/10; i++) {
+        for (uint16_t j = 0; j < num_pellets/10; j++) {
+            Pellet newPellet;
+            newPellet.x = i*screen.DISPLAY_WIDTH/10 + 15;
+            newPellet.y = j*screen.DISPLAY_HEIGHT/10 + 15;
+
+            //newPellet.Draw(screen);
+
+            grid.addPellet(newPellet);
+            
+            pellets[k++] = newPellet;
+        }  
+    }
+
+    for (uint16_t i = 0; i < num_pellets; i++) {
+        grid.removePellet(pellets[i]);
+    }
 }
 
 void Game::drawLives() {
@@ -110,7 +130,7 @@ Orientation Game::translateToOrien(uint8_t direction) {
         return (Orientation) 2;
     }
 
-    else if (direction == 8u) {
+    else {//if (direction == 8u) {
         return (Orientation) 3;
     }
 }
@@ -122,7 +142,6 @@ uint8_t Game::isValidDirection(uint8_t direction) {
         return 0;
     }
 }
-
 
 void Game::moveInTunnel(uint8_t direction, uint8_t opposite) {
     if (currentDirection == direction) {
@@ -149,7 +168,7 @@ void Game::moveInTunnel(uint8_t direction, uint8_t opposite) {
         }
 
         else if (map.getXY(currentJunction->next(translateToOrien(currentDirection))).x == current_x && map.getXY(currentJunction->next(translateToOrien(currentDirection))).y == current_y) {
-            Serial.print("You are at a new junction!");
+            //Serial.print("You are at a new junction!");
             currentJunction = currentJunction->next(translateToOrien(direction));
 
             if (nextDirection != 0) {
@@ -198,5 +217,7 @@ void Game::Start() {
     enemy.isPacman = false;
 
     enemy.Move(150, 200);
-    enemy.Draw(screen);
+    enemy.Draw(screen); 
+
+    testGrid();
 }
