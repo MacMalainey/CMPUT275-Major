@@ -1,4 +1,4 @@
-// Acknowledgement: this is based off the code provided in class for 
+// Acknowledgement: this is based off the code provided in class for
 // dynamic arrays.
 
 #pragma once
@@ -9,7 +9,7 @@ template <typename T>
 class DynamicArray {
  public:
   DynamicArray(uint16_t size = 0);
-  ~DynamicArray(); 
+  ~DynamicArray();
 
   void insert(const T& item);
 };

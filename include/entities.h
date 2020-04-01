@@ -14,9 +14,6 @@ class Drawable {
 
   virtual void Draw(Screen &) = 0;
 
-  Orientation queuedMovement;
-  int immediateMovement[4];
-
   uint16_t x;
   uint16_t y;
 
@@ -27,11 +24,12 @@ class Drawable {
 
 struct Pellet : public Drawable {
   void Draw(Screen &screen) final;
+
+  bool isPowerUp = false;
 };
 
 struct PlayerCharacter : public Drawable {
-
   void Draw(Screen &screen) final;
 
-  bool is_pacman = true;
+  bool isPacman = true;
 };
