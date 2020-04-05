@@ -19,8 +19,7 @@ class Cell {
  public:
   uint16_t getID();
 
-  PlayerCharacter ghosts;
-  Pellet pellets;
+  LinkedList<Pellet> pellets;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -35,7 +34,7 @@ class Row {
   Cell **cells;
   uint8_t divisions;
 
-  Row(uint8_t divisions);
+  Row(uint8_t divisions, uint16_t num_cells);
   ~Row();
 
  public:
@@ -62,6 +61,7 @@ class Grid {
   uint16_t sizeX;
   uint16_t sizeY;
   uint8_t divisions;
+  uint16_t num_cells = 0;
 
   void Generate(uint8_t divisions);
 
@@ -69,10 +69,6 @@ class Grid {
 
   uint8_t getRowIndex(uint16_t x);
   uint8_t getCellIndex(uint16_t y);
-
-  void addCharacter(PlayerCharacter character);
-  void removeCharacter(PlayerCharacter character);
-  void characterMoved(PlayerCharacter character);
 
   void addPellet(Pellet pellet);
   void removePellet(Pellet pellet);

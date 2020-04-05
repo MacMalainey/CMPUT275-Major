@@ -1,10 +1,10 @@
 #pragma once
 
 struct Joystick {
-  const uint8_t LEFT_PIN = 47;
-  const uint8_t UP_PIN = 49;
-  const uint8_t DOWN_PIN = 51;
-  const uint8_t RIGHT_PIN = 53;
+  const uint8_t LEFT_PIN = 45;
+  const uint8_t UP_PIN = 47;
+  const uint8_t DOWN_PIN = 49;
+  const uint8_t RIGHT_PIN = 51;
 
   Joystick() {
     pinMode(DOWN_PIN, INPUT);
@@ -26,10 +26,10 @@ struct Joystick {
     if (down == LOW) {
       out |= 2u;
     }
-    if (left == LOW) {
+    if (right == LOW) {
       out |= 4u;
     }
-    if (right == LOW) {
+    if (left == LOW) {
       out |= 8u;
     }
 

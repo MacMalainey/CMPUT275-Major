@@ -10,6 +10,7 @@
 #include <Arduino.h>
 
 #include "include/game.h"
+#include "include/comm.h"
 
 #define RAND_SEED_LENGTH 32
 #define RAND_READ_PIN    A11
@@ -35,7 +36,7 @@ int main() {
 
 
 
-  Game game(digitalRead(SERVER_SELECT_PIN) == HIGH);
+  Game game(false);
   game.Start();
 
   while (true) {

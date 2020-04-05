@@ -16,8 +16,6 @@
 #define DISPLAY_WIDTH  480
 #define DISPLAY_HEIGHT 320
 
-uint16_t randomCounter = 0;
-
 ///////////////////////////////////////////////////////////////////////////////
 // Cell class
 ///////////////////////////////////////////////////////////////////////////////
@@ -30,12 +28,12 @@ uint16_t Cell::getID() { return this->id; }
 // Row class
 ///////////////////////////////////////////////////////////////////////////////
 
-Row::Row(uint8_t divisions) {
+Row::Row(uint8_t divisions, uint16_t num_cells) {
   this->divisions = divisions;
   this->cells = new Cell *[divisions];
 
   for (uint8_t i = 0; i < divisions; i++) {
-    this->cells[i] = new Cell(randomCounter++);
+    this->cells[i] = new Cell(num_cells++);
   }
 }
 
@@ -72,7 +70,14 @@ void Grid::addPellet(Pellet pellet) {
   uint8_t rowIndex = getRowIndex(pellet.x);
   uint8_t cellIndex = getCellIndex(pellet.y);
 
-  // rows[rowIndex]->cells[cellIndex]
+  rows[rowIndex]->cells[cellIndex]->pellets.insert(pellet);
+}
+
+void Grid::removePellet(Pellet pellet) {
+  uint8_t rowIndex = getRowIndex(pellet.x);
+  uint8_t cellIndex = getCellIndex(pellet.y);
+
+  rows[rowIndex]->cells[cellIndex]->pellets.remove(pellet);
 }
 
 void Grid::Generate(uint8_t divisions) {
@@ -80,6 +85,7 @@ void Grid::Generate(uint8_t divisions) {
   this->rows = new Row *[divisions];
 
   for (uint8_t i = 0; i < divisions; i++) {
-    this->rows[i] = new Row(divisions);
+    this->rows[i] = new Row(divisions, num_cells);
+    num_cells += divisions;
   }
 }

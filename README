@@ -18,7 +18,12 @@ Included files:
 
 
 Wiring Instructions:
- 	* yeet
+ 	* Arduino Pin 51 -> Right Button
+	* Arduino Pin 49 -> Down Button
+	* Arduino Pin 47 -> Up Button
+	* Arduino Pin 45 -> Left Button
+
+
 
 
 Compiling and Running Instructions:
