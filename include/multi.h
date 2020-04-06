@@ -5,10 +5,9 @@
 #include "comm.h"
 
 enum ComState {
-  START,
+  START = 0,
   MAP,
-  DEVICES,
-  GAME,
+  LOOP,
   DISCONNECTED
 };
 
@@ -21,6 +20,15 @@ struct PlayerPayload {
     uint16_t x;
     uint16_t y;
 };
+
+struct MapPayload {
+    uint8_t id; // Guaranteed to be > 0;
+    uint8_t neighbours[4]; // TODO: Don't hardcode this value
+    uint16_t x, y;
+};
+
+typedef void (*playerCb)(PlayerPayload*);
+typedef void (*stateCb)(StatePayload*);
 
 class Device {
 protected:
@@ -42,14 +50,18 @@ protected:
     bool checkForAck();
 
 public:
-  void sendGameState(StatePayload p);
-  void sendEntityLocation(PlayerPayload p);
 
-  Device(uint8_t port);
+    playerCb pCallback;
+    stateCb sCallback;
 
-  virtual void begin();
-  virtual void handle();
-  virtual void end();
+    void sendGameState(StatePayload p);
+    void sendEntityLocation(PlayerPayload p);
+
+    Device(uint8_t port);
+
+    virtual void begin();
+    virtual void handle();
+    virtual void end();
 
 };
 

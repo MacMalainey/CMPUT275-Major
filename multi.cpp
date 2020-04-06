@@ -79,7 +79,22 @@ void Server::handle() {
       }
       break;
     case MAP:
-    break;
+      break;
+    case LOOP:
+      if (buffer.hasMessage()) {
+        Message* msg = buffer.getMessage();
+        void* payload = new uint8_t[msg->size];
+        if (msg->type == STATE) {
+          sCallback(static_cast<StatePayload*>(payload));
+        } else if (msg->type == PLAYER) {
+          pCallback(static_cast<PlayerPayload*>(payload));
+        }
+        delete msg;
+      }
+      break;
+    case DISCONNECTED:
+    default:
+      break; // Do nothing (idle until reset) as we are disconnected or in a bad state
   }
 }
 
@@ -96,6 +111,7 @@ void Client::handle() {
           state = MAP;
           Serial.println("Transitioning to Map");
         }
+        delete msg;
       }
       break;
     case MAP:
@@ -109,9 +125,26 @@ void Client::handle() {
           buffer.send(ACK, &id, 0);
         } else if (msg->type == MAP_END) {
           buffer.send(ACK, &id, 0);
-          state = DEVICES;
+          state = LOOP;
         }
+        delete msg;
       }
       break;
+    case LOOP:
+      if (buffer.hasMessage()) {
+        Message* msg = buffer.getMessage();
+        void* payload = new uint8_t[msg->size];
+        memcpy(payload, msg->payload, msg->size);
+        if (msg->type == STATE) {
+          sCallback(static_cast<StatePayload*>(payload));
+        } else if (msg->type == PLAYER) {
+          pCallback(static_cast<PlayerPayload*>(payload));
+        }
+        delete msg;
+      }
+      break;
+    case DISCONNECTED:
+    default:
+      break; // Do nothing (idle until reset) as we are disconnected or in a bad state
   }
 }
