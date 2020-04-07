@@ -12,5 +12,5 @@ struct Screen : public MCUFRIEND_kbv {
 
   Screen();
 
-  void DrawMap(Map &map, uint16_t color);
+  void DrawMap(Map *map, uint16_t color);
 };

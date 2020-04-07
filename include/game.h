@@ -33,7 +33,7 @@ class Game {
   uint8_t isValidDirection(uint8_t direction);
   void moveInTunnel(uint8_t direction, uint8_t opposite);
 
-  Map map;
+  Map *map;
   uint16_t map_color;
 
   Grid grid;

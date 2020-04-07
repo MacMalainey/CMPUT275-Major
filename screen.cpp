@@ -8,14 +8,14 @@ Screen::Screen() {
   this->setTextSize(2);
 }
 
-void Screen::DrawMap(Map &map, uint16_t color) {
+void Screen::DrawMap(Map *map, uint16_t color) {
   uint16_t c_width = 10;
   uint16_t c_width_half = c_width / 2;
 
-  bool touched[map.GetNodeCount()] = {false};
+  bool touched[map->GetNodeCount()] = {false};
 
   Queue<Junction *> events;
-  events.push(map.GetStart());
+  events.push(map->GetStart());
   touched[0] = true;
 
   // canvas.setTextColor(color);
