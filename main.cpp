@@ -9,8 +9,8 @@
 
 #include <Arduino.h>
 
-#include "include/game.h"
 #include "include/comm.h"
+#include "include/game.h"
 
 #define RAND_SEED_LENGTH 32
 #define RAND_READ_PIN    A11
@@ -34,8 +34,6 @@ void setup() {
 int main() {
   setup();
 
-
-
   Game game(false);
   game.Start();
 
@@ -44,6 +42,4 @@ int main() {
   }
 
   Serial.end();
-
-  return 0;
 }

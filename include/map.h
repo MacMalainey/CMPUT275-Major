@@ -22,12 +22,11 @@ class Junction {
 
 class Map {
  private:
-  Junction **nodes;
+  Junction **nodes = nullptr;
   uint8_t n = 0;
-  Map();
-  Map(Junction **nodes, uint8_t n);
 
  public:
+  Map(Junction **nodes, uint8_t n);
   ~Map();
 
   Point getXY(Junction *startingNode);
@@ -37,57 +36,71 @@ class Map {
   Junction *GetStart();
 
   uint8_t GetNodeCount();
-
-  friend class MapBuilder;
 };
 
 struct MapBuilder {
-  Map *map = new Map();
+  Junction **copy_arr;
+  Point *links;
 
-  uint8_t currentJunction = 0;
+  uint8_t junctionCount = 0;
+  uint16_t linkCount = 0;
 
-  MapBuilder &SetNumJunctions(uint8_t junctions) {
-    map->n = junctions;
-    return *this;
+  void SetJunctionCount(uint8_t count) {
+    copy_arr = new Junction *[count];
+    links = new Point[count * 4];
   }
 
-  MapBuilder &SetJunctionLocations(uint16_t x, uint16_t y) {
-    map->nodes[currentJunction] = new Junction(x, y);
-    map->nodes[currentJunction]->id = currentJunction;
-    currentJunction++;
-    return *this;
+  void SetJunctionLocations(uint16_t x, uint16_t y) {
+    auto newJunction = new Junction(x, y);
+    newJunction->id = junctionCount;
+    copy_arr[junctionCount] = newJunction;
+    Serial.print("Added new junction at ");
+    Serial.print(copy_arr[junctionCount]->x);
+    Serial.print(" ");
+    Serial.println(copy_arr[junctionCount]->y);
+    Serial.println(copy_arr[junctionCount]->id);
+
+    junctionCount++;
   }
 
-  MapBuilder &LinkJunctions(uint8_t junctionID1, uint8_t junctionID2) {
-    map->nodes[junctionID1]->link(map->nodes[junctionID2]);
-    return *this;
+  void LinkJunctions(uint8_t junctionID1, uint8_t junctionID2) {
+    links[linkCount++] = Point{.x = junctionID1, .y = junctionID2};
   }
 
-  MapBuilder &TestGen() {
-    this->SetNumJunctions(9)
-        .SetJunctionLocations(20, 120)
-        .SetJunctionLocations(50, 120)
-        .SetJunctionLocations(50, 300)
-        .SetJunctionLocations(50, 60)
-        .SetJunctionLocations(120, 120)
-        .SetJunctionLocations(120, 300)
-        .SetJunctionLocations(120, 60)
-        .SetJunctionLocations(240, 60)
-        .SetJunctionLocations(240, 300)
-        .LinkJunctions(1, 2)
-        .LinkJunctions(2, 3)
-        .LinkJunctions(2, 4)
-        .LinkJunctions(2, 5)
-        .LinkJunctions(5, 6)
-        .LinkJunctions(5, 7)
-        .LinkJunctions(6, 3)
-        .LinkJunctions(6, 9)
-        .LinkJunctions(7, 4)
-        .LinkJunctions(7, 8)
-        .LinkJunctions(8, 9);
-
-    return *this;
+  void TestGen() {
+    SetJunctionCount(9);
+    SetJunctionLocations(20, 120);
+    SetJunctionLocations(50, 120);
+    SetJunctionLocations(50, 300);
+    SetJunctionLocations(50, 60);
+    SetJunctionLocations(120, 120);
+    SetJunctionLocations(120, 300);
+    SetJunctionLocations(120, 60);
+    SetJunctionLocations(240, 60);
+    SetJunctionLocations(240, 300);
+    LinkJunctions(1u, 2u);
+    LinkJunctions(2u, 3u);
+    LinkJunctions(2u, 4u);
+    LinkJunctions(2u, 5u);
+    LinkJunctions(5u, 6u);
+    LinkJunctions(5u, 7u);
+    LinkJunctions(6u, 3u);
+    LinkJunctions(6u, 9u);
+    LinkJunctions(7u, 4u);
+    LinkJunctions(7u, 8u);
+    LinkJunctions(8u, 9u);
   }
 
-  Map *Build() { return map; }
+  Map *Build() {
+    for (auto i = 0; i < linkCount; i++) {
+      auto currentLink = links[i];
+      copy_arr[currentLink.x]->link(copy_arr[currentLink.y]);
+      Serial.print("Linking: ");
+      Serial.print(currentLink.x);
+      Serial.print(" To ");
+      Serial.println(currentLink.y);
+    }
+
+    return new Map(copy_arr, junctionCount);
+  }
 };

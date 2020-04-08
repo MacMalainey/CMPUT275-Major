@@ -13,7 +13,8 @@ Game::Game(bool isServer) {
 
   // Its the map, its the map, its the map, its the map...
   MapBuilder mb;
-  map = mb.TestGen().Build();
+  mb.TestGen();
+  map = mb.Build();
   map_color = genNeonColor();
   screen.drawLine(0, 30, 480, 30, map_color);
 
@@ -216,7 +217,6 @@ void Game::Loop() {
 
 void Game::Start() {
   screen.DrawMap(map, map_color);
-
   Point startingPoint = map->getXY(map->GetStart());
   current_x = startingPoint.x;
   current_y = startingPoint.y;

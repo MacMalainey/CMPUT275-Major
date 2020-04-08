@@ -1,8 +1,8 @@
 #include "include/map.h"
 
-Map::Map() {
-  n = 0;
-  nodes = nullptr;
+Map::Map(Junction **nodes, uint8_t n) {
+  this->n = n;
+  this->nodes = nodes;
 }
 
 Junction *Map::GetStart() { return nodes[0]; }

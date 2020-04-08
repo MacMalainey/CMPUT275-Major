@@ -1,8 +1,7 @@
 #pragma once
 
-#include <stdint.h>
-
 #include <Arduino.h>
+#include <stdint.h>
 
 struct Point {
   uint16_t x;
@@ -67,14 +66,16 @@ class LinkedList {
   LinkedList();
   ~LinkedList();
 
-  LNode<T> *find(const T& item);
+  LNode<T> *find(const T &item);
 
-  void insert(const T& item);
-  void remove(const T& item);
+  void insert(const T &item);
+  void remove(const T &item);
 
-  void removeNode(LNode<T>* node);
+  void removeNode(LNode<T> *node);
   void removeFront();
   void removeBack();
+
+  LNode<T> *getFront();
 
   uint16_t size();
 
@@ -99,18 +100,23 @@ LinkedList<T>::~LinkedList() {
 }
 
 template <class T>
-LNode<T> *LinkedList<T>::find(const T& item) {
+LNode<T> *LinkedList<T>::find(const T &item) {
   LNode<T> *node = first;
 
   while (node != nullptr && node->item != item) {
     node = node->next;
   }
 
-  return node; // nullptr if item not found
+  return node;  // nullptr if item not found
 }
 
 template <class T>
-void LinkedList<T>::insert(const T& item) {
+LNode<T> *LinkedList<T>::getFront() {
+  return first;
+}
+
+template <class T>
+void LinkedList<T>::insert(const T &item) {
   LNode<T> *node = new LNode<T>{item, nullptr, first};
 
   if (first != nullptr) {
@@ -124,7 +130,7 @@ void LinkedList<T>::insert(const T& item) {
 }
 
 template <class T>
-void LinkedList<T>::remove(const T& item) {
+void LinkedList<T>::remove(const T &item) {
   LNode<T> *node = find(item);
 
   if (node != nullptr) {
@@ -133,7 +139,7 @@ void LinkedList<T>::remove(const T& item) {
 }
 
 template <class T>
-void LinkedList<T>::removeNode(LNode<T>* node) {
+void LinkedList<T>::removeNode(LNode<T> *node) {
   if (node == first) {
     removeFront();
   } else if (node == last) {
