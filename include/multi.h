@@ -12,27 +12,15 @@
 #include <Arduino.h>
 
 #include "comm.h"
+#include "map.h"
+#include "misc.h"
 
 enum ComState { START = 0, MAP, LOOP, DISCONNECTED };
 
-struct StatePayload {
-  uint8_t state;
-};
-
-struct PlayerPayload {
-  uint8_t id;
-  uint16_t x;
-  uint16_t y;
-};
-
-struct MapPayload {
-  uint8_t id;             // Guaranteed to be > 0;
-  uint8_t neighbours[4];  // TODO: Don't hardcode this value
-  uint16_t x, y;
-};
-
 typedef void (*playerCb)(PlayerPayload*);
 typedef void (*stateCb)(StatePayload*);
+typedef Map* (*mapGetter)();
+typedef void (*mapSetter)(Map*);
 
 class Device {
  protected:
@@ -41,8 +29,9 @@ class Device {
   CommBuffer buffer;
   ComState state;
 
-  uint8_t index;
-  uint8_t num_elements;
+  MapBuilder* builder; // In reality the two subclasses use this seperately of Device
+                       // so it doesn't need to be in the superclass, but it was easier
+                       // to define it once here
 
   uint8_t id;
 
@@ -52,30 +41,47 @@ class Device {
   bool waitingForAck;
 
   bool checkForAck();
+  bool checkTimeout();
 
- public:
+public:
   playerCb pCallback;
   stateCb sCallback;
 
   void sendGameState(StatePayload p);
   void sendEntityLocation(PlayerPayload p);
+  ComState getState();
 
   Device(uint8_t port);
 
-  virtual void begin();
+  void begin();
   virtual void handle();
-  virtual void end();
+  void end();
 };
 
 class Server : public Device {
- public:
+private:
+  void beginMap();
+  void beginLoop();
+
+  // Used for iterating through the map
+  uint8_t index;
+  uint8_t num_elements;
+
+public:
+  mapGetter mCallback;
   void handle() final;
   Server(uint8_t id);
 };
 
 class Client : public Device {
- private:
- public:
+private:
+  void beginMap();
+  void beginLoop();
+
+  void processMap(MapPayload* m);
+
+public:
+  mapSetter mCallback;
   void handle() final;
   Client();
 };

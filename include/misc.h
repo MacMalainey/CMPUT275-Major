@@ -212,3 +212,23 @@ uint16_t LinkedList<T>::size() {
 }
 
 uint16_t genNeonColor();
+
+// Data payloads are stored here to stop any circular dependency issues
+
+struct StatePayload {
+    uint8_t state;
+};
+
+struct PlayerPayload {
+    uint8_t id;
+    uint16_t x;
+    uint16_t y;
+};
+
+#define INVALID_JID 255 // We will never have 255 ids so this won't happen
+
+struct MapPayload {
+    uint8_t id; // Guaranteed to be > 0;
+    uint8_t neighbours[4]; // TODO: Don't hardcode this value
+    uint16_t x, y;
+};
