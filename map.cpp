@@ -74,41 +74,62 @@ Point Map::getXY(Junction *node) {
   return startingPoint;
 }
 
-// void Map::Generate() {
-//   auto j1 = new Junction(20, 120);
-//   auto j2 = new Junction(50, 120);
-//   auto j3 = new Junction(50, 300);
-//   auto j4 = new Junction(50, 60);
-//   auto j5 = new Junction(120, 120);
-//   auto j6 = new Junction(120, 300);
-//   auto j7 = new Junction(120, 60);
-//   auto j8 = new Junction(240, 60);
-//   auto j9 = new Junction(240, 300);
+void MapBuilder::SetJunctionCount(uint8_t count) {
+  junctionCount = count;
+  copy_arr = new Junction *[count];
+  links = new Point[count * 4];
+}
+void MapBuilder::SetJunctionLocations(uint8_t id, uint16_t x, uint16_t y) {
+  auto newJunction = new Junction(x, y);
+  newJunction->id = id;
+  copy_arr[id - 1] = newJunction;
+  Serial.print("Added new junction at ");
+  Serial.print(copy_arr[id - 1]->x);
+  Serial.print(" ");
+  Serial.println(copy_arr[id - 1]->y);
+  Serial.println(copy_arr[id - 1]->id);
+}
+void MapBuilder::LinkJunctions(uint8_t junctionID1, uint8_t junctionID2) {
+  links[linkCount++] = Point{.x = junctionID1, .y = junctionID2};
+}
+void MapBuilder::TestGen() {
+  SetJunctionCount(9);
+  LinkJunctions(1, 2);
+  LinkJunctions(2, 3);
+  LinkJunctions(2, 4);
+  LinkJunctions(2, 5);
+  LinkJunctions(5, 6);
+  LinkJunctions(5, 7);
+  LinkJunctions(6, 3);
+  LinkJunctions(6, 9);
+  LinkJunctions(7, 4);
+  LinkJunctions(7, 8);
+  LinkJunctions(8, 9);
+  SetJunctionLocations(1, 20, 120);
+  SetJunctionLocations(2, 50, 120);
+  SetJunctionLocations(3, 50, 300);
+  SetJunctionLocations(4, 50, 60);
+  SetJunctionLocations(5, 120, 120);
+  SetJunctionLocations(6, 120, 300);
+  SetJunctionLocations(7, 120, 60);
+  SetJunctionLocations(8, 240, 60);
+  SetJunctionLocations(9, 240, 300);
+}
+Map *MapBuilder::Build() {
+  for (uint16_t i = 0; i < linkCount; i++) {
+    auto currentLink = links[i];
+    copy_arr[currentLink.x - 1]->link(copy_arr[currentLink.y - 1]);
 
-//   j1->link(j2);
+    auto currentJunction = copy_arr[currentLink.x - 1];
 
-//   j2->link(j3);
-//   j2->link(j4);
-//   j2->link(j5);
-
-//   j5->link(j6);
-//   j5->link(j7);
-
-//   j6->link(j3);
-//   j6->link(j9);
-
-//   j7->link(j4);
-//   j7->link(j8);
-
-//   j8->link(j9);
-
-//   Junction *copy_arr[] = {j1, j2, j3, j4, j5, j6, j7, j8, j9};
-
-//   this->n = 9;
-//   this->nodes = new Junction *[n];
-//   for (uint8_t i = 0; i < n; i++) {
-//     this->nodes[i] = copy_arr[i];
-//     this->nodes[i]->id =
-//         i;  // Set id to make certain all Junctions have unique values
-//   }
-// }
+    for (uint8_t i = 0; i < N_ORIENT; i++) {
+      if (currentJunction->adjacent[i] != nullptr) {
+        Serial.print("Linked: ");
+        Serial.print(currentJunction->id);
+        Serial.print(" To ");
+        Serial.println(currentJunction->adjacent[i]->id);
+      }
+    }
+  }
+  return new Map(copy_arr, junctionCount);
+}

@@ -67,15 +67,15 @@ uint8_t Grid::getCellIndex(uint16_t y) {
 }
 
 void Grid::addPellet(Pellet pellet) {
-  uint8_t rowIndex = getRowIndex(pellet.x);
-  uint8_t cellIndex = getCellIndex(pellet.y);
+  uint8_t rowIndex = getRowIndex(pellet.location.x);
+  uint8_t cellIndex = getCellIndex(pellet.location.y);
 
   rows[rowIndex]->cells[cellIndex]->pellets.insert(pellet);
 }
 
 void Grid::removePellet(Pellet pellet) {
-  uint8_t rowIndex = getRowIndex(pellet.x);
-  uint8_t cellIndex = getCellIndex(pellet.y);
+  uint8_t rowIndex = getRowIndex(pellet.location.x);
+  uint8_t cellIndex = getCellIndex(pellet.location.y);
 
   rows[rowIndex]->cells[cellIndex]->pellets.remove(pellet);
 }

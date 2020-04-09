@@ -1,10 +1,19 @@
 #pragma once
+
 #include "comm.h"
 #include "entities.h"
 #include "grid.h"
 #include "input.h"
 #include "map.h"
 #include "screen.h"
+#include "vector.h"
+
+enum State {
+  SETUP,
+  WAIT_FOR_SERVER,
+  WAIT_FOR_CLIENT,
+  READY,
+};
 
 class Game {
  public:
@@ -27,7 +36,6 @@ class Game {
   void updateScore();
   void drawLives();
   void decrementLives();
-  void movePacman();
   void testGrid();
   Orientation translateToOrien(uint8_t direction);
   uint8_t isValidDirection(uint8_t direction);
@@ -42,8 +50,15 @@ class Game {
   Joystick joy;
 
   PlayerCharacter pacman;
-  PlayerCharacter enemy;
+  PlayerCharacter ghost;
 
   uint16_t num_pellets = 0;
   Pellet pellets[100];
+
+  // characters[0] should be current player.
+  Vector<PlayerCharacter> characters;
+  bool isServer = false;
+
+  State GameState;
+  Point startingPoint;
 };

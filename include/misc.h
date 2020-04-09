@@ -3,6 +3,8 @@
 #include <Arduino.h>
 #include <stdint.h>
 
+#include "vector.h"
+
 struct Point {
   uint16_t x;
   uint16_t y;
@@ -27,37 +29,43 @@ class Queue {
   LNode<T> *back;
 
  public:
-  uint16_t push(T item) {
-    if (num > 0) {
-      back->next = new LNode<T>{item, nullptr, nullptr};
-      back = back->next;
-    } else {
-      front = new LNode<T>{item, nullptr, nullptr};
-      back = front;
-    }
+  uint16_t push(T item);
 
-    return ++num;
-  }
-
-  T pop() {
-    LNode<T> *n = front;
-    num--;
-
-    if (n > 0) {
-      front = front->next;
-    } else {
-      front = nullptr;
-      back = nullptr;
-    }
-
-    T item = n->item;
-    delete n;
-
-    return item;
-  }
+  T pop();
 
   uint16_t size() { return num; }
 };
+
+template<class T>
+uint16_t Queue<T>::push(T item) {
+  if (num > 0) {
+    back->next = new LNode<T>{item, nullptr, nullptr};
+    back = back->next;
+  } else {
+    front = new LNode<T>{item, nullptr, nullptr};
+    back = front;
+  }
+
+  return ++num;
+}
+
+template<class T>
+T Queue<T>::pop() {
+  LNode<T> *n = front;
+  num--;
+
+  if (n > 0) {
+    front = front->next;
+  } else {
+    front = nullptr;
+    back = nullptr;
+  }
+
+  T item = n->item;
+  delete n;
+
+  return item;
+}
 
 // Linked list implementation based off of in-class code
 template <class T>

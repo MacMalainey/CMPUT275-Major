@@ -8,31 +8,41 @@
 
 class Drawable {
  public:
-  Drawable(uint16_t start_x = 0, uint16_t start_y = 0);
+  Drawable();
+  Drawable(Point startPoint);
+  void Move(Screen &screen);
 
-  void Move(uint16_t new_x, uint16_t new_y);
+  virtual void Draw(Screen &screen) = 0;
+  virtual void Clear(Screen &screen) = 0;
 
-  virtual void Draw(Screen &) = 0;
+  void SetOrientation(Orientation &newOrientation);
 
-  uint16_t x;
-  uint16_t y;
-
+  Point location;
   uint16_t color;
-
-  bool isVisible = true;
 
   // Used for the LinkedList class for checking inequality
   bool operator!=(const Drawable &other) const;
+
+  Orientation orientation = Orientation::EAST;
 };
 
 struct Pellet : public Drawable {
+  Pellet();
+  Pellet(Point startPoint);
+
   void Draw(Screen &screen) final;
+  void Clear(Screen &screen) final;
 
   bool isPowerUp = false;
 };
 
 struct PlayerCharacter : public Drawable {
+  PlayerCharacter();
+  PlayerCharacter(Point startPoint);
+
   void Draw(Screen &screen) final;
+  void Clear(Screen &screen) final;
+  void DrawGhostBody(Screen &screen);
 
   bool isPacman = true;
 };
