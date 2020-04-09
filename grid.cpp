@@ -77,7 +77,10 @@ void Grid::removePellet(Pellet pellet) {
   uint8_t rowIndex = getRowIndex(pellet.x);
   uint8_t cellIndex = getCellIndex(pellet.y);
 
+  Serial.print("removing ");
+  Serial.print(pellet.x); Serial.print(", "); Serial.print(pellet.y);
   rows[rowIndex]->cells[cellIndex]->pellets.remove(pellet);
+  Serial.println();
 }
 
 void Grid::Generate(uint8_t divisions) {
@@ -88,4 +91,35 @@ void Grid::Generate(uint8_t divisions) {
     this->rows[i] = new Row(divisions, num_cells);
     num_cells += divisions;
   }
+}
+
+/**
+ * @brief Iterates through the pellets in the current grid and checks if pacman
+ *        is close.
+ * 
+ * @param pacman The player.
+ * @return true if there was a collision.
+ * @return false if there wasn't a collision.
+ */
+bool Grid::update(PlayerCharacter pacman) {
+  uint8_t rowIndex = getRowIndex(pacman.x);
+  uint8_t cellIndex = getCellIndex(pacman.y);
+
+  LNode<Pellet> *current = rows[rowIndex]->cells[cellIndex]->pellets.getFront();
+  Pellet pellet;
+
+  while (current != nullptr) {
+    pellet = current->item;
+
+    if (abs(pellet.x - pacman.x) <= 4 && abs(pellet.y - pacman.y) <= 4) {
+      // remove the pellet from the grid
+      removePellet(pellet);
+
+      return true;
+    }
+
+    current = current->next;
+  }
+
+  return false;
 }

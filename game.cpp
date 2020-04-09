@@ -23,7 +23,7 @@ Game::Game(bool isServer) {
 }
 
 void Game::updateScore() {
-  screen.fillRect(90, 0, screen.DISPLAY_WIDTH, 30, TFT_BLACK);
+  screen.fillRect(90, 6, screen.DISPLAY_WIDTH/4, 18, TFT_BLACK);
   screen.setCursor(90, 6);
   screen.print(score);
 }
@@ -62,10 +62,10 @@ void Game::testGrid() {
   for (uint16_t i = 0; i < num_pellets / 10; i++) {
     for (uint16_t j = 0; j < num_pellets / 10; j++) {
       Pellet newPellet;
-      newPellet.x = i * screen.DISPLAY_WIDTH / 10 + 15;
+      newPellet.x = i * screen.DISPLAY_WIDTH / 10 + 25;
       newPellet.y = j * screen.DISPLAY_HEIGHT / 10 + 15;
 
-      // newPellet.Draw(screen);
+      newPellet.Draw(screen);
 
       grid.addPellet(newPellet);
 
@@ -73,9 +73,9 @@ void Game::testGrid() {
     }
   }
 
-  for (uint16_t i = 0; i < num_pellets; i++) {
-    grid.removePellet(pellets[i]);
-  }
+  // for (uint16_t i = 0; i < num_pellets; i++) {
+  //   grid.removePellet(pellets[i]);
+  // }
 }
 
 void Game::drawLives() {
@@ -91,35 +91,35 @@ void Game::drawLives() {
 
 void Game::movePacman() {
   if (currentDirection == 1u) {
-    screen.fillCircle(current_x, current_y, 4, TFT_BLACK);
-    current_y -= 1;
-    screen.fillCircle(current_x, current_y, 4, TFT_YELLOW);
-    screen.fillTriangle(current_x, current_y, current_x + 2, current_y - 4,
-                        current_x - 2, current_y - 4, TFT_BLACK);
+    screen.fillCircle(pacman.x, pacman.y, 4, TFT_BLACK);
+    pacman.y--;
+    screen.fillCircle(pacman.x, pacman.y, 4, TFT_YELLOW);
+    screen.fillTriangle(pacman.x, pacman.y, pacman.x + 2, pacman.y - 4,
+                        pacman.x - 2, pacman.y - 4, TFT_BLACK);
   }
 
   else if (currentDirection == 2u) {
-    screen.fillCircle(current_x, current_y, 4, TFT_BLACK);
-    current_y += 1;
-    screen.fillCircle(current_x, current_y, 4, TFT_YELLOW);
-    screen.fillTriangle(current_x, current_y, current_x + 2, current_y + 4,
-                        current_x - 2, current_y + 4, TFT_BLACK);
+    screen.fillCircle(pacman.x, pacman.y, 4, TFT_BLACK);
+    pacman.y++;
+    screen.fillCircle(pacman.x, pacman.y, 4, TFT_YELLOW);
+    screen.fillTriangle(pacman.x, pacman.y, pacman.x + 2, pacman.y + 4,
+                        pacman.x - 2, pacman.y + 4, TFT_BLACK);                    
   }
 
   else if (currentDirection == 4u) {
-    screen.fillCircle(current_x, current_y, 4, TFT_BLACK);
-    current_x += 1;
-    screen.fillCircle(current_x, current_y, 4, TFT_YELLOW);
-    screen.fillTriangle(current_x, current_y, current_x + 4, current_y + 2,
-                        current_x + 4, current_y - 2, TFT_BLACK);
+    screen.fillCircle(pacman.x, pacman.y, 4, TFT_BLACK);
+    pacman.x++;
+    screen.fillCircle(pacman.x, pacman.y, 4, TFT_YELLOW);
+    screen.fillTriangle(pacman.x, pacman.y, pacman.x + 4, pacman.y + 2,
+                        pacman.x + 4, pacman.y - 2, TFT_BLACK);
   }
 
   else if (currentDirection == 8u) {
-    screen.fillCircle(current_x, current_y, 4, TFT_BLACK);
-    current_x -= 1;
-    screen.fillCircle(current_x, current_y, 4, TFT_YELLOW);
-    screen.fillTriangle(current_x, current_y, current_x - 4, current_y + 2,
-                        current_x - 4, current_y - 2, TFT_BLACK);
+    screen.fillCircle(pacman.x, pacman.y, 4, TFT_BLACK);
+    pacman.x--;
+    screen.fillCircle(pacman.x, pacman.y, 4, TFT_YELLOW);
+    screen.fillTriangle(pacman.x, pacman.y, pacman.x - 4, pacman.y + 2,
+                        pacman.x - 4, pacman.y - 2, TFT_BLACK);
   }
 }
 
@@ -137,7 +137,7 @@ Orientation Game::translateToOrien(uint8_t direction) {
     return (Orientation)2;
   }
 
-  else {  // if (direction == 8u) {
+  else if (direction == 8u) {
     return (Orientation)3;
   }
 }
@@ -163,8 +163,8 @@ void Game::moveInTunnel(uint8_t direction, uint8_t opposite) {
       nextDirection = input;
     }
 
-    if (map->getXY(currentJunction).x == current_x &&
-        map->getXY(currentJunction).y == current_y) {
+    if (map->getXY(currentJunction).x == pacman.x &&
+        map->getXY(currentJunction).y == pacman.y) {
       if (nextDirection != 0) {
         currentDirection = isValidDirection(nextDirection);
         nextDirection = 0;
@@ -177,10 +177,10 @@ void Game::moveInTunnel(uint8_t direction, uint8_t opposite) {
 
     else if (map->getXY(
                     currentJunction->next(translateToOrien(currentDirection)))
-                     .x == current_x &&
+                     .x == pacman.x &&
              map->getXY(
                     currentJunction->next(translateToOrien(currentDirection)))
-                     .y == current_y) {
+                     .y == pacman.y) {
       // Serial.print("You are at a new junction!");
       currentJunction = currentJunction->next(translateToOrien(direction));
 
@@ -201,8 +201,8 @@ void Game::moveInTunnel(uint8_t direction, uint8_t opposite) {
 void Game::Loop() {
   uint8_t buttonPressed = joy.ReadInput();
 
-  if (map->getXY(currentJunction).x == current_x &&
-      map->getXY(currentJunction).y == current_y && buttonPressed != 0) {
+  if (map->getXY(currentJunction).x == pacman.x &&
+      map->getXY(currentJunction).y == pacman.y && buttonPressed != 0) {
     currentDirection = isValidDirection(buttonPressed);
     movePacman();
   }
@@ -212,21 +212,28 @@ void Game::Loop() {
   moveInTunnel(4u, 8u);
   moveInTunnel(8u, 4u);
 
+  // handle collisions between pacman and pellets
+  Serial.print("Pacman pos: "); Serial.print(pacman.x);
+  Serial.print(", "); Serial.println(pacman.y);
+  bool collected = grid.update(pacman);
+
+  if (collected) {
+    score += 10;
+    updateScore();
+  }
+
   delay(20);
 }
 
 void Game::Start() {
   screen.DrawMap(map, map_color);
   Point startingPoint = map->getXY(map->GetStart());
-  current_x = startingPoint.x;
-  current_y = startingPoint.y;
-  pacman.Move(current_x, current_y);
-
-  currentJunction = map->GetStart();
+  pacman.Move(startingPoint.x, startingPoint.y);
   pacman.Draw(screen);
 
-  enemy.isPacman = false;
+  currentJunction = map->GetStart();
 
+  enemy.isPacman = false;
   enemy.Move(150, 200);
   enemy.Draw(screen);
 

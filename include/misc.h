@@ -133,8 +133,9 @@ template <class T>
 void LinkedList<T>::remove(const T &item) {
   LNode<T> *node = find(item);
 
-  if (node != nullptr) {
+  if (node != nullptr) { 
     removeNode(node);
+    Serial.print(" -> removed");
   }
 }
 

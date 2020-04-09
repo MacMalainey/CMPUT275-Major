@@ -73,5 +73,5 @@ class Grid {
   void addPellet(Pellet pellet);
   void removePellet(Pellet pellet);
 
-  void update();
+  bool update(PlayerCharacter pacman);
 };

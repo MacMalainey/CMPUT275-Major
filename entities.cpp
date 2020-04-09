@@ -5,8 +5,8 @@ Drawable::Drawable(uint16_t start_x, uint16_t start_y)
     : x(start_x), y(start_y) {}
 
 void Drawable::Move(uint16_t new_x, uint16_t new_y) {
-  x += new_x;
-  y += new_y;
+  x = new_x;
+  y = new_y;
 }
 
 bool Drawable::operator!=(const Drawable &other) const { 
