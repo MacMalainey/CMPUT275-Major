@@ -25,8 +25,6 @@ class Game {
  private:
   uint8_t current_lives = 3;
   uint16_t score = 0;
-  uint16_t current_x;
-  uint16_t current_y;
 
   Junction *currentJunction;
 

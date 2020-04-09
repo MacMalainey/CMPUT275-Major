@@ -1,8 +1,9 @@
 #pragma once
 
-// Custom vector class to help not use double pointers and heap allocations everywhere
+// Custom vector class to help not use double pointers and heap allocations
+// everywhere
 
-template<typename T>
+template <typename T>
 class Vector {
   T *array;
   size_t capacity;
@@ -14,11 +15,11 @@ class Vector {
   Vector();
   Vector(size_t size);
 
-  void Push(const T& value);
-  T &Get();      // Get first item
-  T &Get(size_t index); // Get random item
+  void Push(const T &value);
+  T &Get();              // Get first item
+  T &Get(size_t index);  // Get random item
 
-  T &Pop(); // Get last item
+  T &Pop();  // Get last item
 
   size_t Size();
 
@@ -28,11 +29,10 @@ class Vector {
   T *End();
 };
 
-template<typename T>
-Vector<T>::Vector() : Vector(DEFAULT_CAPACITY) {
-}
+template <typename T>
+Vector<T>::Vector() : Vector(DEFAULT_CAPACITY) {}
 
-template<typename T>
+template <typename T>
 Vector<T>::Vector(size_t size) {
   capacity = size;
   array = new T[capacity];
@@ -40,8 +40,8 @@ Vector<T>::Vector(size_t size) {
 }
 
 // Always makes a copy!
-template<typename T>
-void Vector<T>::Push(const T& value) {
+template <typename T>
+void Vector<T>::Push(const T &value) {
   if (count == capacity) {
     // Make new temp array
     T *tempArr = new T[1.5 * capacity];
@@ -60,37 +60,37 @@ void Vector<T>::Push(const T& value) {
   count++;
 }
 
-template<typename T>
+template <typename T>
 T &Vector<T>::Get() {
   return Get(0);
 }
 
-template<typename T>
+template <typename T>
 T &Vector<T>::Get(size_t index) {
   return &array[index];
 }
 
-template<typename T>
+template <typename T>
 T &Vector<T>::Pop() {
   return &array[count--];
 }
 
-template<typename T>
+template <typename T>
 size_t Vector<T>::Size() {
   return count;
 }
 
-template<typename T>
+template <typename T>
 size_t Vector<T>::Capacity() {
   return capacity;
 }
 
-template<typename T>
+template <typename T>
 T *Vector<T>::Begin() {
   return array;
 }
 
-template<typename T>
+template <typename T>
 T *Vector<T>::End() {
   return *(array[count]);
 }

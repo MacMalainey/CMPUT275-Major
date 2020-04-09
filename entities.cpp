@@ -7,13 +7,17 @@ Drawable::Drawable(Point startPoint) : location(startPoint) {}
 void Drawable::Move(Screen &screen) {
   Clear(screen);
   switch (orientation) {
-    case NORTH:location.y--;
+    case NORTH:
+      location.y--;
       break;
-    case SOUTH:location.y++;
+    case SOUTH:
+      location.y++;
       break;
-    case EAST:location.x++;
+    case EAST:
+      location.x++;
       break;
-    case WEST:location.x--;
+    case WEST:
+      location.x--;
       break;
   }
   Draw(screen);
@@ -24,7 +28,8 @@ void Drawable::SetOrientation(Orientation &newOrientation) {
 }
 
 bool Drawable::operator!=(const Drawable &other) const {
-  return (this->location.x != other.location.x || this->location.y != other.location.y);
+  return (this->location.x != other.location.x ||
+          this->location.y != other.location.y);
 }
 
 Pellet::Pellet() : Drawable() {}
@@ -50,39 +55,23 @@ void PlayerCharacter::Draw(Screen &screen) {
     screen.fillCircle(location.x, location.y, 4, TFT_YELLOW);
     switch (orientation) {
       case NORTH:
-        screen.fillTriangle(location.x,
-                            location.y,
-                            location.x + 2,
-                            location.y - 4,
-                            location.x - 2,
-                            location.y - 4,
+        screen.fillTriangle(location.x, location.y, location.x + 2,
+                            location.y - 4, location.x - 2, location.y - 4,
                             TFT_BLACK);
         break;
       case SOUTH:
-        screen.fillTriangle(location.x,
-                            location.y,
-                            location.x + 2,
-                            location.y + 4,
-                            location.x - 2,
-                            location.y + 4,
+        screen.fillTriangle(location.x, location.y, location.x + 2,
+                            location.y + 4, location.x - 2, location.y + 4,
                             TFT_BLACK);
         break;
       case EAST:
-        screen.fillTriangle(location.x,
-                            location.y,
-                            location.x + 4,
-                            location.y + 2,
-                            location.x + 4,
-                            location.y - 2,
+        screen.fillTriangle(location.x, location.y, location.x + 4,
+                            location.y + 2, location.x + 4, location.y - 2,
                             TFT_BLACK);
         break;
       case WEST:
-        screen.fillTriangle(location.x,
-                            location.y,
-                            location.x - 4,
-                            location.y + 2,
-                            location.x - 4,
-                            location.y - 2,
+        screen.fillTriangle(location.x, location.y, location.x - 4,
+                            location.y + 2, location.x - 4, location.y - 2,
                             TFT_BLACK);
         break;
     }
@@ -131,7 +120,6 @@ void PlayerCharacter::DrawGhostBody(Screen &screen) {
   screen.fillRect(location.x - 2, location.y + 4, 4, 1, TFT_RED);
   screen.fillRect(location.x - 2, location.y - 3, 1, 1, TFT_RED);
   screen.fillRect(location.x + 1, location.y - 3, 1, 1, TFT_RED);
-
 }
 void PlayerCharacter::Clear(Screen &screen) {
   if (isPacman) {

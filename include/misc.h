@@ -36,7 +36,7 @@ class Queue {
   uint16_t size() { return num; }
 };
 
-template<class T>
+template <class T>
 uint16_t Queue<T>::push(T item) {
   if (num > 0) {
     back->next = new LNode<T>{item, nullptr, nullptr};
@@ -49,7 +49,7 @@ uint16_t Queue<T>::push(T item) {
   return ++num;
 }
 
-template<class T>
+template <class T>
 T Queue<T>::pop() {
   LNode<T> *n = front;
   num--;

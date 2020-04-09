@@ -1,6 +1,5 @@
 #include "include/game.h"
 
-
 Game::Game(bool isServer) : isServer(isServer), characters(3) {
   // Draw UI
   screen.setCursor(14, 6);
@@ -26,7 +25,7 @@ Game::Game(bool isServer) : isServer(isServer), characters(3) {
 }
 
 void Game::updateScore() {
-  screen.fillRect(90, 0, screen.DISPLAY_WIDTH, 30, TFT_BLACK);
+  screen.fillRect(90, 6, screen.DISPLAY_WIDTH / 4, 18, TFT_BLACK);
   screen.setCursor(90, 6);
   screen.print(score);
 }
@@ -64,10 +63,11 @@ void Game::testGrid() {
 
   for (uint16_t i = 0; i < num_pellets / 10; i++) {
     for (uint16_t j = 0; j < num_pellets / 10; j++) {
-      auto newPelletLocation =
-          Point{.x = static_cast<uint16_t>(i * Screen::DISPLAY_WIDTH / 10 + 15), .y =  static_cast<uint16_t>(
-              j * Screen::DISPLAY_HEIGHT / 10 + 15)};
-      Pellet newPellet(newPelletLocation);
+      Pellet newPellet;
+      newPellet.x = i * screen.DISPLAY_WIDTH / 10 + 25;
+      newPellet.y = j * screen.DISPLAY_HEIGHT / 10 + 15;
+
+      newPellet.Draw(screen);
 
       grid.addPellet(newPellet);
 
@@ -75,9 +75,9 @@ void Game::testGrid() {
     }
   }
 
-  for (uint16_t i = 0; i < num_pellets; i++) {
-    grid.removePellet(pellets[i]);
-  }
+  // for (uint16_t i = 0; i < num_pellets; i++) {
+  //   grid.removePellet(pellets[i]);
+  // }
 }
 
 void Game::drawLives() {
@@ -94,18 +94,18 @@ void Game::drawLives() {
 // up = 0, down = 1, right = 2, left = 3
 Orientation Game::translateToOrien(uint8_t direction) {
   if (direction == 1u) {
-    return (Orientation) 0;
+    return (Orientation)0;
   } else if (direction == 2u) {
-    return (Orientation) 1;
+    return (Orientation)1;
   } else if (direction == 4u) {
-    return (Orientation) 2;
+    return (Orientation)2;
   } else {  // if (direction == 8u) {
-    return (Orientation) 3;
+    return (Orientation)3;
   }
 }
 
 uint8_t Game::isValidDirection(uint8_t direction) {
-  if (currentJunction->next((Orientation) translateToOrien(direction)) !=
+  if (currentJunction->next((Orientation)translateToOrien(direction)) !=
       nullptr) {
     return direction;
   } else {
@@ -123,8 +123,8 @@ void Game::moveInTunnel(uint8_t direction, uint8_t opposite) {
       nextDirection = input;
     }
 
-    if (map->getXY(currentJunction).x == current_x &&
-        map->getXY(currentJunction).y == current_y) {
+    if (map->getXY(currentJunction).x == pacman.x &&
+        map->getXY(currentJunction).y == pacman.y) {
       if (nextDirection != 0) {
         currentDirection = isValidDirection(nextDirection);
         nextDirection = 0;
@@ -132,11 +132,11 @@ void Game::moveInTunnel(uint8_t direction, uint8_t opposite) {
         currentDirection = isValidDirection(currentDirection);
       }
     } else if (map->getXY(
-            currentJunction->next(translateToOrien(currentDirection)))
-        .x == current_x &&
-        map->getXY(
-                currentJunction->next(translateToOrien(currentDirection)))
-            .y == current_y) {
+                      currentJunction->next(translateToOrien(currentDirection)))
+                       .x == current_x &&
+               map->getXY(
+                      currentJunction->next(translateToOrien(currentDirection)))
+                       .y == current_y) {
       // Serial.print("You are at a new junction!");
       currentJunction = currentJunction->next(translateToOrien(direction));
 
@@ -156,8 +156,8 @@ void Game::Loop() {
   uint8_t buttonPressed = joy.ReadInput();
   // Read
 
-  if (map->getXY(currentJunction).x == current_x &&
-      map->getXY(currentJunction).y == current_y && buttonPressed != 0) {
+  if (map->getXY(currentJunction).x == pacman.x &&
+      map->getXY(currentJunction).y == pacman.y && buttonPressed != 0) {
     currentDirection = isValidDirection(buttonPressed);
     pacman.Move(screen);
   }
@@ -167,11 +167,18 @@ void Game::Loop() {
   moveInTunnel(4u, 8u);
   moveInTunnel(8u, 4u);
 
+  // handle collisions between pacman and pellets
+  bool collected = grid.update(pacman);
+
+  if (collected) {
+    score += 10;
+    updateScore();
+  }
+
   delay(20);
 }
 
 void Game::Start() {
-
   while (GameState != READY) {
     switch (GameState) {
       case WAIT_FOR_SERVER:
@@ -180,7 +187,8 @@ void Game::Start() {
       case WAIT_FOR_CLIENT:
         // We server
         break;
-      case SETUP:screen.DrawMap(map, map_color);
+      case SETUP:
+        screen.DrawMap(map, map_color);
         startingPoint = map->getXY(map->GetStart());
         pacman = PlayerCharacter(startingPoint);
 

@@ -1,14 +1,14 @@
 #include "include/multi.h"
 
 enum MsgType {
-  ACK = 0,        // Your basic acknowledgement (because everyone deserves to be
+  ACK = 0,    // Your basic acknowledgement (because everyone deserves to be
               // acknowledged)
   INIT,       // Initialize communication message
   MAP_START,  // Map sending sequence start
   MAP_NODE,   // Map node
   MAP_END,    // Map sending sequence end
   STATE,      // Game state
-  PLAYER,      // Player location
+  PLAYER,     // Player location
   CONFIRM,    // Signals a request for a confirm (from server)
 };
 
@@ -34,9 +34,7 @@ void Device::begin() {
   buffer.begin();
 }
 
-void Device::end() {
-  buffer.end();
-}
+void Device::end() { buffer.end(); }
 
 Device::Device(uint8_t port) : buffer(port) {}
 
@@ -45,7 +43,7 @@ Server::Server(uint8_t id) : Device(id) {}
 Client::Client() : Device(1) {}
 
 bool Device::checkForAck() {
-  if(buffer.hasMessage()) {
+  if (buffer.hasMessage()) {
     Message* msg = buffer.getMessage();
 
     // We want an ACK, nothing else...
@@ -67,7 +65,7 @@ bool Device::checkForAck() {
 void Server::handle() {
   buffer.recieve();
 
-  switch(state) {
+  switch (state) {
     case START:
       if (!waitingForAck) {
         buffer.send(INIT, &id, 0);
@@ -94,14 +92,15 @@ void Server::handle() {
       break;
     case DISCONNECTED:
     default:
-      break; // Do nothing (idle until reset) as we are disconnected or in a bad state
+      break;  // Do nothing (idle until reset) as we are disconnected or in a
+              // bad state
   }
 }
 
 void Client::handle() {
   buffer.recieve();
 
-  switch(state) {
+  switch (state) {
     case START:
       if (buffer.hasMessage()) {
         Serial.println("Got a message");
@@ -115,7 +114,8 @@ void Client::handle() {
       }
       break;
     case MAP:
-      // TODO it might be best to build a generator class that I can input nodes into
+      // TODO it might be best to build a generator class that I can input nodes
+      // into
       if (buffer.hasMessage()) {
         Serial.println("Got a message");
         Message* msg = buffer.getMessage();
@@ -145,6 +145,7 @@ void Client::handle() {
       break;
     case DISCONNECTED:
     default:
-      break; // Do nothing (idle until reset) as we are disconnected or in a bad state
+      break;  // Do nothing (idle until reset) as we are disconnected or in a
+              // bad state
   }
 }
