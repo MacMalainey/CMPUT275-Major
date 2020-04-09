@@ -10,25 +10,55 @@
  */
 
 Description:
-	* An implementation of Pacman using several Arduinos.
+    * An implementation of Pacman using several Arduinos.
 
 
 Included files:
-	* yeet
+    * cbuffer.cpp
+    * color.cpp
+    * entities.cpp
+    * game.cpp
+    * grid.cpp
+    * input.cpp
+    * main.cpp
+    * map.cpp
+    * multi.cpp
+    * screen.cpp
+    
+    * include/comm.h
+    * include/entities.h
+    * include/game.h
+    * include/grid.h
+    * include/input.h
+    * include/map.h
+    * include/misc.h
+    * include/multi.h
+    * include/screen.h
+    * include/vector.h
+
 
 
 Wiring Instructions:
- 	* Arduino Pin 51 -> Right Button
-	* Arduino Pin 49 -> Down Button
-	* Arduino Pin 47 -> Up Button
-	* Arduino Pin 45 -> Left Button
+    Buttons:
+    * Arduino Pin 51 -> Right Button
+    * Arduino Pin 49 -> Down Button
+    * Arduino Pin 47 -> Up Button
+    * Arduino Pin 45 -> Left Button
 
+    Server:
+    * RXn -> TX1 (client)
+    * TXn -> RX1 (client)
+    * where n is the port selected (can be 1, 2, 3)
 
+    Server select pin:
+    * 53 -> GND (for client config)
+    * 53 -> 560 Ohm Resistor -> 5v (for server config)
 
 
 Compiling and Running Instructions:
-	* yeet
+    1. Open the terminal in client/.
+    2. Compile and upload the files by running "make upload".
 
 
 References:
-	* Some of the code in this assignment was provided in the assignment template
+    * Some of the code in this assignment was provided in the assignment template

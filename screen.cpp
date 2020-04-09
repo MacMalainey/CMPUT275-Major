@@ -33,10 +33,6 @@ void Screen::DrawMap(Map *map, uint16_t color) {
   while (events.size() > 0) {
     Junction *j = events.pop();
 
-    Serial.print("Drawing: ");
-    Serial.println(j->id);
-
-    fillCircle(j->x, j->y, 8, color);
     for (uint8_t i = 0; i < N_ORIENT; i++) {
       if (j->next((Orientation)i) != nullptr) {
         Junction *a = j->adjacent[i];
@@ -44,8 +40,6 @@ void Screen::DrawMap(Map *map, uint16_t color) {
         if (!touched[a->id]) {
           touched[a->id] = true;
           events.push(a);
-          Serial.print("PUSHED: ");
-          Serial.println(a->id);
         }
 
         if (j->x == a->x) {  // vertical corridor

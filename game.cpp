@@ -16,7 +16,6 @@ Game::Game(bool isServer) : isServer(isServer), characters(3) {
   updateScore();
   drawLives();
 
-  // Its the map, its the map, its the map, its the map...
   MapBuilder mb;
   mb.TestGen();
   map = mb.Build();
@@ -102,65 +101,12 @@ void Game::drawLives() {
   screen.fillTriangle(460, 15, 468, 19, 468, 11, TFT_BLACK);
 }
 
-bool Game::isValidDirection(Orientation direction) {
-  if (currentJunction->next(direction) != nullptr) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
-void Game::moveInTunnel(Orientation direction, uint8_t opposite) {
-  if (currentDirection == direction) {
-    uint8_t input = joy.ReadInput();
-
-    if (input == opposite) {
-      currentDirection = opposite;
-    } else if (input != 0) {
-      nextDirection = input;
-    }
-
-    if (map->getXY(currentJunction) == pacman.location) {
-      if (nextDirection != 0) {
-        currentDirection = isValidDirection(nextDirection);
-        nextDirection = 0;
-      } else {
-        currentDirection = isValidDirection(currentDirection);
-      }
-    } else if (map->getXY(currentJunction->next(currentDirection)) ==
-               pacman.location) {
-      // Serial.print("You are at a new junction!");
-      currentJunction = currentJunction->next(direction);
-
-      if (nextDirection != 0) {
-        currentDirection = isValidDirection(nextDirection);
-        nextDirection = 0;
-      } else {
-        currentDirection = isValidDirection(currentDirection);
-      }
-    }
-
-    pacman.Move(screen);
-  }
-}
-
 void Game::Loop() {
-  auto input = joy.ReadInput();
-  // Read
+  // get joystick input
+  uint8_t input = joy.ReadInput();
 
-  if (map->getXY(currentJunction) == pacman.location &&
-      input != Orientation::N_ORIENT) {
-    if (isValidDirection(input)) {
-      pacman.SetOrientation(input);
-    }
-
-    pacman.Move(screen);
-  }
-
-  moveInTunnel(1u, 2u);
-  moveInTunnel(2u, 1u);
-  moveInTunnel(4u, 8u);
-  moveInTunnel(8u, 4u);
+  // handle movement
+  pacman.handleMovement(screen, input, map);
 
   // handle collisions between pacman and pellets
   bool collected = grid.update(pacman);
@@ -174,6 +120,8 @@ void Game::Loop() {
 }
 
 void Game::Start() {
+  GameState = SETUP;
+
   while (GameState != READY) {
     switch (GameState) {
       case WAIT_FOR_SERVER:
@@ -186,16 +134,12 @@ void Game::Start() {
         screen.DrawMap(map, map_color);
         startingPoint = map->getXY(map->GetStart());
         pacman = PlayerCharacter(startingPoint);
+        pacman.currentJunction = map->GetStart();
 
         GameState = READY;
         break;
     }
   }
-  currentJunction = map->GetStart();
-
-  ghost.isPacman = false;
-
-  ghost.Move(screen);
 
   testGrid();
 }

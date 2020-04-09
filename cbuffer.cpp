@@ -43,6 +43,7 @@ Message* CommBuffer::deserialize() {
 }
 
 bool CommBuffer::validate() {
+  Serial.println("Running validate check");
   uint16_t checksum = genChecksum(buffer + HEADER_LENGTH, buffer[SIZE_BYTE]);
   uint16_t valid = buffer[CHECKSUM_BYTE + 1];
   valid <<= 8;
@@ -52,16 +53,9 @@ bool CommBuffer::validate() {
 }
 
 void CommBuffer::cleanBuffer() {
-  uint8_t remain = bufferLen - (buffer[SIZE_BYTE] + HEADER_LENGTH);
-  if (remain > 0 &&
-      buffer[bufferLen - remain] ==
-          START_FLAG) {  // We seem to be recieving another message, check if
-                         // true, otherwise just dump the whole buffer
-    memcpy(buffer, buffer + (bufferLen - remain), remain);
-    bufferLen = remain;
-  } else {
-    bufferLen = 0;
-  }
+  bufferLen = 0; // This was a long function but I decided to change functionality
+  isWaiting = true;
+  msgReady = false;
 }
 
 CommBuffer::CommBuffer(uint8_t select) {  // This should be created as a factory
@@ -83,8 +77,7 @@ CommBuffer::CommBuffer(uint8_t select) {  // This should be created as a factory
       serial = &Serial3;
       break;
     default:
-      return;  // TODO: We should throw an exception here
-      break;
+      break; // TODO: We should throw an exception here
   }
 }
 
@@ -96,28 +89,31 @@ void CommBuffer::send(uint8_t type, void* payload, uint8_t length) {
     serial->write(wBuffer[i]);
     Serial.print(wBuffer[i]);
   }
+  Serial.println("");
 }
 
 void CommBuffer::recieve() {
   uint8_t bytes = 0;
 
   while (serial->available() > 0 &&
-         bytes < MAX_READ) {  // TODO check for buffer overflow
+         bytes < MAX_READ && !msgReady) {
     if (isWaiting) {
       uint8_t byte = serial->read();
       if (byte == START_FLAG) {
         isWaiting = false;  // Signify that we are actively reading a message
         buffer[START_BYTE] = byte;
         timestamp = millis();
+        bytes++;
       }
-      bytes++;
     } else {
       buffer[bufferLen + bytes] = serial->read();
       Serial.print(buffer[bufferLen + bytes]);
+      // Serial.print(bufferLen + bytes);
       bytes++;
       if (!msgReady && bufferLen + bytes >= buffer[SIZE_BYTE] + HEADER_LENGTH) {
         if (validate()) {
           msgReady = true;
+          Serial.println("MSG READY");
         } else {  // Our validate call failed and a message wasn't already
                   // prepared so we should drop what we currently have
           cleanBuffer();
@@ -137,7 +133,6 @@ bool CommBuffer::hasMessage() { return msgReady; }
 
 Message* CommBuffer::getMessage() {
   if (!msgReady) return nullptr;
-  msgReady = false;
 
   Message* msg = deserialize();
   cleanBuffer();

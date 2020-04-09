@@ -11,15 +11,33 @@
 
 enum MsgType {
   ACK = 0,    // Your basic acknowledgement (because everyone deserves to be
-              // acknowledged)
+              // acknowledged for their hardwork and good comm skills)
   INIT,       // Initialize communication message
   MAP_START,  // Map sending sequence start
   MAP_NODE,   // Map node
   MAP_END,    // Map sending sequence end
   STATE,      // Game state
-  PLAYER,     // Player location
-  CONFIRM,    // Signals a request for a confirm (from server)
+  PLAYER      // Player location
 };
+
+MapPayload junctionToPayload(Junction* j) {
+  MapPayload p;
+
+  p.id = j->id;
+  p.x = j->x;
+  p.y = j->y;
+
+  for (uint8_t i = 0; i < N_ORIENT; i++) {
+    if (j->adjacent[i] != nullptr) {
+      p.neighbours[i] = j->adjacent[i]->id;
+    } else {
+      p.neighbours[i] = INVALID_JID;
+    }
+  }
+
+  return p;
+
+}
 
 void Device::sendGameState(StatePayload p) {
   buffer.send(STATE, &p, sizeof(StatePayload));
@@ -31,8 +49,6 @@ void Device::sendEntityLocation(PlayerPayload p) {
 
 void Device::begin() {
   state = START;
-  index = 0;
-  num_elements = 0;
   id = 0;
 
   timeout = 0;
@@ -44,6 +60,8 @@ void Device::begin() {
 }
 
 void Device::end() { buffer.end(); }
+
+ComState Device::getState() { return state; }
 
 Device::Device(uint8_t port) : buffer(port) {}
 
@@ -59,16 +77,28 @@ bool Device::checkForAck() {
     if (msg->type == ACK) {
       failures = 0;
 
+      waitingForAck = false;
+
       delete msg;
       return true;
     }
 
-  } else if (millis() - timeout >= TIMEOUT_LENGTH) {
-    failures++;
+  } else if (!checkTimeout()) {
     waitingForAck = false;
   }
 
   return false;
+}
+
+bool Device::checkTimeout() {
+  if (millis() - timeout >= TIMEOUT_LENGTH) {
+    failures++;
+    if (failures > 3) {
+      state = DISCONNECTED;
+    }
+    return false;
+  }
+  return true;
 }
 
 void Server::handle() {
@@ -77,24 +107,48 @@ void Server::handle() {
   switch (state) {
     case START:
       if (!waitingForAck) {
-        buffer.send(INIT, &id, 0);
+        buffer.send(INIT, nullptr, 0);
         timeout = millis();
         waitingForAck = true;
       } else if (checkForAck()) {
-        state = MAP;
         Serial.println("Transitioning to Map");
+        beginMap();
       }
       break;
     case MAP:
+      if (!waitingForAck) {
+        if (index == 0) {
+          buffer.send(MAP_START, &num_elements, 1);
+        } else if (index <= num_elements) {
+          buffer.send(
+            MAP_NODE,
+            &junctionToPayload(builder->copy_arr[index - 1]), // Bad but it gets copied so its fine
+            sizeof(MapPayload)
+          );
+        } else {
+          buffer.send(MAP_END, nullptr, 0);
+        }
+        timeout = millis();
+        waitingForAck = true;
+      } else if (checkForAck()) {
+        if (index <= num_elements) {
+          index++;
+          Serial.print("Increase map send index: ");
+          Serial.println(index);
+        } else {
+          Serial.println("Transitioning to Loop");
+          beginLoop();
+        }
+      }
       break;
     case LOOP:
       if (buffer.hasMessage()) {
         Message* msg = buffer.getMessage();
         void* payload = new uint8_t[msg->size];
         if (msg->type == STATE) {
-          sCallback(static_cast<StatePayload*>(payload));
+          sCallback((StatePayload*)(payload));
         } else if (msg->type == PLAYER) {
-          pCallback(static_cast<PlayerPayload*>(payload));
+          pCallback((PlayerPayload*)(payload));
         }
         delete msg;
       }
@@ -106,35 +160,54 @@ void Server::handle() {
   }
 }
 
+void Server::beginMap() {
+  builder = new MapBuilder();
+  builder->Debuild(mCallback());
+
+  index = 0;
+  num_elements = builder->junctionCount;
+
+  state = MAP;
+}
+
+void Server::beginLoop() {
+  delete builder;
+
+  state = LOOP;
+}
+
+
 void Client::handle() {
   buffer.recieve();
 
   switch (state) {
     case START:
       if (buffer.hasMessage()) {
-        Serial.println("Got a message");
         Message* msg = buffer.getMessage();
         if (msg->type == INIT) {
           buffer.send(ACK, &id, 0);
-          state = MAP;
+          beginMap();
           Serial.println("Transitioning to Map");
         }
         delete msg;
       }
       break;
     case MAP:
-      // TODO it might be best to build a generator class that I can input nodes
-      // into
       if (buffer.hasMessage()) {
-        Serial.println("Got a message");
         Message* msg = buffer.getMessage();
         if (msg->type == MAP_START) {
-          buffer.send(ACK, &id, 0);
+          buffer.send(ACK, nullptr, 0);
+          builder->SetJunctionCount(*(uint8_t*)(msg->payload));
         } else if (msg->type == MAP_NODE) {
-          buffer.send(ACK, &id, 0);
+          MapPayload* load = (MapPayload*)(msg->payload);
+          buffer.send(ACK, nullptr, 0);
+          processMap(load);
         } else if (msg->type == MAP_END) {
-          buffer.send(ACK, &id, 0);
-          state = LOOP;
+          buffer.send(ACK, nullptr, 0);
+          beginLoop();
+        } else {
+          delete msg;
+          break; // Just force that we don't send back an ACK for an invalid msg
         }
         delete msg;
       }
@@ -142,12 +215,10 @@ void Client::handle() {
     case LOOP:
       if (buffer.hasMessage()) {
         Message* msg = buffer.getMessage();
-        void* payload = new uint8_t[msg->size];
-        memcpy(payload, msg->payload, msg->size);
         if (msg->type == STATE) {
-          sCallback(static_cast<StatePayload*>(payload));
+          sCallback((StatePayload*)(msg->payload));
         } else if (msg->type == PLAYER) {
-          pCallback(static_cast<PlayerPayload*>(payload));
+          pCallback((PlayerPayload*)(msg->payload));
         }
         delete msg;
       }
@@ -156,5 +227,27 @@ void Client::handle() {
     default:
       break;  // Do nothing (idle until reset) as we are disconnected or in a
               // bad state
+  }
+}
+
+void Client::beginMap() {
+  builder = new MapBuilder();
+
+  state = MAP;
+}
+
+void Client::beginLoop() {
+  mCallback(builder->Build());
+  delete builder;
+
+  state = LOOP;
+}
+
+void Client::processMap(MapPayload* m) {
+  builder->SetJunctionLocations(m->id, m->x, m->y);
+  for (uint8_t i = 0; i < N_ORIENT; i++) {
+    if (m->neighbours[i] != INVALID_JID) {
+      builder->LinkJunctions(m->id, m->neighbours[i]);
+    }
   }
 }
