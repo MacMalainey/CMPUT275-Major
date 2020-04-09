@@ -1,3 +1,12 @@
+/**
+ * CMPUT 275 -- Winter 2020 -- Final Project
+ *
+ * Mackenzie Malainey, 1570494
+ * Benjamin Kong, 1573684
+ * Lora Ma, 1570935
+ * Michael Kwok, 1548454
+ */
+
 #pragma once
 
 #include <Arduino.h>
@@ -8,6 +17,10 @@
 struct Point {
   uint16_t x;
   uint16_t y;
+
+  bool operator==(const Point &other) const {
+    return (this->x == other.x) && (this->y == other.y);
+  }
 };
 
 enum Orientation { NORTH = 0, SOUTH, EAST, WEST, N_ORIENT };

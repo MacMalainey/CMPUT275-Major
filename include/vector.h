@@ -1,3 +1,12 @@
+/**
+ * CMPUT 275 -- Winter 2020 -- Final Project
+ *
+ * Mackenzie Malainey, 1570494
+ * Benjamin Kong, 1573684
+ * Lora Ma, 1570935
+ * Michael Kwok, 1548454
+ */
+
 #pragma once
 
 // Custom vector class to help not use double pointers and heap allocations

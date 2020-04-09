@@ -1,3 +1,12 @@
+/**
+ * CMPUT 275 -- Winter 2020 -- Final Project
+ *
+ * Mackenzie Malainey, 1570494
+ * Benjamin Kong, 1573684
+ * Lora Ma, 1570935
+ * Michael Kwok, 1548454
+ */
+
 #pragma once
 
 #include "comm.h"
@@ -35,9 +44,8 @@ class Game {
   void drawLives();
   void decrementLives();
   void testGrid();
-  Orientation translateToOrien(uint8_t direction);
-  uint8_t isValidDirection(uint8_t direction);
-  void moveInTunnel(uint8_t direction, uint8_t opposite);
+  bool isValidDirection(Orientation direction);
+  void moveInTunnel(Orientation direction, uint8_t opposite);
 
   Map *map;
   uint16_t map_color;
