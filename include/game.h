@@ -35,11 +35,6 @@ class Game {
   uint8_t current_lives = 3;
   uint16_t score = 0;
 
-  Junction *currentJunction;
-
-  uint8_t currentDirection = 0;
-  uint8_t nextDirection = 0;
-
   void updateScore();
   void drawLives();
   void decrementLives();

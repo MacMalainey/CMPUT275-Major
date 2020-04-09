@@ -13,29 +13,6 @@ Drawable::Drawable() : Drawable(Point{.x = 0, .y = 0}) {}
 
 Drawable::Drawable(Point startPoint) : location(startPoint) {}
 
-void Drawable::Move(Screen &screen) {
-  Clear(screen);
-  switch (orientation) {
-    case NORTH:
-      location.y--;
-      break;
-    case SOUTH:
-      location.y++;
-      break;
-    case EAST:
-      location.x++;
-      break;
-    case WEST:
-      location.x--;
-      break;
-  }
-  Draw(screen);
-}
-
-void Drawable::SetOrientation(Orientation &newOrientation) {
-  orientation = newOrientation;
-}
-
 bool Drawable::operator!=(const Drawable &other) const {
   return (this->location.x != other.location.x ||
           this->location.y != other.location.y);
@@ -58,6 +35,92 @@ void Pellet::Clear(Screen &screen) {
 
 PlayerCharacter::PlayerCharacter() : Drawable() {}
 PlayerCharacter::PlayerCharacter(Point startPoint) : Drawable(startPoint) {}
+
+void PlayerCharacter::Move(Screen &screen) {
+  Clear(screen);
+  switch (orientation) {
+    case NORTH:
+      location.y--;
+      break;
+    case SOUTH:
+      location.y++;
+      break;
+    case EAST:
+      location.x++;
+      break;
+    case WEST:
+      location.x--;
+      break;
+  }
+  Draw(screen);
+}
+
+void PlayerCharacter::handleMovement(Screen &screen, uint8_t input, Map *map) {
+  if (map->getXY(currentJunction) == location &&
+                                  input != N_ORIENT) {
+    SetOrientation(input);
+    Move(screen);
+  } 
+
+  MoveTunnel(input, screen, map);
+}
+
+bool PlayerCharacter::isValidDirection(Orientation direction) {
+  if (currentJunction->next(direction) != nullptr) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+void PlayerCharacter::SetOrientation(uint8_t newOrientation) {
+  if (isValidDirection(newOrientation)) {
+    orientation = newOrientation;
+  } else {
+    orientation = N_ORIENT;
+  }
+}
+
+void PlayerCharacter::checkTunnelDirection(Screen &screen, uint8_t input, 
+    Map *map, Orientation direction, Orientation opposite) {
+  if (orientation == direction) {
+
+    // If we're in a corridor, we can change directions
+    if (input == opposite) { // Switch directions
+      orientation = opposite;
+    } else if (input != N_ORIENT) { // Queue a future movement
+      nextDirection = input;
+    }
+
+    // Check if we're at on of two possible junctions in a corridor
+    if (map->getXY(currentJunction) == location) { 
+      if (nextDirection != N_ORIENT) {
+        SetOrientation(nextDirection);
+        nextDirection = N_ORIENT;
+      } else {
+        SetOrientation(orientation);
+      }
+    } else if (map->getXY(currentJunction->next(orientation)) == location) {
+      currentJunction = currentJunction->next(direction);
+
+      if (nextDirection != N_ORIENT) {
+        SetOrientation(nextDirection);
+        nextDirection = N_ORIENT;
+      } else {
+        SetOrientation(orientation);
+      }
+    }
+
+    Move(screen);
+  }
+}
+
+void PlayerCharacter::MoveTunnel(uint8_t input, Screen &screen, Map *map) {
+  checkTunnelDirection(screen, input, map, NORTH, SOUTH);
+  checkTunnelDirection(screen, input, map, SOUTH, NORTH);
+  checkTunnelDirection(screen, input, map, EAST, WEST);
+  checkTunnelDirection(screen, input, map, WEST, EAST);
+}
 
 void PlayerCharacter::Draw(Screen &screen) {
   if (isPacman) {
@@ -122,6 +185,7 @@ void PlayerCharacter::Draw(Screen &screen) {
     }
   }
 }
+
 void PlayerCharacter::DrawGhostBody(Screen &screen) {
   screen.fillRect(location.x - 3, location.y + 3, 6, 6, TFT_RED);
   screen.fillRect(location.x - 4, location.y + 1, 1, 5, TFT_RED);
@@ -130,6 +194,7 @@ void PlayerCharacter::DrawGhostBody(Screen &screen) {
   screen.fillRect(location.x - 2, location.y - 3, 1, 1, TFT_RED);
   screen.fillRect(location.x + 1, location.y - 3, 1, 1, TFT_RED);
 }
+
 void PlayerCharacter::Clear(Screen &screen) {
   if (isPacman) {
     screen.fillCircle(location.x, location.y, 4, TFT_BLACK);

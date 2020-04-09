@@ -18,21 +18,16 @@
 class Drawable {
  public:
   Drawable();
-  Drawable(Point startPoint);
-  void Move(Screen &screen);
+  Drawable(Point startPoint);                            
 
   virtual void Draw(Screen &screen) = 0;
   virtual void Clear(Screen &screen) = 0;
-
-  void SetOrientation(Orientation &newOrientation);
 
   Point location;
   uint16_t color;
 
   // Used for the LinkedList class for checking inequality
   bool operator!=(const Drawable &other) const;
-
-  Orientation orientation = Orientation::EAST;
 };
 
 struct Pellet : public Drawable {
@@ -48,6 +43,21 @@ struct Pellet : public Drawable {
 struct PlayerCharacter : public Drawable {
   PlayerCharacter();
   PlayerCharacter(Point startPoint);
+
+  Orientation orientation = EAST;
+  Orientation nextDirection = N_ORIENT;
+  Junction *currentJunction;
+
+  void Move(Screen &screen); 
+
+  void handleMovement(Screen &screen, uint8_t input, Map *map);
+
+  bool isValidDirection(Orientation direction);
+  void SetOrientation(uint8_t newOrientation);
+  void checkTunnelDirection(Screen &screen, uint8_t input, Map *map, 
+                            Orientation direction, Orientation opposite); 
+
+  void MoveTunnel(uint8_t input, Screen &screen, Map *map);  
 
   void Draw(Screen &screen) final;
   void Clear(Screen &screen) final;
