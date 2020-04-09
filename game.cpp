@@ -180,6 +180,8 @@ void Game::Loop() {
 }
 
 void Game::Start() {
+  GameState = SETUP;
+  
   while (GameState != READY) {
     switch (GameState) {
       case WAIT_FOR_SERVER:
