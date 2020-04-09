@@ -99,8 +99,8 @@ void Grid::Generate(uint8_t divisions) {
  * @return false if there wasn't a collision.
  */
 bool Grid::update(PlayerCharacter pacman) {
-  uint8_t rowIndex = getRowIndex(pacman.x);
-  uint8_t cellIndex = getCellIndex(pacman.y);
+  uint8_t rowIndex = getRowIndex(pacman.location.x);
+  uint8_t cellIndex = getCellIndex(pacman.location.y);
 
   LNode<Pellet> *current = rows[rowIndex]->cells[cellIndex]->pellets.getFront();
   Pellet pellet;
@@ -108,7 +108,8 @@ bool Grid::update(PlayerCharacter pacman) {
   while (current != nullptr) {
     pellet = current->item;
 
-    if (abs(pellet.x - pacman.x) <= 4 && abs(pellet.y - pacman.y) <= 4) {
+    if (abs(pellet.location.x - pacman.location.x) <= 4 &&
+        abs(pellet.location.y - pacman.location.y) <= 4) {
       // remove the pellet from the grid
       removePellet(pellet);
 

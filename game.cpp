@@ -64,8 +64,8 @@ void Game::testGrid() {
   for (uint16_t i = 0; i < num_pellets / 10; i++) {
     for (uint16_t j = 0; j < num_pellets / 10; j++) {
       Pellet newPellet;
-      newPellet.x = i * screen.DISPLAY_WIDTH / 10 + 25;
-      newPellet.y = j * screen.DISPLAY_HEIGHT / 10 + 15;
+      newPellet.location.x = i * Screen::DISPLAY_WIDTH / 10 + 25;
+      newPellet.location.y = j * Screen::DISPLAY_HEIGHT / 10 + 15;
 
       newPellet.Draw(screen);
 
@@ -123,8 +123,8 @@ void Game::moveInTunnel(uint8_t direction, uint8_t opposite) {
       nextDirection = input;
     }
 
-    if (map->getXY(currentJunction).x == pacman.x &&
-        map->getXY(currentJunction).y == pacman.y) {
+    if (map->getXY(currentJunction).x == pacman.location.x &&
+        map->getXY(currentJunction).y == pacman.location.y) {
       if (nextDirection != 0) {
         currentDirection = isValidDirection(nextDirection);
         nextDirection = 0;
@@ -133,10 +133,10 @@ void Game::moveInTunnel(uint8_t direction, uint8_t opposite) {
       }
     } else if (map->getXY(
                       currentJunction->next(translateToOrien(currentDirection)))
-                       .x == current_x &&
+                       .x == pacman.location.x &&
                map->getXY(
                       currentJunction->next(translateToOrien(currentDirection)))
-                       .y == current_y) {
+                       .y == pacman.location.y) {
       // Serial.print("You are at a new junction!");
       currentJunction = currentJunction->next(translateToOrien(direction));
 
@@ -156,8 +156,9 @@ void Game::Loop() {
   uint8_t buttonPressed = joy.ReadInput();
   // Read
 
-  if (map->getXY(currentJunction).x == pacman.x &&
-      map->getXY(currentJunction).y == pacman.y && buttonPressed != 0) {
+  if (map->getXY(currentJunction).x == pacman.location.x &&
+      map->getXY(currentJunction).y == pacman.location.y &&
+      buttonPressed != 0) {
     currentDirection = isValidDirection(buttonPressed);
     pacman.Move(screen);
   }
