@@ -19,7 +19,8 @@ class Drawable {
  public:
   Drawable();
   Drawable(Point startPoint);
-  void Move(Screen &screen);
+
+  void Move(Screen &screen, uint8_t speed);
 
   virtual void Draw(Screen &screen) = 0;
   virtual void Clear(Screen &screen) = 0;

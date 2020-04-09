@@ -13,20 +13,20 @@ Drawable::Drawable() : Drawable(Point{.x = 0, .y = 0}) {}
 
 Drawable::Drawable(Point startPoint) : location(startPoint) {}
 
-void Drawable::Move(Screen &screen) {
+void Drawable::Move(Screen &screen, uint8_t speed) {
   Clear(screen);
   switch (orientation) {
     case NORTH:
-      location.y--;
+      location.y -= speed;
       break;
     case SOUTH:
-      location.y++;
+      location.y += speed;
       break;
     case EAST:
-      location.x++;
+      location.x += speed;
       break;
     case WEST:
-      location.x--;
+      location.x -= speed;
       break;
   }
   Draw(screen);

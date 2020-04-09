@@ -23,15 +23,19 @@ Orientation Joystick::ReadInput() {
   bool down = digitalRead(Joystick::DOWN_PIN);
 
   if (up == LOW) {
+    Serial.println("Up");
     return Orientation::NORTH;
   }
   if (down == LOW) {
+    Serial.println("down");
     return Orientation::SOUTH;
   }
   if (right == LOW) {
+    Serial.println("right");
     return Orientation::EAST;
   }
   if (left == LOW) {
+    Serial.println("left");
     return Orientation::WEST;
   }
 

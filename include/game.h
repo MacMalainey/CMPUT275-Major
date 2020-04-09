@@ -37,15 +37,15 @@ class Game {
 
   Junction *currentJunction;
 
-  uint8_t currentDirection = 0;
-  uint8_t nextDirection = 0;
+  Orientation currentDirection = Orientation::EAST;
+  Orientation nextDirection;
 
   void updateScore();
   void drawLives();
   void decrementLives();
   void testGrid();
   bool isValidDirection(Orientation direction);
-  void moveInTunnel(Orientation direction, uint8_t opposite);
+  // void moveInTunnel(Orientation direction, uint8_t opposite);
 
   Map *map;
   uint16_t map_color;
