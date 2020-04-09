@@ -17,6 +17,10 @@
 struct Point {
   uint16_t x;
   uint16_t y;
+
+  bool operator==(const Point &other) const {
+    return (this->x == other.x) && (this->y == other.y);
+  }
 };
 
 enum Orientation { NORTH = 0, SOUTH, EAST, WEST, N_ORIENT };
