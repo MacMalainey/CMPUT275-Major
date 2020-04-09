@@ -26,11 +26,13 @@ Game::Game(bool isServer) : isServer(isServer), characters(3) {
   // Spatial partitioning
   grid.Generate(10);  // 10 is the number of divisions
 
-  if (isServer) {
-    GameState = WAIT_FOR_CLIENT;
-  } else {
-    GameState = WAIT_FOR_SERVER;
-  }
+  GameState = SETUP;
+
+  // if (isServer) {
+  //   GameState = WAIT_FOR_CLIENT;
+  // } else {
+  //   GameState = WAIT_FOR_SERVER;
+  // }
 }
 
 void Game::updateScore() {
@@ -100,29 +102,15 @@ void Game::drawLives() {
   screen.fillTriangle(460, 15, 468, 19, 468, 11, TFT_BLACK);
 }
 
-// up = 0, down = 1, right = 2, left = 3
-Orientation Game::translateToOrien(uint8_t direction) {
-  if (direction == 1u) {
-    return (Orientation)0;
-  } else if (direction == 2u) {
-    return (Orientation)1;
-  } else if (direction == 4u) {
-    return (Orientation)2;
-  } else {  // if (direction == 8u) {
-    return (Orientation)3;
-  }
-}
-
-uint8_t Game::isValidDirection(uint8_t direction) {
-  if (currentJunction->next((Orientation)translateToOrien(direction)) !=
-      nullptr) {
-    return direction;
+bool Game::isValidDirection(Orientation direction) {
+  if (currentJunction->next(direction) != nullptr) {
+    return true;
   } else {
-    return 0;
+    return false;
   }
 }
 
-void Game::moveInTunnel(uint8_t direction, uint8_t opposite) {
+void Game::moveInTunnel(Orientation direction, uint8_t opposite) {
   if (currentDirection == direction) {
     uint8_t input = joy.ReadInput();
 
@@ -132,22 +120,17 @@ void Game::moveInTunnel(uint8_t direction, uint8_t opposite) {
       nextDirection = input;
     }
 
-    if (map->getXY(currentJunction).x == pacman.location.x &&
-        map->getXY(currentJunction).y == pacman.location.y) {
+    if (map->getXY(currentJunction) == pacman.location) {
       if (nextDirection != 0) {
         currentDirection = isValidDirection(nextDirection);
         nextDirection = 0;
       } else {
         currentDirection = isValidDirection(currentDirection);
       }
-    } else if (map->getXY(
-                      currentJunction->next(translateToOrien(currentDirection)))
-                       .x == pacman.location.x &&
-               map->getXY(
-                      currentJunction->next(translateToOrien(currentDirection)))
-                       .y == pacman.location.y) {
+    } else if (map->getXY(currentJunction->next(currentDirection)) ==
+               pacman.location) {
       // Serial.print("You are at a new junction!");
-      currentJunction = currentJunction->next(translateToOrien(direction));
+      currentJunction = currentJunction->next(direction);
 
       if (nextDirection != 0) {
         currentDirection = isValidDirection(nextDirection);
@@ -162,13 +145,15 @@ void Game::moveInTunnel(uint8_t direction, uint8_t opposite) {
 }
 
 void Game::Loop() {
-  uint8_t buttonPressed = joy.ReadInput();
+  auto input = joy.ReadInput();
   // Read
 
-  if (map->getXY(currentJunction).x == pacman.location.x &&
-      map->getXY(currentJunction).y == pacman.location.y &&
-      buttonPressed != 0) {
-    currentDirection = isValidDirection(buttonPressed);
+  if (map->getXY(currentJunction) == pacman.location &&
+      input != Orientation::N_ORIENT) {
+    if (isValidDirection(input)) {
+      pacman.SetOrientation(input);
+    }
+
     pacman.Move(screen);
   }
 

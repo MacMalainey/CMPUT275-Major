@@ -44,9 +44,8 @@ class Game {
   void drawLives();
   void decrementLives();
   void testGrid();
-  Orientation translateToOrien(uint8_t direction);
-  uint8_t isValidDirection(uint8_t direction);
-  void moveInTunnel(uint8_t direction, uint8_t opposite);
+  bool isValidDirection(Orientation direction);
+  void moveInTunnel(Orientation direction, uint8_t opposite);
 
   Map *map;
   uint16_t map_color;
