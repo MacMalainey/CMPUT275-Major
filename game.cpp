@@ -213,8 +213,6 @@ void Game::Loop() {
   moveInTunnel(8u, 4u);
 
   // handle collisions between pacman and pellets
-  Serial.print("Pacman pos: "); Serial.print(pacman.x);
-  Serial.print(", "); Serial.println(pacman.y);
   bool collected = grid.update(pacman);
 
   if (collected) {

@@ -77,10 +77,7 @@ void Grid::removePellet(Pellet pellet) {
   uint8_t rowIndex = getRowIndex(pellet.x);
   uint8_t cellIndex = getCellIndex(pellet.y);
 
-  Serial.print("removing ");
-  Serial.print(pellet.x); Serial.print(", "); Serial.print(pellet.y);
   rows[rowIndex]->cells[cellIndex]->pellets.remove(pellet);
-  Serial.println();
 }
 
 void Grid::Generate(uint8_t divisions) {

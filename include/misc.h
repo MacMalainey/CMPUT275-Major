@@ -135,7 +135,6 @@ void LinkedList<T>::remove(const T &item) {
 
   if (node != nullptr) { 
     removeNode(node);
-    Serial.print(" -> removed");
   }
 }
 
