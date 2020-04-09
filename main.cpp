@@ -9,7 +9,10 @@
 
 #include <Arduino.h>
 
-#include "include/comm.h"
+#include "include/multi.h"
+#include "include/misc.h"
+#include "include/screen.h"
+#include "include/map.h"
 #include "include/game.h"
 
 #define RAND_SEED_LENGTH 32
@@ -31,8 +34,60 @@ void setup() {
   randomSeed(seed);
 }
 
+// Left some test code in here for myself
+// Please don't delete -- Mac
+
+// Map* TEST_MAP_GET() {
+//   Serial.println("Map getter called");
+//   Screen s;
+//   MapBuilder mb;
+//   mb.TestGen();
+//   Map* map = mb.Build();
+//   uint16_t map_color = genNeonColor();
+
+//   s.DrawMap(map, map_color);
+
+//   return map;
+// }
+
+// void TEST_MAP_SET(Map* map) {
+//   Serial.println("Map setter called");
+//   Screen s;
+//   uint16_t map_color = genNeonColor();
+
+//   s.DrawMap(map, map_color);
+// }
+
+
 int main() {
   setup();
+
+  // Left some test code in here for myself
+  // Please don't delete -- Mac
+
+  // Device* d;
+  // ComState state = START;
+
+  // if (digitalRead(SERVER_SELECT_PIN) == HIGH) {
+  //   Server* s = new Server(1);
+  //   s->mCallback = TEST_MAP_GET;
+  //   d = s;
+  // } else {
+  //   Client* c = new Client();
+  //   c->mCallback = TEST_MAP_SET;
+  //   d = c;
+  // }
+
+  // d->begin();
+
+  // for (;;) {
+  //   d->handle();
+  //   if (d->getState() != state) {
+  //     state = d->getState();
+  //     Serial.print("Transitioned State: ");
+  //     Serial.print(state);
+  //   }
+  // }
 
   Game game(false);
   game.Start();

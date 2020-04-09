@@ -16,7 +16,6 @@ Game::Game(bool isServer) : isServer(isServer), characters(3) {
   updateScore();
   drawLives();
 
-  // Its the map, its the map, its the map, its the map...
   MapBuilder mb;
   mb.TestGen();
   map = mb.Build();
