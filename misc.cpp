@@ -7,10 +7,10 @@
  * Michael Kwok, 1548454
  */
 
+#include "include/misc.h"
+
 #include <Arduino.h>
 #include <math.h>
-
-#include "include/misc.h"
 
 // https://gist.github.com/kuathadianto/200148f53616cbd226d993b400214a7fs
 uint16_t HSVtoRGB(int H, double S, double V) {

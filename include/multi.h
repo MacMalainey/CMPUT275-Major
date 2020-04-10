@@ -46,7 +46,7 @@ class Device {
   bool checkForAck();
   bool checkTimeout();
 
-public:
+ public:
   PlayerCallback* pCallback;
   StateCallback* sCallback;
   MapBuilder* builder;
@@ -63,7 +63,7 @@ public:
 };
 
 class Server : public Device {
-private:
+ private:
   void beginMap();
   void beginLoop();
 
@@ -71,21 +71,19 @@ private:
   uint8_t index;
   uint8_t num_elements;
 
-public:
-
+ public:
   void handle();
   Server(uint8_t id);
 };
 
 class Client : public Device {
-private:
+ private:
   void beginMap();
   void beginLoop();
 
   void processMap(MapPayload* m);
 
-public:
-
+ public:
   void handle();
   Client();
 };

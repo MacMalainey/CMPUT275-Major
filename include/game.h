@@ -13,14 +13,11 @@
 #include "grid.h"
 #include "input.h"
 #include "map.h"
+#include "multi.h"
 #include "screen.h"
 #include "vector.h"
-#include "multi.h"
 
-enum State {
-  WAIT_FOR_CONNECTION,
-  READY
-};
+enum State { WAIT_FOR_CONNECTION, READY };
 
 class ServerGame {
  public:
@@ -52,29 +49,26 @@ class ServerGame {
   PlayerCharacter myChar;
   PlayerCharacter ghost;
 
-  uint16_t num_pellets = 0;
-  Pellet pellets[100];
+  Vector<Pellet> pellets;
 
   // characters[0] should be PacMan.
   Vector<PlayerCharacter> characters;
 
-  Server* devices[3];
+  Server *devices[3];
   State gameState;
   Point startingPoint;
-
 };
 
 class ClientGame {
-public:
-
+ public:
   ClientGame();
 
   void Start();
   void Loop();
 
-private:
+ private:
   State gameState;
-  Client* device;
+  Client *device;
 
   Screen screen;
   Joystick joy;
@@ -93,5 +87,4 @@ private:
   void updateScore();
   void decrementLives();
   void drawLives();
-
 };

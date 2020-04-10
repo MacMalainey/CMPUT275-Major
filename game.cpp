@@ -27,14 +27,10 @@ ServerGame::ServerGame() : characters(3) {
   for (uint8_t i = 0; i < 3; i++) {
     devices[i] = new Server(i + 1);
     devices[i]->builder = new MapBuilder();
-    Serial.println("yeetA");
     devices[i]->builder->Debuild(map);
-    Serial.println("yeetB");
     devices[i]->pCallback = new PlayerCallback();
     devices[i]->sCallback = new StateCallback();
   }
-  Serial.println("yeet3");
-
 }
 
 void ServerGame::updateScore() {
@@ -71,22 +67,22 @@ void ServerGame::testGrid() {
   // Serial.println(grid.getRowIndex(300));
   // Serial.println(grid.getRowIndex(480));
 
-  num_pellets = 100;
-  uint16_t k = 0;
+  // num_pellets = 100;
+  // uint16_t k = 0;
 
-  for (uint16_t i = 0; i < num_pellets / 10; i++) {
-    for (uint16_t j = 0; j < num_pellets / 10; j++) {
-      Pellet newPellet;
-      newPellet.location.x = i * Screen::DISPLAY_WIDTH / 10 + 25;
-      newPellet.location.y = j * Screen::DISPLAY_HEIGHT / 10 + 15;
+  // for (uint16_t i = 0; i < num_pellets / 10; i++) {
+  //   for (uint16_t j = 0; j < num_pellets / 10; j++) {
+  //     Pellet newPellet;
+  //     newPellet.location.x = i * Screen::DISPLAY_WIDTH / 10 + 25;
+  //     newPellet.location.y = j * Screen::DISPLAY_HEIGHT / 10 + 15;
 
-      newPellet.Draw(screen);
+  //     newPellet.Draw(screen);
 
-      grid.addPellet(newPellet);
+  //     grid.addPellet(newPellet);
 
-      pellets[k++] = newPellet;
-    }
-  }
+  //     pellets[k++] = newPellet;
+  //   }
+  // }
 
   // for (uint16_t i = 0; i < num_pellets; i++) {
   //   grid.removePellet(pellets[i]);
@@ -169,12 +165,11 @@ void ServerGame::drawLives() {
 }
 
 void ServerGame::Loop() {
-  Serial.println("1");
   for (uint8_t i = 0; i < 3; i++) {
     devices[i]->handle();
   }
-  Serial.println("2");
-  switch(gameState) {
+
+  switch (gameState) {
     case WAIT_FOR_CONNECTION:
 
       // Assume true
@@ -230,6 +225,7 @@ void ServerGame::Start() {
   for (uint8_t i = 0; i < 3; i++) {
     devices[i]->begin();
   }
+  Pellet::GeneratePellets(pellets, map);
 
   gameState = WAIT_FOR_CONNECTION;
 
@@ -250,10 +246,9 @@ void ClientGame::Start() {
 }
 
 void ClientGame::Loop() {
-
   device->handle();
 
-  switch(gameState) {
+  switch (gameState) {
     case WAIT_FOR_CONNECTION:
       if (device->getState() == LOOP) {
         map = device->builder->Build();

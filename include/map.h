@@ -39,9 +39,7 @@ class Map {
   ~Map();
 
   Point getXY(Junction *startingNode);
-
   Junction *GetStart();
-
   uint8_t GetNodeCount();
 };
 
@@ -62,7 +60,7 @@ struct MapBuilder {
 
   Map *Build();
 
-  void Debuild(Map* map) {  // Cause the hardest part of programming is naming
+  void Debuild(Map *map) {  // Cause the hardest part of programming is naming
 
     SetJunctionCount(map->GetNodeCount());
 
