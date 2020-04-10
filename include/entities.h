@@ -67,4 +67,6 @@ struct PlayerCharacter : public Drawable {
   void Draw(Screen &screen) final;
   void Clear(Screen &screen) final;
   void DrawGhostBody(Screen &screen);
+
+  uint16_t color;
 };

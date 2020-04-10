@@ -171,7 +171,11 @@ void ServerGame::Loop() {
           devices[i].sendEntityLocation(p);
           if (devices[i].pCallback.hasData) {
             devices[i].pCallback.hasData = false;
-            // TODO other player's movement
+            uint8_t id = devices[i].pCallback.load.id;
+            characters[id].Clear(screen);
+            characters[id].location.x = devices[i].pCallback.load.x;
+            characters[id].location.y = devices[i].pCallback.load.y;
+            characters[id].Draw(screen);
           }
         }
       }
@@ -206,10 +210,14 @@ void ServerGame::Start() {
   startingPoint = map->getXY(map->GetStart());
   myChar = PlayerCharacter(startingPoint);
   myChar.currentJunction = map->GetStart();
+  myChar.color = TFT_YELLOW;
 
   for (uint8_t i = 0; i < 2; i++) {
     devices[i].begin();
   }
+
+  characters[1].color = genNeonColor();
+  characters[2].color = genNeonColor();
 
   GameState = WAIT_FOR_CONNECTION;
 }
@@ -247,6 +255,8 @@ void ClientGame::Loop() {
         screen.DrawMap(map, map_color);
         myChar = PlayerCharacter(map->getXY(map->GetStart()));
         myChar.currentJunction = map->GetStart();
+        myChar.color = genNeonColor();
+        characters[0].color = TFT_YELLOW;
         GameState = READY;
       }
       break;
@@ -255,7 +265,7 @@ void ClientGame::Loop() {
       myChar.handleMovement(screen, input, map);
 
       PlayerPayload p;
-      p.id = 0;
+      p.id = device.getID();
       p.x = myChar.location.x;
       p.y = myChar.location.y;
 

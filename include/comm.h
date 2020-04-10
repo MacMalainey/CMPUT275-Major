@@ -56,44 +56,107 @@ class CommBuffer {
    * Byte 2: Type of message
    * Byte 3 and 4: 16 bit checksum
    * Byte 5 to n: Payload
+   *
+   * Parameters:
+   * type (uint8_t): Type of message
+   * payload (void *): Message information
+   * size (uint8_t): size of payload
+   * buffer(uint8_t*): buffer to write to
    */
   uint8_t serialize(uint8_t type, void* payload, uint8_t size, uint8_t* buffer);
 
+
+  /**
+   * Description:
+   * Generates a checksum for the given payload
+   *
+   * Parameters:
+   * payload (void*): bytes to gen checksum for
+   * size (uint8_t): size of payload
+   */
   uint16_t genChecksum(void* payload, uint8_t size);
 
   /**
+   * Description:
+   * Deserializes the current contents of the buffer into a message
    *
-   *
-   *
-   * Note:
-   * This function has a lot of C style stuff to it...
-   * Don't touch unless you are comfortable with C memory allocation (talk to
-   * Mac otherwise)
+   * Returns:
+   * msg (Message*): Pointer to deserialized message
    */
   Message* deserialize();
 
+  /**
+   * Description:
+   * Validates the current message in the buffer
+   *
+   * Returns:
+   * isValid (bool): Whether or not the message is valid
+   */
   bool validate();
 
+  /**
+   * Description:
+   * Cleans the buffer (resets the pointer back to the start)
+   */
   void cleanBuffer();
 
  public:
-  // Flag to determine behaviour on dropped messages
-  // If true it will re-request any dropped messages
-  // If false it will drop the message and continue to wait for new messages
-  bool reqOnDrop;
 
+  /**
+   * Description:
+   * Communications Buffer Constructor
+   *
+   * Parameters:
+   * select (uint8_t): Port select
+   */
   CommBuffer(uint8_t select);
   ~CommBuffer();
 
+  /**
+   * Description:
+   * Sends a message with the given data and meta data
+   *
+   * Parameters:
+   * type (uint8_t): Type of message (for deseriatlization)
+   * payload (void*): Data to get sent
+   * length (uint8_t): Length of payload
+   */
   void send(uint8_t type, void* payload, uint8_t length);
 
+
+  /**
+   * Description:
+   * Recieves and processes any incoming bytes
+   */
   void recieve();
 
+  /**
+   * Description:
+   * Start the buffer
+   */
   void begin();
 
+  /**
+   * Description:
+   * Close the line and buffer
+   */
   void end();
 
+  /**
+   * Description:
+   * Returns a flag that shows if a complete message is in the buffer
+   *
+   * Returns:
+   * hasMessage (bool): true if there is a complete message in the buffer
+   */
   bool hasMessage();
 
+  /**
+   * Description:
+   * Returns a flag that shows if a complete message is in the buffer
+   *
+   * Returns:
+   * msg (Message*): Pointer to serialized msg obj (MUST BE FREED )
+   */
   Message* getMessage();
 };

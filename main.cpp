@@ -39,7 +39,6 @@ int main() {
 
   if (digitalRead(SERVER_SELECT_PIN) == HIGH) {
     ServerGame game;
-
     game.Start();
 
     while (true) {
@@ -47,7 +46,6 @@ int main() {
     }
   } else {
     ClientGame game;
-
     game.Start();
 
     while (true) {
