@@ -42,7 +42,6 @@ class ServerGame {
   void decrementLives();
   void testGrid();
   bool isValidDirection(Orientation direction);
-  void handleClientUpdate(PlayerPayload* p);
   // void moveInTunnel(Orientation direction, uint8_t opposite);
 
   Map *map;
@@ -53,7 +52,7 @@ class ServerGame {
   Screen screen;
   Joystick joy;
 
-  PlayerCharacter pacman;
+  PlayerCharacter myChar;
   PlayerCharacter ghost;
 
   uint16_t num_pellets = 0;
@@ -66,7 +65,6 @@ class ServerGame {
   State gameState;
   Point startingPoint;
 
-  Map* getMap();
 };
 
 class ClientGame {
@@ -90,6 +88,13 @@ private:
 
   Vector<PlayerCharacter> characters;
 
-  void setMap(Map* m);
+  PlayerCharacter myChar;
+
+  uint16_t score = 0;
+  uint8_t current_lives = 3;
+
+  void updateScore();
+  void decrementLives();
+  void drawLives();
 
 };
