@@ -161,9 +161,6 @@ void Server::handle() {
 }
 
 void Server::beginMap() {
-  builder = new MapBuilder();
-  builder->Debuild(mCallback());
-
   index = 0;
   num_elements = builder->junctionCount;
 
@@ -237,9 +234,6 @@ void Client::beginMap() {
 }
 
 void Client::beginLoop() {
-  mCallback(builder->Build());
-  delete builder;
-
   state = LOOP;
 }
 

@@ -19,8 +19,6 @@ enum ComState { START = 0, MAP, LOOP, DISCONNECTED };
 
 typedef void (*playerCb)(PlayerPayload*);
 typedef void (*stateCb)(StatePayload*);
-typedef Map* (*mapGetter)();
-typedef void (*mapSetter)(Map*);
 
 class Device {
  protected:
@@ -28,10 +26,6 @@ class Device {
 
   CommBuffer buffer;
   ComState state;
-
-  MapBuilder* builder; // In reality the two subclasses use this seperately of Device
-                       // so it doesn't need to be in the superclass, but it was easier
-                       // to define it once here
 
   uint8_t id;
 
@@ -46,6 +40,7 @@ class Device {
 public:
   playerCb pCallback;
   stateCb sCallback;
+  MapBuilder* builder;
 
   void sendGameState(StatePayload p);
   void sendEntityLocation(PlayerPayload p);
@@ -54,7 +49,7 @@ public:
   Device(uint8_t port);
 
   void begin();
-  virtual void handle();
+  void handle();
   void end();
 };
 
@@ -68,8 +63,8 @@ private:
   uint8_t num_elements;
 
 public:
-  mapGetter mCallback;
-  void handle() final;
+
+  void handle();
   Server(uint8_t id);
 };
 
@@ -81,7 +76,7 @@ private:
   void processMap(MapPayload* m);
 
 public:
-  mapSetter mCallback;
-  void handle() final;
+
+  void handle();
   Client();
 };
