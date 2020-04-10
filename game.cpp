@@ -15,6 +15,8 @@ ServerGame::ServerGame() {
   map = mb.Build();
   map_color = genNeonColor();
 
+  myChar = characters[0];
+
   // Spatial partitioning
   grid.Generate(10);  // 10 is the number of divisions
   for (uint8_t i = 0; i < 2; i++) {
