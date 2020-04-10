@@ -33,17 +33,10 @@ class ServerGame {
   uint8_t current_lives = 3;
   uint16_t score = 0;
 
-  Junction *currentJunction;
-
-  Orientation currentDirection = Orientation::EAST;
-  Orientation nextDirection;
-
   void updateScore();
   void drawLives();
   void decrementLives();
   void testGrid();
-  bool isValidDirection(Orientation direction);
-  // void moveInTunnel(Orientation direction, uint8_t opposite);
 
   Map *map;
   uint16_t map_color;
@@ -60,7 +53,7 @@ class ServerGame {
   uint16_t num_pellets = 0;
   Pellet pellets[100];
 
-  // characters[0] should be current player.
+  // characters[0] should be PacMan.
   Vector<PlayerCharacter> characters;
 
   State GameState;
@@ -74,9 +67,15 @@ public:
   void Start();
   void Loop();
 
+private:
+
   void updateScore();
   void drawLives();
   void decrementLives();
+
+  uint16_t distUntilDeadEnd(Point gLocation, Junction *junction,
+                            Orientation orientation);
+  void canSeePacman(PlayerCharacter ghost);
 
   State GameState;
 
@@ -92,4 +91,6 @@ public:
 
   PlayerCharacter myChar;
 
+  // characters[0] should be PacMan.
+  Vector<PlayerCharacter> characters;
 };

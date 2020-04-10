@@ -64,6 +64,72 @@ void ServerGame::testGrid() {
 
 }
 
+Orientation reverseOrien(Orientation orientation) {
+  if (orientation == N_ORIENT) { return N_ORIENT; }
+  if (orientation == NORTH) { return SOUTH; }
+  if (orientation == SOUTH ) { return NORTH; }
+  if (orientation == EAST ) { return WEST; }
+  return EAST;
+}
+
+uint16_t ClientGame::distUntilDeadEnd(Point gLocation,
+Junction *junction, Orientation orientation) {
+
+  Junction *current = junction;
+
+  // get the farthest junction in current direction
+  while (current->next(orientation) != nullptr) {
+    current = current->next(orientation);
+  }
+
+  return (map->getXY(current) - gLocation);
+}
+
+void ClientGame::canSeePacman(PlayerCharacter ghost) {
+  Point pLocation = characters.Get(0).location;
+  Point gLocation = ghost.location;
+
+  if (pLocation.x == gLocation.x || pLocation.y == gLocation.y) {
+    // We now need to check there is a straight line.
+
+    uint16_t distPac = pLocation - gLocation; // Manhattan distance
+    Orientation orien = ghost.orientation;
+    Junction *currentJunc = ghost.currentJunction;
+
+    // Ghost is at a junction, check all valid junction directions.
+    if (map->getXY(currentJunc) == gLocation) {
+      for (uint8_t i = 0; i < N_ORIENT; i++) {
+        if (currentJunc->next((Orientation)i) != nullptr) {
+          uint16_t dist = distUntilDeadEnd(gLocation, currentJunc, (Orientation)i);
+
+          if (dist >= distPac) {
+            ghost.canSeePacman = true;
+            Serial.println("Visible1");
+            return;
+          }
+        }
+      }
+
+      ghost.canSeePacman = false;
+    }
+
+    // Ghost is in a corridor, check orientation and opposite orientation.
+    else {
+      uint16_t dist = distUntilDeadEnd(gLocation, currentJunc, orien);
+      uint16_t distR = distUntilDeadEnd(gLocation, currentJunc, reverseOrien(orien));
+
+      if (dist >= distPac || distR >= distPac) {
+        ghost.canSeePacman = true;
+        Serial.println("Visible2");
+        return;
+      } else {
+        ghost.canSeePacman = false;
+      }
+    }
+
+  }
+}
+
 void ServerGame::drawLives() {
   screen.fillCircle(400, 15, 8, TFT_YELLOW);
   screen.fillTriangle(400, 15, 408, 19, 408, 11, TFT_BLACK);

@@ -18,8 +18,14 @@ struct Point {
   uint16_t x;
   uint16_t y;
 
+  // Equality operator.
   bool operator==(const Point &other) const {
     return (this->x == other.x) && (this->y == other.y);
+  }
+
+  // Manhanttan distance between two points.
+  uint16_t operator-(const Point &other) const {
+    return (abs(this->x - other.x) + abs(this->y - other.y));
   }
 };
 
