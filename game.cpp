@@ -28,8 +28,6 @@ ServerGame::ServerGame() : characters(3) {
     devices[i] = new Server(i + 1);
     devices[i]->builder = new MapBuilder();
     devices[i]->builder->Debuild(map);
-    devices[i]->pCallback = new PlayerCallback();
-    devices[i]->sCallback = new StateCallback();
   }
 
 }
@@ -117,7 +115,7 @@ void ServerGame::Loop() {
       for (uint8_t i = 0; i < 3; i++) {
         ComState ds = devices[i]->getState();
 
-        // If true then that means our assumption is false
+        // If not true then that means our assumption is false
         if (ds != LOOP && ds != DISCONNECTED) allCon = false;
       }
 
@@ -134,10 +132,10 @@ void ServerGame::Loop() {
   uint8_t input = joy.ReadInput();
 
   // handle movement
-  myChar.handleMovement(screen, input, map);
+  pacman.handleMovement(screen, input, map);
 
   // handle collisions between pacman and pellets
-  bool collected = grid.update(myChar);
+  bool collected = grid.update(pacman);
 
   if (collected) {
     score += 10;
@@ -151,8 +149,8 @@ void ServerGame::Start() {
   screen.DrawMap(map, map_color);
   screen.drawLine(0, 30, 480, 30, map_color);
   startingPoint = map->getXY(map->GetStart());
-  myChar = PlayerCharacter(startingPoint);
-  myChar.currentJunction = map->GetStart();
+  pacman = PlayerCharacter(startingPoint);
+  pacman.currentJunction = map->GetStart();
 
   for (uint8_t i = 0; i < 3; i++) {
     devices[i]->begin();
@@ -185,14 +183,8 @@ void ClientGame::Loop() {
       if (device->getState() == LOOP) {
         map = device->builder->Build();
 
-        // Draw UI
-        screen.setCursor(14, 6);
-        screen.print("Score:");
-        updateScore();
-        drawLives();
-
-        screen.drawLine(0, 30, 480, 30, map_color);
         screen.DrawMap(map, map_color);
+        screen.drawLine(0, 30, 480, 30, map_color);
 
         delete device->builder;
 
@@ -203,31 +195,4 @@ void ClientGame::Loop() {
       Serial.println("WE HAVE A CONNECTION");
       break;
   }
-}
-
-void ClientGame::updateScore() {
-  screen.fillRect(90, 6, screen.DISPLAY_WIDTH / 4, 18, TFT_BLACK);
-  screen.setCursor(90, 6);
-  screen.print(score);
-}
-
-void ClientGame::decrementLives() {
-  if (current_lives == 3) {
-    screen.fillRect(390, 0, 30, 30, TFT_BLACK);
-  } else if (current_lives == 2) {
-    screen.fillRect(420, 0, 30, 30, TFT_BLACK);
-  } else {
-    screen.fillRect(450, 0, 30, 30, TFT_BLACK);
-  }
-}
-
-void ClientGame::drawLives() {
-  screen.fillCircle(400, 15, 8, TFT_YELLOW);
-  screen.fillTriangle(400, 15, 408, 19, 408, 11, TFT_BLACK);
-
-  screen.fillCircle(430, 15, 8, TFT_YELLOW);
-  screen.fillTriangle(430, 15, 438, 19, 438, 11, TFT_BLACK);
-
-  screen.fillCircle(460, 15, 8, TFT_YELLOW);
-  screen.fillTriangle(460, 15, 468, 19, 468, 11, TFT_BLACK);
 }

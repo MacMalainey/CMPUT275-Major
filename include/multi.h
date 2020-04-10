@@ -17,17 +17,8 @@
 
 enum ComState { START = 0, MAP, LOOP, DISCONNECTED };
 
-// This is NOT how callbacks are supposed to work BUT
-// C++ doesn't LIKE using member class function pointers for callbacks unless
-// you specific class type...  WHYYYYYY (its ok I can work around)
-
-struct PlayerCallback {
-  PlayerPayload* load = nullptr;
-};
-
-struct StateCallback {
-  StatePayload* load = nullptr;
-};
+typedef void (*playerCb)(PlayerPayload*);
+typedef void (*stateCb)(StatePayload*);
 
 class Device {
  protected:
@@ -47,8 +38,8 @@ class Device {
   bool checkTimeout();
 
 public:
-  PlayerCallback* pCallback;
-  StateCallback* sCallback;
+  playerCb pCallback;
+  stateCb sCallback;
   MapBuilder* builder;
 
   void sendGameState(StatePayload p);

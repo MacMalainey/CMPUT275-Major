@@ -146,9 +146,9 @@ void Server::handle() {
         Message* msg = buffer.getMessage();
         void* payload = new uint8_t[msg->size];
         if (msg->type == STATE) {
-          sCallback->load = (StatePayload*)(msg->payload);
+          sCallback((StatePayload*)(payload));
         } else if (msg->type == PLAYER) {
-          pCallback->load = (PlayerPayload*)(msg->payload);
+          pCallback((PlayerPayload*)(payload));
         }
         delete msg;
       }
@@ -213,9 +213,9 @@ void Client::handle() {
       if (buffer.hasMessage()) {
         Message* msg = buffer.getMessage();
         if (msg->type == STATE) {
-          sCallback->load = (StatePayload*)(msg->payload);
+          sCallback((StatePayload*)(msg->payload));
         } else if (msg->type == PLAYER) {
-          pCallback->load = (PlayerPayload*)(msg->payload);
+          pCallback((PlayerPayload*)(msg->payload));
         }
         delete msg;
       }
