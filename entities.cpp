@@ -304,7 +304,7 @@ void Pellet::GeneratePellets(Pellet *pellets, Junction *startJunction,
 
   while (events.size() > 0) {
     Junction *junct = events.pop();
-    if (junct->id != 31 || junct->id != 36 || junct->id != 37) {
+    if (junct->id != 31 && junct->id != 36 && junct->id != 37) {
       for (uint8_t orient = 0; orient < N_ORIENT; orient++) {
         if (junct->next((Orientation)orient) != nullptr) {
           Junction *adj = junct->adjacent[orient];
