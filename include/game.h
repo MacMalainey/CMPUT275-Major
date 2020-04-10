@@ -16,11 +16,7 @@
 #include "multi.h"
 #include "screen.h"
 
-enum State {
-  SETUP,
-  WAIT_FOR_CONNECTION,
-  READY,
-};
+enum State { SETUP, WAIT_FOR_CONNECTION, READY, PACMAN_DEATH, GAME_END };
 
 class ServerGame {
  public:
@@ -31,6 +27,8 @@ class ServerGame {
  private:
   uint8_t current_lives = 3;
   uint16_t score = 0;
+
+  uint8_t player_count = 0;
 
   void updateScore();
   void drawLives();
@@ -45,8 +43,7 @@ class ServerGame {
   Joystick joy;
   Server devices[2];
 
-  PlayerCharacter myChar;
-  PlayerCharacter ghost;
+  PlayerCharacter &myChar;
 
   Pellet pellets[70];
   PlayerCharacter characters[3];
