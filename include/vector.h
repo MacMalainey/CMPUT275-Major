@@ -53,7 +53,7 @@ template <typename T>
 void Vector<T>::Push(const T &value) {
   if (count == capacity) {
     // Make new temp array
-    T *tempArr = new T[1.5 * capacity];
+    T *tempArr = new T[2 * capacity];
 
     // Copy all data
     for (size_t i = 0; i < capacity; i++) {
@@ -62,10 +62,10 @@ void Vector<T>::Push(const T &value) {
 
     // Clean up old array
     delete[] array;
-    capacity *= 1.5;
+    capacity *= 2;
     array = tempArr;
   }
-  array[count] = T(value);
+  array[count] = value;
   count++;
 }
 
@@ -76,12 +76,14 @@ T &Vector<T>::Get() {
 
 template <typename T>
 T &Vector<T>::Get(size_t index) {
-  return &array[index];
+  if (index >= 0 && index < capacity) {
+    return array[index];
+  }
 }
 
 template <typename T>
 T &Vector<T>::Pop() {
-  return &array[count--];
+  return array[count--];
 }
 
 template <typename T>

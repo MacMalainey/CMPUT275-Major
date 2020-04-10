@@ -201,3 +201,65 @@ void PlayerCharacter::Clear(Screen &screen) {
     screen.fillRect(location.x - 4, location.y + 4, 8, 8, TFT_BLACK);
   }
 }
+
+static void Pellet::GeneratePellets(Vector<Pellet> &pellets, const Map *map) {
+  bool touched[map->GetNodeCount()] = {false};
+  bool pelletized[map->GetNodeCount()][map->GetNodeCount()] = {false};
+  Queue<Junction *> events;
+  events.push(map->GetStart());
+  touched[0] = true;
+
+  while (events.size() > 0) {
+    Junction *junct = events.pop();
+
+    for (uint8_t orient = 0; orient < N_ORIENT; orient++) {
+      if (junct->next((Orientation)orient) != nullptr) {
+        Junction *adj = junct->adjacent[orient];
+
+        if (!touched[adj->id]) {
+          touched[adj->id] = true;
+          events.push(adj);
+        }
+
+        if (!(pelletized[junct->id][adj->id] ||
+              pelletized[adj->id][junct->id])) {
+          pelletized[junct->id][adj->id] = true;
+          pelletized[adj->id][junct->id] = true;
+
+          Pellet newPellet;
+
+          if (junct->x == adj->x) {  // vertical corridor
+            uint16_t numPellets = abs((int)junct->y - (int)adj->y) / 10;
+
+            Serial.print("Generating ");
+            Serial.print(numPellets);
+            Serial.print(" vertical pellets between ");
+            Serial.print(junct->id);
+            Serial.print(" and ");
+            Serial.println(adj->id);
+
+            for (uint16_t i = 0; i < numPellets; i++) {
+              newPellet.location.x = junct->x;
+              newPellet.location.y = min(junct->y, adj->y) + (10 * i);
+              pellets.Push(newPellet);
+            }
+          } else {  // horizontal corridor
+            uint16_t numPellets = abs((int)adj->x - (int)junct->x) / 10;
+            Serial.print("Generating ");
+            Serial.print(numPellets);
+            Serial.print(" horizontal pellets between ");
+            Serial.print(junct->id);
+            Serial.print(" and ");
+            Serial.println(adj->id);
+
+            for (uint16_t i = 0; i < numPellets; i++) {
+              newPellet.location.y = junct->y;
+              newPellet.location.x = min(junct->x, adj->x) + (10 * i);
+              pellets.Push(newPellet);
+            }
+          }
+        }
+      }
+    }
+  }
+}

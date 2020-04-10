@@ -19,14 +19,13 @@
 
 enum State {
   SETUP,
-  WAIT_FOR_SERVER,
   WAIT_FOR_CLIENT,
   READY,
 };
 
 class Game {
  public:
-  Game(bool isServer);
+  Game();
   void Start();
   void Loop();
   bool is_running = true;
@@ -43,7 +42,6 @@ class Game {
   void updateScore();
   void drawLives();
   void decrementLives();
-  void testGrid();
   bool isValidDirection(Orientation direction);
   // void moveInTunnel(Orientation direction, uint8_t opposite);
 
@@ -58,8 +56,7 @@ class Game {
   PlayerCharacter pacman;
   PlayerCharacter ghost;
 
-  uint16_t num_pellets = 0;
-  Pellet pellets[100];
+  Vector<Pellet> pellets;
 
   // characters[0] should be current player.
   Vector<PlayerCharacter> characters;

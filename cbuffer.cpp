@@ -53,7 +53,8 @@ bool CommBuffer::validate() {
 }
 
 void CommBuffer::cleanBuffer() {
-  bufferLen = 0; // This was a long function but I decided to change functionality
+  bufferLen =
+      0;  // This was a long function but I decided to change functionality
   isWaiting = true;
   msgReady = false;
 }
@@ -77,7 +78,7 @@ CommBuffer::CommBuffer(uint8_t select) {  // This should be created as a factory
       serial = &Serial3;
       break;
     default:
-      break; // TODO: We should throw an exception here
+      break;  // TODO: We should throw an exception here
   }
 }
 
@@ -95,8 +96,7 @@ void CommBuffer::send(uint8_t type, void* payload, uint8_t length) {
 void CommBuffer::recieve() {
   uint8_t bytes = 0;
 
-  while (serial->available() > 0 &&
-         bytes < MAX_READ && !msgReady) {
+  while (serial->available() > 0 && bytes < MAX_READ && !msgReady) {
     if (isWaiting) {
       uint8_t byte = serial->read();
       if (byte == START_FLAG) {

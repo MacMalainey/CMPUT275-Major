@@ -36,7 +36,6 @@ MapPayload junctionToPayload(Junction* j) {
   }
 
   return p;
-
 }
 
 void Device::sendGameState(StatePayload p) {
@@ -120,11 +119,11 @@ void Server::handle() {
         if (index == 0) {
           buffer.send(MAP_START, &num_elements, 1);
         } else if (index <= num_elements) {
-          buffer.send(
-            MAP_NODE,
-            &junctionToPayload(builder->copy_arr[index - 1]), // Bad but it gets copied so its fine
-            sizeof(MapPayload)
-          );
+          buffer.send(MAP_NODE,
+                      &junctionToPayload(
+                          builder->copy_arr[index - 1]),  // Bad but it gets
+                                                          // copied so its fine
+                      sizeof(MapPayload));
         } else {
           buffer.send(MAP_END, nullptr, 0);
         }
@@ -176,7 +175,6 @@ void Server::beginLoop() {
   state = LOOP;
 }
 
-
 void Client::handle() {
   buffer.recieve();
 
@@ -207,7 +205,8 @@ void Client::handle() {
           beginLoop();
         } else {
           delete msg;
-          break; // Just force that we don't send back an ACK for an invalid msg
+          break;  // Just force that we don't send back an ACK for an invalid
+                  // msg
         }
         delete msg;
       }

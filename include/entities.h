@@ -38,13 +38,15 @@ struct Pellet : public Drawable {
   void Clear(Screen &screen) final;
 
   bool isPowerUp = false;
+
+  static void GeneratePellets(Vector<Pellet> &pellets, const Map *map);
 };
 
 struct PlayerCharacter : public Drawable {
   PlayerCharacter();
   PlayerCharacter(Point startPoint);
 
-  Orientation orientation = EAST;
+  Orientation orientation = N_ORIENT;
   Orientation nextDirection = N_ORIENT;
   Junction *currentJunction;
 

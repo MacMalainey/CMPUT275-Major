@@ -9,11 +9,11 @@
 
 #include <Arduino.h>
 
-#include "include/multi.h"
-#include "include/misc.h"
-#include "include/screen.h"
-#include "include/map.h"
 #include "include/game.h"
+#include "include/map.h"
+#include "include/misc.h"
+#include "include/multi.h"
+#include "include/screen.h"
 
 #define RAND_SEED_LENGTH 32
 #define RAND_READ_PIN    A11
@@ -58,7 +58,6 @@ void setup() {
 //   s.DrawMap(map, map_color);
 // }
 
-
 int main() {
   setup();
 
@@ -89,7 +88,7 @@ int main() {
   //   }
   // }
 
-  Game game(false);
+  Game game;
   game.Start();
 
   while (true) {

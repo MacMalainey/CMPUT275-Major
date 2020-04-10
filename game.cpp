@@ -9,7 +9,7 @@
 
 #include "include/game.h"
 
-Game::Game(bool isServer) : isServer(isServer), characters(3) {
+Game::Game() : characters(3) {
   // Draw UI
   screen.setCursor(14, 6);
   screen.print("Score:");
@@ -26,12 +26,6 @@ Game::Game(bool isServer) : isServer(isServer), characters(3) {
   grid.Generate(10);  // 10 is the number of divisions
 
   GameState = SETUP;
-
-  // if (isServer) {
-  //   GameState = WAIT_FOR_CLIENT;
-  // } else {
-  //   GameState = WAIT_FOR_SERVER;
-  // }
 }
 
 void Game::updateScore() {
@@ -48,46 +42,6 @@ void Game::decrementLives() {
   } else {
     screen.fillRect(450, 0, 30, 30, TFT_BLACK);
   }
-}
-
-void Game::testGrid() {
-  // for (uint8_t i = 0; i < grid.divisions; i++) {
-  //     for (uint8_t j = 0; j < grid.divisions; j++) {
-  //         Row *row_i = grid.getRow(i);
-  //         Cell *cell_ij = row_i->getCell(j);
-  //         uint16_t id = cell_ij->getID();
-
-  //         Serial.println(id);
-  //     }
-  // }
-
-  // Serial.println(grid.getRowIndex(0));
-  // Serial.println(grid.getRowIndex(10));
-  // Serial.println(grid.getRowIndex(100));
-  // Serial.println(grid.getRowIndex(200));
-  // Serial.println(grid.getRowIndex(300));
-  // Serial.println(grid.getRowIndex(480));
-
-  num_pellets = 100;
-  uint16_t k = 0;
-
-  for (uint16_t i = 0; i < num_pellets / 10; i++) {
-    for (uint16_t j = 0; j < num_pellets / 10; j++) {
-      Pellet newPellet;
-      newPellet.location.x = i * Screen::DISPLAY_WIDTH / 10 + 25;
-      newPellet.location.y = j * Screen::DISPLAY_HEIGHT / 10 + 15;
-
-      newPellet.Draw(screen);
-
-      grid.addPellet(newPellet);
-
-      pellets[k++] = newPellet;
-    }
-  }
-
-  // for (uint16_t i = 0; i < num_pellets; i++) {
-  //   grid.removePellet(pellets[i]);
-  // }
 }
 
 void Game::drawLives() {
@@ -124,9 +78,6 @@ void Game::Start() {
 
   while (GameState != READY) {
     switch (GameState) {
-      case WAIT_FOR_SERVER:
-        // We client
-        break;
       case WAIT_FOR_CLIENT:
         // We server
         break;
@@ -135,11 +86,13 @@ void Game::Start() {
         startingPoint = map->getXY(map->GetStart());
         pacman = PlayerCharacter(startingPoint);
         pacman.currentJunction = map->GetStart();
-
         GameState = READY;
         break;
     }
   }
+  Pellet::GeneratePellets(pellets, map);
 
-  testGrid();
+  for (uint16_t i = 0; i < pellets.Size(); i++) {
+    pellets.Get(i).Draw(screen);
+  }
 }

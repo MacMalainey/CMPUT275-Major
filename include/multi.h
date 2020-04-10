@@ -29,9 +29,9 @@ class Device {
   CommBuffer buffer;
   ComState state;
 
-  MapBuilder* builder; // In reality the two subclasses use this seperately of Device
-                       // so it doesn't need to be in the superclass, but it was easier
-                       // to define it once here
+  MapBuilder* builder;  // In reality the two subclasses use this seperately of
+                        // Device so it doesn't need to be in the superclass,
+                        // but it was easier to define it once here
 
   uint8_t id;
 
@@ -43,7 +43,7 @@ class Device {
   bool checkForAck();
   bool checkTimeout();
 
-public:
+ public:
   playerCb pCallback;
   stateCb sCallback;
 
@@ -59,7 +59,7 @@ public:
 };
 
 class Server : public Device {
-private:
+ private:
   void beginMap();
   void beginLoop();
 
@@ -67,20 +67,20 @@ private:
   uint8_t index;
   uint8_t num_elements;
 
-public:
+ public:
   mapGetter mCallback;
   void handle() final;
   Server(uint8_t id);
 };
 
 class Client : public Device {
-private:
+ private:
   void beginMap();
   void beginLoop();
 
   void processMap(MapPayload* m);
 
-public:
+ public:
   mapSetter mCallback;
   void handle() final;
   Client();
