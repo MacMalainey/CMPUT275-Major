@@ -102,7 +102,7 @@ bool Device::checkTimeout() {
   return true;
 }
 
-uint8_t Device::getID() {return id;}
+uint8_t Device::getID() { return id; }
 
 void Server::handle() {
   buffer.recieve();
@@ -146,7 +146,6 @@ void Server::handle() {
         if (msg->type == PLAYER) {
           pCallback.hasData = true;
           pCallback.load = *(PlayerPayload*)((msg->payload));
-          Serial.println(pCallback.y);
         }
         delete msg;
       }

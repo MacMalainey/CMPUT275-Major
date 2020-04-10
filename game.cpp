@@ -206,6 +206,7 @@ void ServerGame::Start() {
   Pellet::GeneratePellets(pellets, map->GetStart(), map->GetNodeCount());
   for (size_t i = 0; i < 70; i++) {
     pellets[i].Draw(screen);
+    grid.addPellet(pellets[i]);
   }
   startingPoint = map->getXY(map->GetStart());
   myChar = PlayerCharacter(startingPoint);

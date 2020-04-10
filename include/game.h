@@ -49,6 +49,7 @@ class ServerGame {
   PlayerCharacter ghost;
 
   Pellet pellets[70];
+  PlayerCharacter characters[3];
 
   State GameState;
   Point startingPoint;
