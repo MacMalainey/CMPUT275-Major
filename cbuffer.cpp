@@ -35,15 +35,17 @@ uint16_t CommBuffer::genChecksum(void* payload, uint8_t size) {
 
 Message* CommBuffer::deserialize() {
   Message* msg = new Message();
-  msg->type = buffer[TYPE_BYTE];
+  msg->type = buffer[TYPE_BYTE];  // Copy over metadata
   msg->size = buffer[SIZE_BYTE];
   msg->payload = new uint8_t[msg->size];
-  memcpy(msg->payload, buffer + HEADER_LENGTH, msg->size);
+  memcpy(msg->payload, buffer + HEADER_LENGTH, msg->size);  // Copy over payload
   return msg;
 }
 
 bool CommBuffer::validate() {
   uint16_t checksum = genChecksum(buffer + HEADER_LENGTH, buffer[SIZE_BYTE]);
+  // The checksum is stored in two bytes so we need to combine two individual bytes
+  // into one 16 bit integer to be able to test it
   uint16_t valid = buffer[CHECKSUM_BYTE + 1];
   valid <<= 8;
   valid += buffer[CHECKSUM_BYTE];
@@ -52,17 +54,19 @@ bool CommBuffer::validate() {
 }
 
 void CommBuffer::cleanBuffer() {
-  bufferLen = 0; // This was a long function but I decided to change functionality
+  // Basically just move it back to beginning state
+  bufferLen = 0;
   isWaiting = true;
   msgReady = false;
 }
 
-CommBuffer::CommBuffer(uint8_t select) {  // This should be created as a factory
-                                          // producing singletons
+CommBuffer::CommBuffer(uint8_t select) {
+  // This should be created as a factory
+  // producing singletons but ran out of time...
+
   bufferLen = 0;
   msgReady = false;
   isWaiting = true;
-  reqOnDrop = true;
 
   // Select which buffer we should be using
   switch (select) {
@@ -76,7 +80,7 @@ CommBuffer::CommBuffer(uint8_t select) {  // This should be created as a factory
       serial = &Serial3;
       break;
     default:
-      break; // TODO: We should throw an exception here
+      break; // We should throw an exception here but didn't have time
   }
 }
 
@@ -84,11 +88,14 @@ void CommBuffer::send(uint8_t type, void* payload, uint8_t length) {
   uint8_t wBuffer[length + HEADER_LENGTH];
   uint8_t size = serialize(type, payload, length, wBuffer);
 
+  Serial.println("Sending:");
+
+  // Sadly we do have to write byte by byte
   for (uint8_t i = 0; i < size; i++) {
     serial->write(wBuffer[i]);
-    // Serial.print(wBuffer[i]);
+    Serial.print(wBuffer[i]);
   }
-  // Serial.println();
+  Serial.println();
 }
 
 void CommBuffer::recieve() {
@@ -102,10 +109,11 @@ void CommBuffer::recieve() {
         isWaiting = false;  // Signify that we are actively reading a message
         buffer[START_BYTE] = byte;
         bytes++;
+        Serial.println("Getting:");
       }
     } else {
       buffer[bufferLen + bytes] = serial->read();
-      // Serial.print(buffer[bufferLen + bytes]);
+      Serial.print(buffer[bufferLen + bytes]);
       bytes++;
       if (!msgReady && bufferLen + bytes >= buffer[SIZE_BYTE] + HEADER_LENGTH) {
         if (validate()) {
@@ -118,6 +126,8 @@ void CommBuffer::recieve() {
     }
   }
   bufferLen += bytes;
+
+  Serial.println();
 }
 
 void CommBuffer::begin() { serial->begin(9600); }

@@ -43,7 +43,7 @@ struct Pellet : public Drawable {
 struct PlayerCharacter : public Drawable {
   PlayerCharacter();
   PlayerCharacter(Point startPoint);
-  
+
   bool isPacman = true;
   bool canSeePacman = false;
 
@@ -64,4 +64,6 @@ struct PlayerCharacter : public Drawable {
   void Draw(Screen &screen) final;
   void Clear(Screen &screen) final;
   void DrawGhostBody(Screen &screen);
+
+  uint16_t color;
 };

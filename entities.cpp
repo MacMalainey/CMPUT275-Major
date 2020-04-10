@@ -204,7 +204,7 @@ void PlayerCharacter::MoveTunnel(uint8_t input, Screen &screen, Map *map) {
  */
 void PlayerCharacter::Draw(Screen &screen) {
   if (isPacman) {
-    screen.fillCircle(location.x, location.y, 4, TFT_YELLOW);
+    screen.fillCircle(location.x, location.y, 4, color);
 
     switch (orientation) {
       case NORTH:

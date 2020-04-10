@@ -16,6 +16,7 @@
 #include "screen.h"
 #include "vector.h"
 #include "multi.h"
+#include "misc.h"
 
 enum State {
   SETUP,
@@ -54,7 +55,7 @@ class ServerGame {
   Pellet pellets[100];
 
   // characters[0] should be PacMan.
-  Vector<PlayerCharacter> characters;
+  PlayerCharacter characters[3];
 
   State GameState;
   Point startingPoint;
@@ -92,5 +93,5 @@ private:
   PlayerCharacter myChar;
 
   // characters[0] should be PacMan.
-  Vector<PlayerCharacter> characters;
+  PlayerCharacter characters[3];
 };

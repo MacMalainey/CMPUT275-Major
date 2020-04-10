@@ -54,6 +54,8 @@ public:
   void sendEntityLocation(PlayerPayload p);
   ComState getState();
 
+  uint8_t getID();
+
   Device(uint8_t port);
 
   void begin();
