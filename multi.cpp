@@ -124,7 +124,7 @@ void Server::handle() {
         } else if (index <= num_elements) {
           buffer.send(
             MAP_NODE,
-            &junctionToPayload(builder.copy_arr[index - 1]), // Bad but it gets copied so its fine
+            &junctionToPayload(mCallback.copy_arr[index - 1]), // Bad but it gets copied so its fine
             sizeof(MapPayload)
           );
         } else {
@@ -159,7 +159,9 @@ void Server::handle() {
 
 void Server::beginMap() {
   index = 0;
-  num_elements = builder.junctionCount;
+  num_elements = mCallback.junctionCount;
+  Serial.print("Element count: ");
+  Serial.println(num_elements);
 
   state = MAP;
 }
@@ -189,7 +191,7 @@ void Client::handle() {
         Message* msg = buffer.getMessage();
         if (msg->type == MAP_START) {
           buffer.send(ACK, nullptr, 0);
-          builder.SetJunctionCount(*(uint8_t*)(msg->payload));
+          mCallback.SetJunctionCount(*(uint8_t*)(msg->payload));
         } else if (msg->type == MAP_NODE) {
           MapPayload* load = (MapPayload*)(msg->payload);
           buffer.send(ACK, nullptr, 0);
@@ -231,10 +233,10 @@ void Client::beginLoop() {
 }
 
 void Client::processMap(MapPayload* m) {
-  builder.SetJunctionLocations(m->id, m->x, m->y);
+  mCallback.SetJunctionLocations(m->id, m->x, m->y);
   for (uint8_t i = 0; i < N_ORIENT; i++) {
     if (m->neighbours[i] != INVALID_JID) {
-      builder.LinkJunctions(m->id, m->neighbours[i]);
+      mCallback.LinkJunctions(m->id, m->neighbours[i]);
     }
   }
 }

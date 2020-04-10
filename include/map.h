@@ -30,6 +30,7 @@ class Junction {
 };
 
 class Map {
+ friend class MapBuilder;
  private:
   Junction **nodes = nullptr;
   uint8_t n = 0;
@@ -64,28 +65,30 @@ struct MapBuilder {
 
   void Debuild(Map* map) {  // Cause the hardest part of programming is naming
 
-    SetJunctionCount(map->GetNodeCount());
+  copy_arr = map->nodes;
 
-    bool touched[map->GetNodeCount()] = {false};
+  junctionCount = map->GetNodeCount();
 
-    Queue<Junction *> events;
-    events.push(map->GetStart());
-    touched[0] = true;
+    // bool touched[map->GetNodeCount()] = {false};
 
-    while (events.size() > 0) {
-      Junction *j = events.pop();
-      copy_arr[j->id] = j;
-      for (uint8_t i = 0; i < N_ORIENT; i++) {
-        if (j->next((Orientation)i) != nullptr) {
-          Junction *a = j->adjacent[i];
-          // Ensures this is only added to the queue once
-          if (!touched[a->id]) {
-            touched[a->id] = true;
-            events.push(a);
-          }
-        }
-      }
-    }
+    // Queue<Junction *> events;
+    // events.push(map->GetStart());
+    // touched[0] = true;
+
+    // while (events.size() > 0) {
+    //   Junction *j = events.pop();
+    //   copy_arr[j->id] = j;
+    //   for (uint8_t i = 0; i < N_ORIENT; i++) {
+    //     if (j->next((Orientation)i) != nullptr) {
+    //       Junction *a = j->adjacent[i];
+    //       // Ensures this is only added to the queue once
+    //       if (!touched[a->id]) {
+    //         touched[a->id] = true;
+    //         events.push(a);
+    //       }
+    //     }
+    //   }
+    // }
   }
 
   // TODO: Destructor

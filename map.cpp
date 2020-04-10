@@ -84,11 +84,6 @@ void MapBuilder::SetJunctionLocations(uint8_t id, uint16_t x, uint16_t y) {
   auto newJunction = new Junction(x, y);
   newJunction->id = id;
   copy_arr[id] = newJunction;
-  Serial.print("Added new junction at ");
-  Serial.print(copy_arr[id]->x);
-  Serial.print(" ");
-  Serial.println(copy_arr[id]->y);
-  Serial.println(copy_arr[id]->id);
 }
 void MapBuilder::LinkJunctions(uint8_t junctionID1, uint8_t junctionID2) {
   links[linkCount++] = Point{.x = junctionID1, .y = junctionID2};
@@ -285,16 +280,17 @@ Map *MapBuilder::Build() {
     auto currentLink = links[i];
     copy_arr[currentLink.x]->link(copy_arr[currentLink.y]);
 
-    auto currentJunction = copy_arr[currentLink.x];
+    // auto currentJunction = copy_arr[currentLink.x];
 
-    for (uint8_t i = 0; i < N_ORIENT; i++) {
-      if (currentJunction->adjacent[i] != nullptr) {
-        Serial.print("Linked: ");
-        Serial.print(currentJunction->id);
-        Serial.print(" To ");
-        Serial.println(currentJunction->adjacent[i]->id);
-      }
-    }
+    // // I have no idea why when I comment this out, everything breaks
+    // for (uint8_t i = 0; i < N_ORIENT; i++) {
+    //   if (currentJunction->adjacent[i] != nullptr) {
+    //     Serial.print("Linked: ");
+    //     Serial.print(currentJunction->id);
+    //     Serial.print(" To ");
+    //     Serial.println(currentJunction->adjacent[i]->id);
+    //   }
+    // }
   }
   return new Map(copy_arr, junctionCount);
 }

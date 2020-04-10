@@ -9,31 +9,31 @@
 
 #include "include/game.h"
 
-Game::Game() : characters(3) {
+ServerGame::ServerGame() : characters(3) {
 
   MapBuilder mb;
   mb.TestGen();
   map = mb.Build();
   map_color = genNeonColor();
-  screen.drawLine(0, 30, 480, 30, map_color);
 
   // Spatial partitioning
   grid.Generate(10);  // 10 is the number of divisions
 
-  for(uint8_t i = 0; i < 3; i++) {
+  for(uint8_t i = 0; i < 2; i++) {
     devices[i] = Server(i);
+    devices[i].mCallback.Debuild(map);
   }
 
   GameState = SETUP;
 }
 
-void Game::updateScore() {
+void ServerGame::updateScore() {
   screen.fillRect(90, 6, screen.DISPLAY_WIDTH / 4, 18, TFT_BLACK);
   screen.setCursor(90, 6);
   screen.print(score);
 }
 
-void Game::decrementLives() {
+void ServerGame::decrementLives() {
   if (current_lives == 3) {
     screen.fillRect(390, 0, 30, 30, TFT_BLACK);
   } else if (current_lives == 2) {
@@ -43,7 +43,7 @@ void Game::decrementLives() {
   }
 }
 
-void Game::testGrid() {
+void ServerGame::testGrid() {
 
   num_pellets = 100;
   uint16_t k = 0;
@@ -64,7 +64,7 @@ void Game::testGrid() {
 
 }
 
-void Game::drawLives() {
+void ServerGame::drawLives() {
   screen.fillCircle(400, 15, 8, TFT_YELLOW);
   screen.fillTriangle(400, 15, 408, 19, 408, 11, TFT_BLACK);
 
@@ -75,9 +75,25 @@ void Game::drawLives() {
   screen.fillTriangle(460, 15, 468, 19, 468, 11, TFT_BLACK);
 }
 
-void Game::Loop() {
+void ServerGame::Loop() {
+  if (GameState == SETUP) return; // We need to call setup first
+
   // get joystick input
   uint8_t input = joy.ReadInput();
+
+  for(uint8_t i = 0; i < 2; i++) {
+    if (devices[i].getState() != DISCONNECTED) {}
+        devices[i].handle();
+  }
+
+  switch(GameState) {
+    case SETUP: // Make the compiler happy
+      break;
+    case WAIT_FOR_CONNECTION:
+      break;
+    case READY:
+      break;
+  }
 
   // handle movement
   myChar.handleMovement(screen, input, map);
@@ -93,9 +109,10 @@ void Game::Loop() {
   delay(20);
 }
 
-void Game::Start() {
+void ServerGame::Start() {
 
   // Draw UI
+  screen.drawLine(0, 30, 480, 30, map_color);
   screen.setCursor(14, 6);
   screen.print("Score:");
   updateScore();
@@ -106,5 +123,78 @@ void Game::Start() {
   myChar = PlayerCharacter(startingPoint);
   myChar.currentJunction = map->GetStart();
 
+  for(uint8_t i = 0; i < 2; i++) {
+    devices[i].begin();
+  }
+
+  GameState = WAIT_FOR_CONNECTION;
+
   testGrid();
+}
+
+ClientGame::ClientGame() {
+  map_color = genNeonColor();
+}
+
+void ClientGame::Start() {
+  device.begin();
+
+  GameState = WAIT_FOR_CONNECTION;
+}
+
+void ClientGame::Loop() {
+  if (GameState == SETUP) return; // We need to call setup first
+
+  device.handle();
+
+  switch(GameState) {
+    case SETUP: // Make the compiler happy
+      break;
+    case WAIT_FOR_CONNECTION:
+      if (device.getState() == LOOP) {
+        map = device.mCallback.Build();
+
+        // Draw UI
+        screen.drawLine(0, 30, 480, 30, map_color);
+        screen.setCursor(14, 6);
+        screen.print("Score:");
+        updateScore();
+        drawLives();
+
+        screen.DrawMap(map, map_color);
+        myChar = PlayerCharacter(map->getXY(map->GetStart()));
+        myChar.currentJunction = map->GetStart();
+        GameState = READY;
+      }
+      break;
+    case READY:
+      break;
+  }
+}
+
+void ClientGame::drawLives() {
+  screen.fillCircle(400, 15, 8, TFT_YELLOW);
+  screen.fillTriangle(400, 15, 408, 19, 408, 11, TFT_BLACK);
+
+  screen.fillCircle(430, 15, 8, TFT_YELLOW);
+  screen.fillTriangle(430, 15, 438, 19, 438, 11, TFT_BLACK);
+
+  screen.fillCircle(460, 15, 8, TFT_YELLOW);
+  screen.fillTriangle(460, 15, 468, 19, 468, 11, TFT_BLACK);
+}
+
+void ClientGame::decrementLives() {
+  if (current_lives == 3) {
+    screen.fillRect(390, 0, 30, 30, TFT_BLACK);
+  } else if (current_lives == 2) {
+    screen.fillRect(420, 0, 30, 30, TFT_BLACK);
+  } else {
+    screen.fillRect(450, 0, 30, 30, TFT_BLACK);
+  }
+}
+
+void ClientGame::updateScore() {
+  screen.fillRect(90, 6, screen.DISPLAY_WIDTH / 4, 18, TFT_BLACK);
+  screen.setCursor(90, 6);
+  screen.print(score);
 }

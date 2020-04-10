@@ -36,10 +36,6 @@ class Device {
   CommBuffer buffer;
   ComState state;
 
-  MapBuilder builder; // In reality the two subclasses use this seperately of Device
-                       // so it doesn't need to be in the superclass, but it was easier
-                       // to define it once here
-
   uint8_t id;
 
   uint32_t timeout;
@@ -51,6 +47,7 @@ class Device {
   bool checkTimeout();
 
 public:
+  MapBuilder mCallback;
   PlayerCallback pCallback;
 
   void sendGameState(StatePayload p);
@@ -74,7 +71,6 @@ private:
   uint8_t num_elements;
 
 public:
-  MapBuilder mCallback;
   void handle() final;
   Server(uint8_t id);
   Server();
@@ -88,7 +84,6 @@ private:
   void processMap(MapPayload* m);
 
 public:
-  MapBuilder mCallback;
   StateCallback sCallback;
   void handle() final;
   Client();

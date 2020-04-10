@@ -19,17 +19,15 @@
 
 enum State {
   SETUP,
-  WAIT_FOR_SERVER,
-  WAIT_FOR_CLIENT,
+  WAIT_FOR_CONNECTION,
   READY,
 };
 
-class Game {
+class ServerGame {
  public:
-  Game();
+  ServerGame();
   void Start();
   void Loop();
-  bool is_running = true;
 
  private:
   uint8_t current_lives = 3;
@@ -54,11 +52,10 @@ class Game {
 
   Screen screen;
   Joystick joy;
+  Server devices[2];
 
   PlayerCharacter myChar;
   PlayerCharacter ghost;
-
-  Server devices[3];
 
   uint16_t num_pellets = 0;
   Pellet pellets[100];
@@ -68,4 +65,31 @@ class Game {
 
   State GameState;
   Point startingPoint;
+};
+
+class ClientGame {
+
+public:
+  ClientGame();
+  void Start();
+  void Loop();
+
+  void updateScore();
+  void drawLives();
+  void decrementLives();
+
+  State GameState;
+
+  Screen screen;
+  Joystick joy;
+  Client device;
+
+  uint8_t current_lives = 3;
+  uint16_t score = 0;
+
+  Map *map;
+  uint16_t map_color;
+
+  PlayerCharacter myChar;
+
 };

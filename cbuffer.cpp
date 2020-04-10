@@ -86,9 +86,7 @@ void CommBuffer::send(uint8_t type, void* payload, uint8_t length) {
 
   for (uint8_t i = 0; i < size; i++) {
     serial->write(wBuffer[i]);
-    Serial.print(wBuffer[i]);
   }
-  Serial.println("");
 }
 
 void CommBuffer::recieve() {
@@ -105,8 +103,6 @@ void CommBuffer::recieve() {
       }
     } else {
       buffer[bufferLen + bytes] = serial->read();
-      Serial.print(buffer[bufferLen + bytes]);
-      // Serial.print(bufferLen + bytes);
       bytes++;
       if (!msgReady && bufferLen + bytes >= buffer[SIZE_BYTE] + HEADER_LENGTH) {
         if (validate()) {
@@ -118,7 +114,6 @@ void CommBuffer::recieve() {
       }
     }
   }
-
   bufferLen += bytes;
 }
 
