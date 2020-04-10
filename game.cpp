@@ -89,7 +89,7 @@ void ClientGame::canSeePacman(PlayerCharacter ghost) {
 
           if (dist >= distPac) {
             ghost.canSeePacman = true;
-            Serial.println("Visible1");
+            //Serial.println("Visible1");
             return;
           }
         }
@@ -106,7 +106,7 @@ void ClientGame::canSeePacman(PlayerCharacter ghost) {
 
       if (dist >= distPac || distR >= distPac) {
         ghost.canSeePacman = true;
-        Serial.println("Visible2");
+        //Serial.println("Visible2");
         return;
       } else {
         ghost.canSeePacman = false;
@@ -160,6 +160,9 @@ void ServerGame::Loop() {
     case READY:
       // handle movement
       myChar.handleMovement(screen, input, map);
+
+      // redraw pellets ghosts may have possibly moved over
+      grid.redrawPellets(screen, myChar);
 
       PlayerPayload p;
       p.id = 0;

@@ -197,7 +197,7 @@ void PlayerCharacter::MoveTunnel(uint8_t input, Screen &screen, Map *map) {
 }
 
 /**
- * @brief Draws the player. If the player is PacMan, it draws the correct
+ * @brief Draws the player. If the player is Pacman, it draws the correct
  *        sprite; otherwise it draws a ghost.
  *
  * @param screen The screen (drawing, etc.).

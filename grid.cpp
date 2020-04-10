@@ -173,10 +173,9 @@ bool Grid::update(PlayerCharacter pacman) {
   while (current != nullptr) {
     pellet = current->item;
 
-    if (abs(pellet.location.x - pacman.location.x) <= 4 &&
-        abs(pellet.location.y - pacman.location.y) <= 4) {
+    if (pellet.location - pacman.location <= 4) {
       // remove the pellet from the grid
-      removePellet(pellet);
+      //removePellet(pellet);
 
       return true;
     }
@@ -185,4 +184,86 @@ bool Grid::update(PlayerCharacter pacman) {
   }
 
   return false;
+}
+
+/**
+ * @brief Redraws pellets close to the ghost in the given cell.
+ * 
+ * @param screen The screen (drawing, etc.).
+ * @param ghost The ghost.
+ * @param current The first item in the cell. We iterate through this.
+ */
+void Grid::redrawClosePelletsInCell(Screen &screen, PlayerCharacter ghost,
+                                    LNode<Pellet> *current) {
+  Pellet pellet;
+
+  while (current != nullptr) {
+    pellet = current->item;
+
+    if (pellet.location - ghost.location <= 10) {
+      // redraw the pellet
+      pellet.Draw(screen);
+    }
+
+    current = current->next;
+  }                              
+}
+
+/**
+ * @brief Redraw pellets in the nearby cells a ghost is in (ghosts might draw 
+ *        over pellets, so we need to redraw those pellets). 
+ * 
+ * @param screen The screen (drawing, etc.).
+ * @param ghost The ghost.
+ */
+void Grid::redrawPellets(Screen &screen, PlayerCharacter ghost) {
+  uint8_t rowIndex = getRowIndex(ghost.location.x);
+  uint8_t cellIndex = getCellIndex(ghost.location.y);
+
+  // Check first grid
+  LNode<Pellet> *current = rows[rowIndex]->cells[cellIndex]->pellets.getFront();
+  redrawClosePelletsInCell(screen, ghost, current); 
+
+  // Check the eight adjacent grids (horizontals, verticals, and diagonals)
+
+  // LEFT
+  if (rowIndex > 0) {
+    current = rows[rowIndex - 1]->cells[cellIndex]->pellets.getFront();
+    redrawClosePelletsInCell(screen, ghost, current); 
+  }
+  // RIGHT
+  if (rowIndex < divisions - 1) {
+    current = rows[rowIndex + 1]->cells[cellIndex]->pellets.getFront();
+    redrawClosePelletsInCell(screen, ghost, current); 
+  }
+  // DOWN
+  if (cellIndex > 0) {
+    current = rows[rowIndex]->cells[cellIndex - 1]->pellets.getFront();
+    redrawClosePelletsInCell(screen, ghost, current); 
+  }
+  // UP
+  if (cellIndex < divisions - 1) {
+    current = rows[rowIndex]->cells[cellIndex + 1]->pellets.getFront();
+    redrawClosePelletsInCell(screen, ghost, current); 
+  }
+  // LEFT & UP
+  if (rowIndex > 0 && cellIndex > 0) {
+    current = rows[rowIndex - 1]->cells[cellIndex - 1]->pellets.getFront();
+    redrawClosePelletsInCell(screen, ghost, current);    
+  }
+  // RIGHT & DOWN
+  if (rowIndex < divisions - 1 && cellIndex < divisions - 1) {
+    current = rows[rowIndex + 1]->cells[cellIndex + 1]->pellets.getFront();
+    redrawClosePelletsInCell(screen, ghost, current);    
+  }
+  // RIGHT & UP
+  if (rowIndex < divisions - 1 && cellIndex > 0) {
+    current = rows[rowIndex + 1]->cells[cellIndex - 1]->pellets.getFront();
+    redrawClosePelletsInCell(screen, ghost, current);    
+  }
+  // LEFT & DOWN
+  if (rowIndex > 0 && cellIndex < divisions - 1) {
+    current = rows[rowIndex - 1]->cells[cellIndex + 1]->pellets.getFront();
+    redrawClosePelletsInCell(screen, ghost, current);    
+  }
 }

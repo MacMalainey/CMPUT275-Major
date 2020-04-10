@@ -83,4 +83,7 @@ class Grid {
   void removePellet(Pellet pellet);
 
   bool update(PlayerCharacter pacman);
+  void redrawClosePelletsInCell(Screen &screen, PlayerCharacter ghost,
+                                LNode<Pellet> *current);
+  void redrawPellets(Screen &screen, PlayerCharacter ghost);
 };
