@@ -19,7 +19,7 @@ ServerGame::ServerGame() {
   // Spatial partitioning
   grid.Generate(10);  // 10 is the number of divisions
 
-  for(uint8_t i = 0; i < 2; i++) {
+  for (uint8_t i = 0; i < 2; i++) {
     devices[i] = Server(i);
     devices[i].mCallback.Debuild(map);
   }
@@ -43,38 +43,24 @@ void ServerGame::decrementLives() {
   }
 }
 
-void ServerGame::testGrid() {
-
-  num_pellets = 100;
-  uint16_t k = 0;
-
-  for (uint16_t i = 0; i < num_pellets / 10; i++) {
-    for (uint16_t j = 0; j < num_pellets / 10; j++) {
-      Pellet newPellet;
-      newPellet.location.x = i * Screen::DISPLAY_WIDTH / 10 + 25;
-      newPellet.location.y = j * Screen::DISPLAY_HEIGHT / 10 + 15;
-
-      newPellet.Draw(screen);
-
-      grid.addPellet(newPellet);
-
-      pellets[k++] = newPellet;
-    }
-  }
-
-}
-
 Orientation reverseOrien(Orientation orientation) {
-  if (orientation == N_ORIENT) { return N_ORIENT; }
-  if (orientation == NORTH) { return SOUTH; }
-  if (orientation == SOUTH ) { return NORTH; }
-  if (orientation == EAST ) { return WEST; }
+  if (orientation == N_ORIENT) {
+    return N_ORIENT;
+  }
+  if (orientation == NORTH) {
+    return SOUTH;
+  }
+  if (orientation == SOUTH) {
+    return NORTH;
+  }
+  if (orientation == EAST) {
+    return WEST;
+  }
   return EAST;
 }
 
-uint16_t ClientGame::distUntilDeadEnd(Point gLocation,
-Junction *junction, Orientation orientation) {
-
+uint16_t ClientGame::distUntilDeadEnd(Point gLocation, Junction *junction,
+                                      Orientation orientation) {
   Junction *current = junction;
 
   // get the farthest junction in current direction
@@ -92,7 +78,7 @@ void ClientGame::canSeePacman(PlayerCharacter ghost) {
   if (pLocation.x == gLocation.x || pLocation.y == gLocation.y) {
     // We now need to check there is a straight line.
 
-    uint16_t distPac = pLocation - gLocation; // Manhattan distance
+    uint16_t distPac = pLocation - gLocation;  // Manhattan distance
     Orientation orien = ghost.orientation;
     Junction *currentJunc = ghost.currentJunction;
 
@@ -100,7 +86,8 @@ void ClientGame::canSeePacman(PlayerCharacter ghost) {
     if (map->getXY(currentJunc) == gLocation) {
       for (uint8_t i = 0; i < N_ORIENT; i++) {
         if (currentJunc->next((Orientation)i) != nullptr) {
-          uint16_t dist = distUntilDeadEnd(gLocation, currentJunc, (Orientation)i);
+          uint16_t dist =
+              distUntilDeadEnd(gLocation, currentJunc, (Orientation)i);
 
           if (dist >= distPac) {
             ghost.canSeePacman = true;
@@ -116,7 +103,8 @@ void ClientGame::canSeePacman(PlayerCharacter ghost) {
     // Ghost is in a corridor, check orientation and opposite orientation.
     else {
       uint16_t dist = distUntilDeadEnd(gLocation, currentJunc, orien);
-      uint16_t distR = distUntilDeadEnd(gLocation, currentJunc, reverseOrien(orien));
+      uint16_t distR =
+          distUntilDeadEnd(gLocation, currentJunc, reverseOrien(orien));
 
       if (dist >= distPac || distR >= distPac) {
         ghost.canSeePacman = true;
@@ -126,7 +114,6 @@ void ClientGame::canSeePacman(PlayerCharacter ghost) {
         ghost.canSeePacman = false;
       }
     }
-
   }
 }
 
@@ -142,39 +129,37 @@ void ServerGame::drawLives() {
 }
 
 void ServerGame::Loop() {
-  if (GameState == SETUP) return; // We need to call setup first
+  if (GameState == SETUP) return;  // We need to call setup first
 
   // get joystick input
   uint8_t input = joy.ReadInput();
 
-  for(uint8_t i = 0; i < 2; i++) {
-    if (devices[i].getState() != DISCONNECTED)
-        devices[i].handle();
+  for (uint8_t i = 0; i < 2; i++) {
+    if (devices[i].getState() != DISCONNECTED) devices[i].handle();
   }
 
-  switch(GameState) {
-    case SETUP: // Make the compiler happy
+  switch (GameState) {
+    case SETUP:  // Make the compiler happy
       break;
     case WAIT_FOR_CONNECTION: {
-        // Assume true
-        bool allCon = true;
+      // Assume true
+      bool allCon = true;
 
-        // If true then for each the following should be true
-        for (uint8_t i = 0; i < 2; i++) {
-          ComState ds = devices[i].getState();
+      // If true then for each the following should be true
+      for (uint8_t i = 0; i < 2; i++) {
+        ComState ds = devices[i].getState();
 
           // If true then that means our assumption is false
           if (ds != LOOP && ds != DISCONNECTED) allCon = false;
 
         }
 
-        // And that my friends is how you do a proof by contradiction
-        // Technically it is by exhaustion but that ruins the joke
-        if (allCon) {
-          GameState = READY;
-        }
+      // And that my friends is how you do a proof by contradiction
+      // Technically it is by exhaustion but that ruins the joke
+      if (allCon) {
+        GameState = READY;
       }
-      break;
+    } break;
     case READY:
       // handle movement
       myChar.handleMovement(screen, input, map);
@@ -184,7 +169,7 @@ void ServerGame::Loop() {
       p.x = myChar.location.x;
       p.y = myChar.location.y;
 
-      for(uint8_t i = 0; i < 2; i++) {
+      for (uint8_t i = 0; i < 2; i++) {
         if (devices[i].getState() != DISCONNECTED) {
             devices[i].sendEntityLocation(p);
             if(devices[i].pCallback.hasData) {
@@ -209,11 +194,9 @@ void ServerGame::Loop() {
       break;
   }
   delay(20);
-
 }
 
 void ServerGame::Start() {
-
   // Draw UI
   screen.drawLine(0, 30, 480, 30, map_color);
   screen.setCursor(14, 6);
@@ -227,21 +210,18 @@ void ServerGame::Start() {
   myChar.currentJunction = map->GetStart();
   myChar.color = TFT_YELLOW;
 
-  for(uint8_t i = 0; i < 2; i++) {
+  for (uint8_t i = 0; i < 2; i++) {
     devices[i].begin();
   }
+  Pellet::GeneratePellets(pellets, map);
 
   characters[1].color = genNeonColor();
   characters[2].color = genNeonColor();
 
   GameState = WAIT_FOR_CONNECTION;
-
-  testGrid();
 }
 
-ClientGame::ClientGame() {
-  map_color = genNeonColor();
-}
+ClientGame::ClientGame() { map_color = genNeonColor(); }
 
 void ClientGame::Start() {
   device.begin();
@@ -250,15 +230,15 @@ void ClientGame::Start() {
 }
 
 void ClientGame::Loop() {
-  if (GameState == SETUP) return; // We need to call setup first
+  if (GameState == SETUP) return;  // We need to call setup first
 
   // get joystick input
   uint8_t input = joy.ReadInput();
 
   device.handle();
 
-  switch(GameState) {
-    case SETUP: // Make the compiler happy
+  switch (GameState) {
+    case SETUP:  // Make the compiler happy
       break;
     case WAIT_FOR_CONNECTION:
       if (device.getState() == LOOP) {
@@ -289,7 +269,7 @@ void ClientGame::Loop() {
       p.y = myChar.location.y;
 
       device.sendEntityLocation(p);
-      if(device.pCallback.hasData) {
+      if (device.pCallback.hasData) {
         device.pCallback.hasData = false;
         // TODO other player's movement
       }
