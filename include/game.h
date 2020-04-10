@@ -13,9 +13,9 @@
 #include "grid.h"
 #include "input.h"
 #include "map.h"
+#include "multi.h"
 #include "screen.h"
 #include "vector.h"
-#include "multi.h"
 
 enum State {
   SETUP,
@@ -36,7 +36,6 @@ class ServerGame {
   void updateScore();
   void drawLives();
   void decrementLives();
-  void testGrid();
 
   Map *map;
   uint16_t map_color;
@@ -50,8 +49,7 @@ class ServerGame {
   PlayerCharacter myChar;
   PlayerCharacter ghost;
 
-  uint16_t num_pellets = 0;
-  Pellet pellets[100];
+  Vector<Pellet> pellets;
 
   // characters[0] should be PacMan.
   Vector<PlayerCharacter> characters;
@@ -61,14 +59,12 @@ class ServerGame {
 };
 
 class ClientGame {
-
-public:
+ public:
   ClientGame();
   void Start();
   void Loop();
 
-private:
-
+ private:
   void updateScore();
   void drawLives();
   void decrementLives();
