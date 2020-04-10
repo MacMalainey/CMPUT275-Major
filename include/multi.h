@@ -9,27 +9,34 @@
 
 #pragma once
 
-#include <Arduino.h>
-
 #include "comm.h"
 #include "map.h"
 #include "misc.h"
 
 enum ComState { START = 0, MAP, LOOP, DISCONNECTED };
 
-typedef void (*playerCb)(PlayerPayload*);
-typedef void (*stateCb)(StatePayload*);
-typedef Map* (*mapGetter)();
-typedef void (*mapSetter)(Map*);
+// This is NOT how callbacks are supposed to work BUT
+// C++ doesn't LIKE using member class function pointers for callbacks unless
+// you specific class type...  WHYYYYYY (its ok I can work around)
+
+struct PlayerCallback {
+  bool hasData = false;
+  PlayerPayload load;
+};
+
+struct StateCallback {
+  bool hasData = false;
+  StatePayload load;
+};
 
 class Device {
  protected:
-  const uint32_t TIMEOUT_LENGTH = 1000UL;
+  const static uint32_t TIMEOUT_LENGTH = 1000UL;
 
   CommBuffer buffer;
   ComState state;
 
-  MapBuilder* builder; // In reality the two subclasses use this seperately of Device
+  MapBuilder builder; // In reality the two subclasses use this seperately of Device
                        // so it doesn't need to be in the superclass, but it was easier
                        // to define it once here
 
@@ -44,8 +51,7 @@ class Device {
   bool checkTimeout();
 
 public:
-  playerCb pCallback;
-  stateCb sCallback;
+  PlayerCallback pCallback;
 
   void sendGameState(StatePayload p);
   void sendEntityLocation(PlayerPayload p);
@@ -68,9 +74,10 @@ private:
   uint8_t num_elements;
 
 public:
-  mapGetter mCallback;
+  MapBuilder mCallback;
   void handle() final;
   Server(uint8_t id);
+  Server();
 };
 
 class Client : public Device {
@@ -81,7 +88,8 @@ private:
   void processMap(MapPayload* m);
 
 public:
-  mapSetter mCallback;
+  MapBuilder mCallback;
+  StateCallback sCallback;
   void handle() final;
   Client();
 };

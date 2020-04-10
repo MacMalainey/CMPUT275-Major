@@ -43,7 +43,6 @@ Message* CommBuffer::deserialize() {
 }
 
 bool CommBuffer::validate() {
-  Serial.println("Running validate check");
   uint16_t checksum = genChecksum(buffer + HEADER_LENGTH, buffer[SIZE_BYTE]);
   uint16_t valid = buffer[CHECKSUM_BYTE + 1];
   valid <<= 8;
@@ -102,7 +101,6 @@ void CommBuffer::recieve() {
       if (byte == START_FLAG) {
         isWaiting = false;  // Signify that we are actively reading a message
         buffer[START_BYTE] = byte;
-        timestamp = millis();
         bytes++;
       }
     } else {
@@ -113,7 +111,6 @@ void CommBuffer::recieve() {
       if (!msgReady && bufferLen + bytes >= buffer[SIZE_BYTE] + HEADER_LENGTH) {
         if (validate()) {
           msgReady = true;
-          Serial.println("MSG READY");
         } else {  // Our validate call failed and a message wasn't already
                   // prepared so we should drop what we currently have
           cleanBuffer();

@@ -9,13 +9,13 @@
 
 #pragma once
 
-#include "comm.h"
 #include "entities.h"
 #include "grid.h"
 #include "input.h"
 #include "map.h"
 #include "screen.h"
 #include "vector.h"
+#include "multi.h"
 
 enum State {
   SETUP,
@@ -26,7 +26,7 @@ enum State {
 
 class Game {
  public:
-  Game(bool isServer);
+  Game();
   void Start();
   void Loop();
   bool is_running = true;
@@ -55,15 +55,16 @@ class Game {
   Screen screen;
   Joystick joy;
 
-  PlayerCharacter pacman;
+  PlayerCharacter myChar;
   PlayerCharacter ghost;
+
+  Server devices[3];
 
   uint16_t num_pellets = 0;
   Pellet pellets[100];
 
   // characters[0] should be current player.
   Vector<PlayerCharacter> characters;
-  bool isServer = false;
 
   State GameState;
   Point startingPoint;

@@ -67,6 +67,8 @@ Device::Device(uint8_t port) : buffer(port) {}
 
 Server::Server(uint8_t id) : Device(id) {}
 
+Server::Server() : Device(1) {};
+
 Client::Client() : Device(1) {}
 
 bool Device::checkForAck() {
@@ -122,7 +124,7 @@ void Server::handle() {
         } else if (index <= num_elements) {
           buffer.send(
             MAP_NODE,
-            &junctionToPayload(builder->copy_arr[index - 1]), // Bad but it gets copied so its fine
+            &junctionToPayload(builder.copy_arr[index - 1]), // Bad but it gets copied so its fine
             sizeof(MapPayload)
           );
         } else {
@@ -133,8 +135,6 @@ void Server::handle() {
       } else if (checkForAck()) {
         if (index <= num_elements) {
           index++;
-          Serial.print("Increase map send index: ");
-          Serial.println(index);
         } else {
           Serial.println("Transitioning to Loop");
           beginLoop();
@@ -144,11 +144,8 @@ void Server::handle() {
     case LOOP:
       if (buffer.hasMessage()) {
         Message* msg = buffer.getMessage();
-        void* payload = new uint8_t[msg->size];
-        if (msg->type == STATE) {
-          sCallback((StatePayload*)(payload));
-        } else if (msg->type == PLAYER) {
-          pCallback((PlayerPayload*)(payload));
+        if (msg->type == PLAYER) {
+          pCallback.load = *(PlayerPayload*)((msg->payload));
         }
         delete msg;
       }
@@ -161,18 +158,13 @@ void Server::handle() {
 }
 
 void Server::beginMap() {
-  builder = new MapBuilder();
-  builder->Debuild(mCallback());
-
   index = 0;
-  num_elements = builder->junctionCount;
+  num_elements = builder.junctionCount;
 
   state = MAP;
 }
 
 void Server::beginLoop() {
-  delete builder;
-
   state = LOOP;
 }
 
@@ -197,7 +189,7 @@ void Client::handle() {
         Message* msg = buffer.getMessage();
         if (msg->type == MAP_START) {
           buffer.send(ACK, nullptr, 0);
-          builder->SetJunctionCount(*(uint8_t*)(msg->payload));
+          builder.SetJunctionCount(*(uint8_t*)(msg->payload));
         } else if (msg->type == MAP_NODE) {
           MapPayload* load = (MapPayload*)(msg->payload);
           buffer.send(ACK, nullptr, 0);
@@ -216,9 +208,9 @@ void Client::handle() {
       if (buffer.hasMessage()) {
         Message* msg = buffer.getMessage();
         if (msg->type == STATE) {
-          sCallback((StatePayload*)(msg->payload));
+          sCallback.load = *(StatePayload*)(msg->payload);
         } else if (msg->type == PLAYER) {
-          pCallback((PlayerPayload*)(msg->payload));
+          pCallback.load = *(PlayerPayload*)(msg->payload);
         }
         delete msg;
       }
@@ -231,23 +223,18 @@ void Client::handle() {
 }
 
 void Client::beginMap() {
-  builder = new MapBuilder();
-
   state = MAP;
 }
 
 void Client::beginLoop() {
-  mCallback(builder->Build());
-  delete builder;
-
   state = LOOP;
 }
 
 void Client::processMap(MapPayload* m) {
-  builder->SetJunctionLocations(m->id, m->x, m->y);
+  builder.SetJunctionLocations(m->id, m->x, m->y);
   for (uint8_t i = 0; i < N_ORIENT; i++) {
     if (m->neighbours[i] != INVALID_JID) {
-      builder->LinkJunctions(m->id, m->neighbours[i]);
+      builder.LinkJunctions(m->id, m->neighbours[i]);
     }
   }
 }

@@ -89,7 +89,7 @@ int main() {
   //   }
   // }
 
-  Game game(false);
+  Game game;
   game.Start();
 
   while (true) {

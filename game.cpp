@@ -9,12 +9,7 @@
 
 #include "include/game.h"
 
-Game::Game(bool isServer) : isServer(isServer), characters(3) {
-  // Draw UI
-  screen.setCursor(14, 6);
-  screen.print("Score:");
-  updateScore();
-  drawLives();
+Game::Game() : characters(3) {
 
   MapBuilder mb;
   mb.TestGen();
@@ -25,13 +20,11 @@ Game::Game(bool isServer) : isServer(isServer), characters(3) {
   // Spatial partitioning
   grid.Generate(10);  // 10 is the number of divisions
 
-  GameState = SETUP;
+  for(uint8_t i = 0; i < 3; i++) {
+    devices[i] = Server(i);
+  }
 
-  // if (isServer) {
-  //   GameState = WAIT_FOR_CLIENT;
-  // } else {
-  //   GameState = WAIT_FOR_SERVER;
-  // }
+  GameState = SETUP;
 }
 
 void Game::updateScore() {
@@ -51,22 +44,6 @@ void Game::decrementLives() {
 }
 
 void Game::testGrid() {
-  // for (uint8_t i = 0; i < grid.divisions; i++) {
-  //     for (uint8_t j = 0; j < grid.divisions; j++) {
-  //         Row *row_i = grid.getRow(i);
-  //         Cell *cell_ij = row_i->getCell(j);
-  //         uint16_t id = cell_ij->getID();
-
-  //         Serial.println(id);
-  //     }
-  // }
-
-  // Serial.println(grid.getRowIndex(0));
-  // Serial.println(grid.getRowIndex(10));
-  // Serial.println(grid.getRowIndex(100));
-  // Serial.println(grid.getRowIndex(200));
-  // Serial.println(grid.getRowIndex(300));
-  // Serial.println(grid.getRowIndex(480));
 
   num_pellets = 100;
   uint16_t k = 0;
@@ -85,9 +62,6 @@ void Game::testGrid() {
     }
   }
 
-  // for (uint16_t i = 0; i < num_pellets; i++) {
-  //   grid.removePellet(pellets[i]);
-  // }
 }
 
 void Game::drawLives() {
@@ -106,10 +80,10 @@ void Game::Loop() {
   uint8_t input = joy.ReadInput();
 
   // handle movement
-  pacman.handleMovement(screen, input, map);
+  myChar.handleMovement(screen, input, map);
 
   // handle collisions between pacman and pellets
-  bool collected = grid.update(pacman);
+  bool collected = grid.update(myChar);
 
   if (collected) {
     score += 10;
@@ -120,26 +94,17 @@ void Game::Loop() {
 }
 
 void Game::Start() {
-  GameState = SETUP;
 
-  while (GameState != READY) {
-    switch (GameState) {
-      case WAIT_FOR_SERVER:
-        // We client
-        break;
-      case WAIT_FOR_CLIENT:
-        // We server
-        break;
-      case SETUP:
-        screen.DrawMap(map, map_color);
-        startingPoint = map->getXY(map->GetStart());
-        pacman = PlayerCharacter(startingPoint);
-        pacman.currentJunction = map->GetStart();
+  // Draw UI
+  screen.setCursor(14, 6);
+  screen.print("Score:");
+  updateScore();
+  drawLives();
 
-        GameState = READY;
-        break;
-    }
-  }
+  screen.DrawMap(map, map_color);
+  startingPoint = map->getXY(map->GetStart());
+  myChar = PlayerCharacter(startingPoint);
+  myChar.currentJunction = map->GetStart();
 
   testGrid();
 }

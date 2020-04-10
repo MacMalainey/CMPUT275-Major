@@ -26,8 +26,7 @@ class CommBuffer {
   static const uint8_t MAX_READ =
       30;  // Maximum number of bytes to read per call to recieve
   static const uint8_t MAX_BUFFER_LENGTH =
-      255;  // We should never send more than 256 bytes at once
-  static const uint64_t MSG_TIMEOUT = 1000;  // 1 second to timeout on a message
+      100;  // We should never send more than 100 bytes in one message
 
   static const uint8_t START_FLAG = 'S';
 
@@ -42,8 +41,6 @@ class CommBuffer {
 
   bool isWaiting;
   bool msgReady;
-
-  uint64_t timestamp;
 
   uint8_t bufferLen;
 
