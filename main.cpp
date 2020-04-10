@@ -88,11 +88,20 @@ int main() {
   //   }
   // }
 
-  Game game;
-  game.Start();
+  if (digitalRead(SERVER_SELECT_PIN) == HIGH) {
+    ServerGame game;
+    game.Start();
 
-  while (true) {
-    game.Loop();
+    while (true) {
+      game.Loop();
+    }
+  } else {
+    ClientGame game;
+    game.Start();
+
+    while (true) {
+      game.Loop();
+    }
   }
 
   Serial.end();

@@ -145,9 +145,9 @@ void Server::handle() {
         Message* msg = buffer.getMessage();
         void* payload = new uint8_t[msg->size];
         if (msg->type == STATE) {
-          sCallback((StatePayload*)(payload));
+          sCallback->load = (StatePayload*)(msg->payload);
         } else if (msg->type == PLAYER) {
-          pCallback((PlayerPayload*)(payload));
+          pCallback->load = (PlayerPayload*)(msg->payload);
         }
         delete msg;
       }
@@ -160,9 +160,6 @@ void Server::handle() {
 }
 
 void Server::beginMap() {
-  builder = new MapBuilder();
-  builder->Debuild(mCallback());
-
   index = 0;
   num_elements = builder->junctionCount;
 
@@ -215,9 +212,9 @@ void Client::handle() {
       if (buffer.hasMessage()) {
         Message* msg = buffer.getMessage();
         if (msg->type == STATE) {
-          sCallback((StatePayload*)(msg->payload));
+          sCallback->load = (StatePayload*)(msg->payload);
         } else if (msg->type == PLAYER) {
-          pCallback((PlayerPayload*)(msg->payload));
+          pCallback->load = (PlayerPayload*)(msg->payload);
         }
         delete msg;
       }
@@ -236,9 +233,6 @@ void Client::beginMap() {
 }
 
 void Client::beginLoop() {
-  mCallback(builder->Build());
-  delete builder;
-
   state = LOOP;
 }
 

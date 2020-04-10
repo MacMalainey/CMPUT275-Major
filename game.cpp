@@ -9,7 +9,7 @@
 
 #include "include/game.h"
 
-Game::Game() : characters(3) {
+ServerGame::ServerGame() : characters(3) {
   // Draw UI
   screen.setCursor(14, 6);
   screen.print("Score:");
@@ -20,21 +20,26 @@ Game::Game() : characters(3) {
   mb.TestGen();
   map = mb.Build();
   map_color = genNeonColor();
-  screen.drawLine(0, 30, 480, 30, map_color);
 
   // Spatial partitioning
   grid.Generate(10);  // 10 is the number of divisions
 
-  GameState = SETUP;
+  for (uint8_t i = 0; i < 3; i++) {
+    devices[i] = new Server(i + 1);
+    devices[i]->builder = new MapBuilder();
+    devices[i]->builder->Debuild(map);
+    devices[i]->pCallback = new PlayerCallback();
+    devices[i]->sCallback = new StateCallback();
+  }
 }
 
-void Game::updateScore() {
+void ServerGame::updateScore() {
   screen.fillRect(90, 6, screen.DISPLAY_WIDTH / 4, 18, TFT_BLACK);
   screen.setCursor(90, 6);
   screen.print(score);
 }
 
-void Game::decrementLives() {
+void ServerGame::decrementLives() {
   if (current_lives == 3) {
     screen.fillRect(390, 0, 30, 30, TFT_BLACK);
   } else if (current_lives == 2) {
@@ -44,7 +49,47 @@ void Game::decrementLives() {
   }
 }
 
-void Game::drawLives() {
+void ServerGame::testGrid() {
+  // for (uint8_t i = 0; i < grid.divisions; i++) {
+  //     for (uint8_t j = 0; j < grid.divisions; j++) {
+  //         Row *row_i = grid.getRow(i);
+  //         Cell *cell_ij = row_i->getCell(j);
+  //         uint16_t id = cell_ij->getID();
+
+  //         Serial.println(id);
+  //     }
+  // }
+
+  // Serial.println(grid.getRowIndex(0));
+  // Serial.println(grid.getRowIndex(10));
+  // Serial.println(grid.getRowIndex(100));
+  // Serial.println(grid.getRowIndex(200));
+  // Serial.println(grid.getRowIndex(300));
+  // Serial.println(grid.getRowIndex(480));
+
+  num_pellets = 100;
+  uint16_t k = 0;
+
+  for (uint16_t i = 0; i < num_pellets / 10; i++) {
+    for (uint16_t j = 0; j < num_pellets / 10; j++) {
+      Pellet newPellet;
+      newPellet.location.x = i * Screen::DISPLAY_WIDTH / 10 + 25;
+      newPellet.location.y = j * Screen::DISPLAY_HEIGHT / 10 + 15;
+
+      newPellet.Draw(screen);
+
+      grid.addPellet(newPellet);
+
+      pellets[k++] = newPellet;
+    }
+  }
+
+  // for (uint16_t i = 0; i < num_pellets; i++) {
+  //   grid.removePellet(pellets[i]);
+  // }
+}
+
+void ServerGame::drawLives() {
   screen.fillCircle(400, 15, 8, TFT_YELLOW);
   screen.fillTriangle(400, 15, 408, 19, 408, 11, TFT_BLACK);
 
@@ -55,15 +100,42 @@ void Game::drawLives() {
   screen.fillTriangle(460, 15, 468, 19, 468, 11, TFT_BLACK);
 }
 
-void Game::Loop() {
+void ServerGame::Loop() {
+  for (uint8_t i = 0; i < 3; i++) {
+    devices[i]->handle();
+  }
+
+  switch (gameState) {
+    case WAIT_FOR_CONNECTION:
+
+      // Assume true
+      bool allCon = true;
+
+      // If true then for each the following should be true
+      for (uint8_t i = 0; i < 3; i++) {
+        ComState ds = devices[i]->getState();
+
+        // If true then that means our assumption is false
+        if (ds != LOOP && ds != DISCONNECTED) allCon = false;
+      }
+
+      // And that my friends is how you do a proof by contradiction
+
+      // Handle state change
+      if (allCon) {
+        Serial.println("WE CONNECTED OK?");
+      }
+
+      break;
+  }
   // get joystick input
   uint8_t input = joy.ReadInput();
 
   // handle movement
-  pacman.handleMovement(screen, input, map);
+  myChar.handleMovement(screen, input, map);
 
   // handle collisions between pacman and pellets
-  bool collected = grid.update(pacman);
+  bool collected = grid.update(myChar);
 
   if (collected) {
     score += 10;
@@ -73,26 +145,87 @@ void Game::Loop() {
   delay(20);
 }
 
-void Game::Start() {
-  GameState = SETUP;
+void ServerGame::Start() {
+  screen.DrawMap(map, map_color);
+  screen.drawLine(0, 30, 480, 30, map_color);
+  startingPoint = map->getXY(map->GetStart());
+  myChar = PlayerCharacter(startingPoint);
+  myChar.currentJunction = map->GetStart();
 
-  while (GameState != READY) {
-    switch (GameState) {
-      case WAIT_FOR_CLIENT:
-        // We server
-        break;
-      case SETUP:
-        screen.DrawMap(map, map_color);
-        startingPoint = map->getXY(map->GetStart());
-        pacman = PlayerCharacter(startingPoint);
-        pacman.currentJunction = map->GetStart();
-        GameState = READY;
-        break;
-    }
+  for (uint8_t i = 0; i < 3; i++) {
+    devices[i]->begin();
   }
   Pellet::GeneratePellets(pellets, map);
 
-  for (uint16_t i = 0; i < pellets.Size(); i++) {
-    pellets.Get(i).Draw(screen);
+  gameState = WAIT_FOR_CONNECTION;
+
+  testGrid();
+}
+
+ClientGame::ClientGame() {
+  map_color = genNeonColor();
+
+  device = new Client();
+  device->builder = new MapBuilder();
+}
+
+void ClientGame::Start() {
+  device->begin();
+
+  gameState = WAIT_FOR_CONNECTION;
+}
+
+void ClientGame::Loop() {
+  device->handle();
+
+  switch (gameState) {
+    case WAIT_FOR_CONNECTION:
+      if (device->getState() == LOOP) {
+        map = device->builder->Build();
+
+        // Draw UI
+        screen.setCursor(14, 6);
+        screen.print("Score:");
+        updateScore();
+        drawLives();
+
+        screen.drawLine(0, 30, 480, 30, map_color);
+        screen.DrawMap(map, map_color);
+
+        delete device->builder;
+
+        gameState = READY;
+      }
+      break;
+    case READY:
+      Serial.println("WE HAVE A CONNECTION");
+      break;
   }
+}
+
+void ClientGame::updateScore() {
+  screen.fillRect(90, 6, screen.DISPLAY_WIDTH / 4, 18, TFT_BLACK);
+  screen.setCursor(90, 6);
+  screen.print(score);
+}
+
+void ClientGame::decrementLives() {
+  if (current_lives == 3) {
+    screen.fillRect(390, 0, 30, 30, TFT_BLACK);
+  } else if (current_lives == 2) {
+    screen.fillRect(420, 0, 30, 30, TFT_BLACK);
+  } else {
+    screen.fillRect(450, 0, 30, 30, TFT_BLACK);
+  }
+}
+
+void ClientGame::drawLives() {
+  screen.fillCircle(400, 15, 8, TFT_YELLOW);
+  screen.fillTriangle(400, 15, 408, 19, 408, 11, TFT_BLACK);
+
+  screen.fillCircle(430, 15, 8, TFT_YELLOW);
+  screen.fillTriangle(430, 15, 438, 19, 438, 11, TFT_BLACK);
+
+  screen.fillCircle(460, 15, 8, TFT_YELLOW);
+  screen.fillTriangle(460, 15, 468, 19, 468, 11, TFT_BLACK);
 }

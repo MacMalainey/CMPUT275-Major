@@ -17,10 +17,17 @@
 
 enum ComState { START = 0, MAP, LOOP, DISCONNECTED };
 
-typedef void (*playerCb)(PlayerPayload*);
-typedef void (*stateCb)(StatePayload*);
-typedef Map* (*mapGetter)();
-typedef void (*mapSetter)(Map*);
+// This is NOT how callbacks are supposed to work BUT
+// C++ doesn't LIKE using member class function pointers for callbacks unless
+// you specific class type...  WHYYYYYY (its ok I can work around)
+
+struct PlayerCallback {
+  PlayerPayload* load = nullptr;
+};
+
+struct StateCallback {
+  StatePayload* load = nullptr;
+};
 
 class Device {
  protected:
@@ -28,10 +35,6 @@ class Device {
 
   CommBuffer buffer;
   ComState state;
-
-  MapBuilder* builder;  // In reality the two subclasses use this seperately of
-                        // Device so it doesn't need to be in the superclass,
-                        // but it was easier to define it once here
 
   uint8_t id;
 
@@ -44,8 +47,9 @@ class Device {
   bool checkTimeout();
 
  public:
-  playerCb pCallback;
-  stateCb sCallback;
+  PlayerCallback* pCallback;
+  StateCallback* sCallback;
+  MapBuilder* builder;
 
   void sendGameState(StatePayload p);
   void sendEntityLocation(PlayerPayload p);
@@ -54,7 +58,7 @@ class Device {
   Device(uint8_t port);
 
   void begin();
-  virtual void handle();
+  void handle();
   void end();
 };
 
@@ -68,8 +72,7 @@ class Server : public Device {
   uint8_t num_elements;
 
  public:
-  mapGetter mCallback;
-  void handle() final;
+  void handle();
   Server(uint8_t id);
 };
 
@@ -81,7 +84,6 @@ class Client : public Device {
   void processMap(MapPayload* m);
 
  public:
-  mapSetter mCallback;
-  void handle() final;
+  void handle();
   Client();
 };

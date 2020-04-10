@@ -9,26 +9,21 @@
 
 #pragma once
 
-#include "comm.h"
 #include "entities.h"
 #include "grid.h"
 #include "input.h"
 #include "map.h"
+#include "multi.h"
 #include "screen.h"
 #include "vector.h"
 
-enum State {
-  SETUP,
-  WAIT_FOR_CLIENT,
-  READY,
-};
+enum State { WAIT_FOR_CONNECTION, READY };
 
-class Game {
+class ServerGame {
  public:
-  Game();
+  ServerGame();
   void Start();
   void Loop();
-  bool is_running = true;
 
  private:
   uint8_t current_lives = 3;
@@ -53,15 +48,45 @@ class Game {
   Screen screen;
   Joystick joy;
 
-  PlayerCharacter pacman;
+  PlayerCharacter myChar;
   PlayerCharacter ghost;
 
   Vector<Pellet> pellets;
 
-  // characters[0] should be current player.
+  // characters[0] should be PacMan.
   Vector<PlayerCharacter> characters;
-  bool isServer = false;
 
-  State GameState;
+  Server *devices[3];
+  State gameState;
   Point startingPoint;
+};
+
+class ClientGame {
+ public:
+  ClientGame();
+
+  void Start();
+  void Loop();
+
+ private:
+  State gameState;
+  Client *device;
+
+  Screen screen;
+  Joystick joy;
+
+  uint16_t map_color;
+
+  Map *map;
+
+  Vector<PlayerCharacter> characters;
+
+  PlayerCharacter myChar;
+
+  uint16_t score = 0;
+  uint8_t current_lives = 3;
+
+  void updateScore();
+  void decrementLives();
+  void drawLives();
 };
