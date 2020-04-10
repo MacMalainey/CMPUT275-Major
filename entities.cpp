@@ -291,7 +291,7 @@ void PlayerCharacter::Clear(Screen &screen) {
   if (isPacman) {
     screen.fillCircle(location.x, location.y, 4, TFT_BLACK);
   } else {
-    screen.fillRect(location.x - 4, location.y + 4, 8, 8, TFT_BLACK);
+    screen.fillRect(location.x - 4, location.y - 4, 8, 8, TFT_BLACK);
   }
 }
 
