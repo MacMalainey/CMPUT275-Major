@@ -15,6 +15,8 @@ ServerGame::ServerGame() {
   map = mb.Build();
   map_color = genNeonColor();
 
+  myChar = characters[0];
+
   // Spatial partitioning
   grid.Generate(10);  // 10 is the number of divisions
   for (uint8_t i = 0; i < 2; i++) {
@@ -183,6 +185,16 @@ void ServerGame::Loop() {
         }
       }
 
+      // Handle ghost and pacman collisions
+      for (auto i = 0; i < 2; i++) {
+        // Pacman and ghost radius is 4, but just let them get to know
+        // each other a little better ;)
+        if ((characters[0].location - characters[i].location) <= 6) {
+          GameState = PACMAN_DEATH;
+          break;
+        }
+      }
+
       // handle collisions between pacman and pellets
       bool collected = grid.update(myChar);
 
@@ -191,6 +203,25 @@ void ServerGame::Loop() {
         updateScore();
       }
 
+      break;
+    case PACMAN_DEATH:
+      decrementLives();
+
+      StatePayload newState;
+      if (current_lives != 0) {
+        characters[0].location = startingPoint;
+        newState = {GameState};
+      } else {
+        GameState = State::GAME_END;
+        newState = {GameState};
+        break;
+      }
+      for (uint8_t i = 0; i < player_count; i++) {
+        devices[i].sendGameState(newState);
+      }
+      GameState = State::READY;
+      break;
+    case GAME_END:
       break;
   }
   delay(20);
@@ -208,8 +239,10 @@ void ServerGame::Start() {
 
   Pellet::GeneratePellets(pellets, map->GetStart(), map->GetNodeCount());
   for (size_t i = 0; i < 70; i++) {
-    pellets[i].Draw(screen);
-    grid.addPellet(pellets[i]);
+    if (i != 31 && i != 36 && i != 37) {
+      pellets[i].Draw(screen);
+      grid.addPellet(pellets[i]);
+    }
   }
   startingPoint = map->getXY(map->GetStart());
   myChar = PlayerCharacter(startingPoint);
@@ -278,7 +311,6 @@ void ClientGame::Loop() {
         device.pCallback.hasData = false;
         // TODO other player's movement
       }
-
       break;
   }
   delay(20);

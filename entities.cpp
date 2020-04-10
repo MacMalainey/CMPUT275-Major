@@ -232,7 +232,6 @@ void PlayerCharacter::Draw(Screen &screen) {
     DrawGhostBody(screen);
     switch (orientation) {
       case NORTH:
-
         screen.fillRect(location.x - 2, location.y - 1, 1, 1, TFT_BLACK);
         screen.fillRect(location.x - 2, location.y - 2, 1, 1, TFT_WHITE);
 
@@ -273,12 +272,12 @@ void PlayerCharacter::Draw(Screen &screen) {
  * @param screen The screen (drawing, etc.).
  */
 void PlayerCharacter::DrawGhostBody(Screen &screen) {
-  screen.fillRect(location.x - 3, location.y + 3, 6, 6, TFT_RED);
-  screen.fillRect(location.x - 4, location.y + 1, 1, 5, TFT_RED);
-  screen.fillRect(location.x + 3, location.y + 1, 1, 5, TFT_RED);
-  screen.fillRect(location.x - 2, location.y + 4, 4, 1, TFT_RED);
-  screen.fillRect(location.x - 2, location.y - 3, 1, 1, TFT_RED);
-  screen.fillRect(location.x + 1, location.y - 3, 1, 1, TFT_RED);
+  screen.fillRect(location.x - 3, location.y - 3, 6, 6, TFT_RED);
+  screen.fillRect(location.x - 4, location.y - 1, 1, 5, TFT_RED);
+  screen.fillRect(location.x + 3, location.y - 1, 1, 5, TFT_RED);
+  screen.fillRect(location.x - 2, location.y - 4, 4, 1, TFT_RED);
+  screen.fillRect(location.x - 2, location.y + 3, 1, 1, TFT_RED);
+  screen.fillRect(location.x + 1, location.y + 3, 1, 1, TFT_RED);
 }
 
 /**
@@ -291,7 +290,7 @@ void PlayerCharacter::Clear(Screen &screen) {
   if (isPacman) {
     screen.fillCircle(location.x, location.y, 4, TFT_BLACK);
   } else {
-    screen.fillRect(location.x - 4, location.y + 4, 8, 8, TFT_BLACK);
+    screen.fillRect(location.x - 4, location.y - 4, 8, 8, TFT_BLACK);
   }
 }
 
@@ -305,16 +304,18 @@ void Pellet::GeneratePellets(Pellet *pellets, Junction *startJunction,
 
   while (events.size() > 0) {
     Junction *junct = events.pop();
-    for (uint8_t orient = 0; orient < N_ORIENT; orient++) {
-      if (junct->next((Orientation)orient) != nullptr) {
-        Junction *adj = junct->adjacent[orient];
-        if (!touched[adj->id]) {
-          touched[adj->id] = true;
-          events.push(adj);
-        }
+    if (junct->id != 31 && junct->id != 36 && junct->id != 37) {
+      for (uint8_t orient = 0; orient < N_ORIENT; orient++) {
+        if (junct->next((Orientation)orient) != nullptr) {
+          Junction *adj = junct->adjacent[orient];
+          if (!touched[adj->id]) {
+            touched[adj->id] = true;
+            events.push(adj);
+          }
 
-        auto pelletLocation = Point{.x = junct->x, .y = junct->y};
-        pellets[junct->id] = Pellet(pelletLocation);
+          auto pelletLocation = Point{.x = junct->x, .y = junct->y};
+          pellets[junct->id] = Pellet(pelletLocation);
+        }
       }
     }
   }
