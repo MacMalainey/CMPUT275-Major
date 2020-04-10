@@ -39,13 +39,14 @@ struct Pellet : public Drawable {
 
   bool isPowerUp = false;
 
-  static void GeneratePellets(Vector<Pellet> &pellets, const Map *map);
+  static void GeneratePellets(Pellet *pellets, Junction *startJunction,
+                              uint8_t junctionCount);
 };
 
 struct PlayerCharacter : public Drawable {
   PlayerCharacter();
   PlayerCharacter(Point startPoint);
-  
+
   bool isPacman = true;
   bool canSeePacman = false;
 

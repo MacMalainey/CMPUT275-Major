@@ -11,7 +11,7 @@
 
 /**
  * @brief Construct a new Drawable:: Drawable object
- * 
+ *
  */
 Drawable::Drawable() : Drawable(Point{.x = 0, .y = 0}) {}
 Drawable::Drawable(Point startPoint) : location(startPoint) {}
@@ -19,7 +19,7 @@ Drawable::Drawable(Point startPoint) : location(startPoint) {}
 /**
  * @brief Inequality operator for drawables. Pellets are guaranteed not to be
  *        in the same position.
- * 
+ *
  * @param other The other drawable we're comparing to.
  * @return true If not equal.
  * @return false If equal.
@@ -31,14 +31,14 @@ bool Drawable::operator!=(const Drawable &other) const {
 
 /**
  * @brief Construct a new Pellet:: Pellet object
- * 
+ *
  */
 Pellet::Pellet() : Drawable() {}
 Pellet::Pellet(Point startPoint) : Drawable(startPoint) {}
 
 /**
  * @brief Draws the pellet.
- * 
+ *
  * @param screen The screen (drawing, etc.).
  */
 void Pellet::Draw(Screen &screen) {
@@ -51,7 +51,7 @@ void Pellet::Draw(Screen &screen) {
 
 /**
  * @brief Removes the drawing of the player.
- * 
+ *
  * @param screen The screen (drawing, etc.).
  */
 void Pellet::Clear(Screen &screen) {
@@ -60,15 +60,15 @@ void Pellet::Clear(Screen &screen) {
 
 /**
  * @brief Construct a new Player Character:: Player Character object
- * 
+ *
  */
 PlayerCharacter::PlayerCharacter() : Drawable() {}
 PlayerCharacter::PlayerCharacter(Point startPoint) : Drawable(startPoint) {}
 
 /**
- * @brief Moves the player by `speed` pixels in it's current orientation 
+ * @brief Moves the player by `speed` pixels in it's current orientation
  *        and redraws the character.
- * 
+ *
  * @param screen The screen (drawing, etc.).
  * @param speed How quickly to move the player (defaults to defaultSpeed).
  */
@@ -93,7 +93,7 @@ void PlayerCharacter::Move(Screen &screen, uint8_t speed = 1) {
 
 /**
  * @brief Run each game loop. Handles everything movement related.
- * 
+ *
  * @param screen The screen (drawing, etc.).
  * @param input The direction of input.
  * @param map The map (junctions, etc.).
@@ -103,7 +103,7 @@ void PlayerCharacter::handleMovement(Screen &screen, uint8_t input, Map *map) {
   if (map->getXY(currentJunction) == location && input != N_ORIENT) {
     SetOrientation(input);
     Move(screen);
-  } 
+  }
   // Handle movement if player is in a corridor.
   else {
     MoveTunnel(input, screen, map);
@@ -112,7 +112,7 @@ void PlayerCharacter::handleMovement(Screen &screen, uint8_t input, Map *map) {
 
 /**
  * @brief Checks if the player can move in the requested direction.
- * 
+ *
  * @param direction The direction we're checking.
  * @return true If we can move in the given direction.
  * @return false If we can't move in the given direction.
@@ -127,7 +127,7 @@ bool PlayerCharacter::isValidDirection(Orientation direction) {
 
 /**
  * @brief Attempts to set the orientation of the player.
- * 
+ *
  * @param newOrientation The direction the player is trying to move.
  */
 void PlayerCharacter::SetOrientation(uint8_t newOrientation) {
@@ -139,8 +139,8 @@ void PlayerCharacter::SetOrientation(uint8_t newOrientation) {
 }
 
 /**
- * @brief Handles player movement when not in a tunnel. 
- * 
+ * @brief Handles player movement when not in a tunnel.
+ *
  * @param screen The screen (drawing, etc.).
  * @param input The direction of input.
  * @param map The map (junctions, etc.).
@@ -184,7 +184,7 @@ void PlayerCharacter::checkTunnelDirection(Screen &screen, uint8_t input,
 /**
  * @brief Handles player movement in each of the four possible cardinal
  *        directions.
- * 
+ *
  * @param input The direction of input.
  * @param screen The screen (drawing, etc.).
  * @param map he map (junctions, etc.).
@@ -199,7 +199,7 @@ void PlayerCharacter::MoveTunnel(uint8_t input, Screen &screen, Map *map) {
 /**
  * @brief Draws the player. If the player is PacMan, it draws the correct
  *        sprite; otherwise it draws a ghost.
- * 
+ *
  * @param screen The screen (drawing, etc.).
  */
 void PlayerCharacter::Draw(Screen &screen) {
@@ -269,7 +269,7 @@ void PlayerCharacter::Draw(Screen &screen) {
 
 /**
  * @brief Draws the ghost sprite.
- * 
+ *
  * @param screen The screen (drawing, etc.).
  */
 void PlayerCharacter::DrawGhostBody(Screen &screen) {
@@ -282,9 +282,9 @@ void PlayerCharacter::DrawGhostBody(Screen &screen) {
 }
 
 /**
- * @brief Clears the character from the screen by drawing a black circle over 
+ * @brief Clears the character from the screen by drawing a black circle over
  *        the location.
- * 
+ *
  * @param screen The screen (drawing, etc.).
  */
 void PlayerCharacter::Clear(Screen &screen) {
@@ -295,63 +295,26 @@ void PlayerCharacter::Clear(Screen &screen) {
   }
 }
 
-static void Pellet::GeneratePellets(Vector<Pellet> &pellets, const Map *map) {
-  bool touched[map->GetNodeCount()] = {false};
-  bool pelletized[map->GetNodeCount()][map->GetNodeCount()] = {false};
+void Pellet::GeneratePellets(Pellet *pellets, Junction *startJunction,
+                             uint8_t junctionCount) {
+  bool touched[junctionCount] = {false};
   Queue<Junction *> events;
-  events.push(map->GetStart());
+  events.push(startJunction);
+
   touched[0] = true;
 
   while (events.size() > 0) {
     Junction *junct = events.pop();
-
     for (uint8_t orient = 0; orient < N_ORIENT; orient++) {
       if (junct->next((Orientation)orient) != nullptr) {
         Junction *adj = junct->adjacent[orient];
-
         if (!touched[adj->id]) {
           touched[adj->id] = true;
           events.push(adj);
         }
 
-        if (!(pelletized[junct->id][adj->id] ||
-              pelletized[adj->id][junct->id])) {
-          pelletized[junct->id][adj->id] = true;
-          pelletized[adj->id][junct->id] = true;
-
-          Pellet newPellet;
-
-          if (junct->x == adj->x) {  // vertical corridor
-            uint16_t numPellets = abs((int)junct->y - (int)adj->y) / 10;
-
-            Serial.print("Generating ");
-            Serial.print(numPellets);
-            Serial.print(" vertical pellets between ");
-            Serial.print(junct->id);
-            Serial.print(" and ");
-            Serial.println(adj->id);
-
-            for (uint16_t i = 0; i < numPellets; i++) {
-              newPellet.location.x = junct->x;
-              newPellet.location.y = min(junct->y, adj->y) + (10 * i);
-              pellets.Push(newPellet);
-            }
-          } else {  // horizontal corridor
-            uint16_t numPellets = abs((int)adj->x - (int)junct->x) / 10;
-            Serial.print("Generating ");
-            Serial.print(numPellets);
-            Serial.print(" horizontal pellets between ");
-            Serial.print(junct->id);
-            Serial.print(" and ");
-            Serial.println(adj->id);
-
-            for (uint16_t i = 0; i < numPellets; i++) {
-              newPellet.location.y = junct->y;
-              newPellet.location.x = min(junct->x, adj->x) + (10 * i);
-              pellets.Push(newPellet);
-            }
-          }
-        }
+        auto pelletLocation = Point{.x = junct->x, .y = junct->y};
+        pellets[junct->id] = Pellet(pelletLocation);
       }
     }
   }

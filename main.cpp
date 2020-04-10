@@ -38,18 +38,20 @@ int main() {
   setup();
 
   if (digitalRead(SERVER_SELECT_PIN) == HIGH) {
-    ServerGame* game = new ServerGame();
-    game->Start();
+    ServerGame game;
+
+    game.Start();
 
     while (true) {
-      game->Loop();
+      game.Loop();
     }
   } else {
-    ClientGame* game = new ClientGame();
-    game->Start();
+    ClientGame game;
+
+    game.Start();
 
     while (true) {
-      game->Loop();
+      game.Loop();
     }
   }
 

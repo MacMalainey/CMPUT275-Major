@@ -7,12 +7,11 @@
  * Michael Kwok, 1548454
  */
 
-#pragma once
+#ifndef __MISC_H
+#define __MISC_H
 
 #include <Arduino.h>
 #include <stdint.h>
-
-#include "vector.h"
 
 struct Point {
   uint16_t x;
@@ -238,3 +237,5 @@ struct MapPayload {
   uint8_t neighbours[4];  // TODO: Don't hardcode this value
   uint16_t x, y;
 };
+
+#endif

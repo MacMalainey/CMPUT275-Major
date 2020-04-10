@@ -278,18 +278,6 @@ Map *MapBuilder::Build() {
   for (uint16_t i = 0; i < linkCount; i++) {
     auto currentLink = links[i];
     copy_arr[currentLink.x]->link(copy_arr[currentLink.y]);
-
-    // auto currentJunction = copy_arr[currentLink.x];
-
-    // // I have no idea why when I comment this out, everything breaks
-    // for (uint8_t i = 0; i < N_ORIENT; i++) {
-    //   if (currentJunction->adjacent[i] != nullptr) {
-    //     Serial.print("Linked: ");
-    //     Serial.print(currentJunction->id);
-    //     Serial.print(" To ");
-    //     Serial.println(currentJunction->adjacent[i]->id);
-    //   }
-    // }
   }
   return new Map(copy_arr, junctionCount);
 }

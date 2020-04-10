@@ -9,7 +9,7 @@
 
 #include "include/game.h"
 
-ServerGame::ServerGame() : characters(3) {
+ServerGame::ServerGame() {
   MapBuilder mb;
   mb.TestGen();
   map = mb.Build();
@@ -17,7 +17,6 @@ ServerGame::ServerGame() : characters(3) {
 
   // Spatial partitioning
   grid.Generate(10);  // 10 is the number of divisions
-
   for (uint8_t i = 0; i < 2; i++) {
     devices[i] = Server(i);
     devices[i].mCallback.Debuild(map);
@@ -71,7 +70,7 @@ uint16_t ClientGame::distUntilDeadEnd(Point gLocation, Junction *junction,
 }
 
 void ClientGame::canSeePacman(PlayerCharacter ghost) {
-  Point pLocation = characters.Get(0).location;
+  Point pLocation = characters[0].location;
   Point gLocation = ghost.location;
 
   if (pLocation.x == gLocation.x || pLocation.y == gLocation.y) {
@@ -199,6 +198,11 @@ void ServerGame::Start() {
   drawLives();
 
   screen.DrawMap(map, map_color);
+
+  Pellet::GeneratePellets(pellets, map->GetStart(), map->GetNodeCount());
+  for (size_t i = 0; i < 70; i++) {
+    pellets[i].Draw(screen);
+  }
   startingPoint = map->getXY(map->GetStart());
   myChar = PlayerCharacter(startingPoint);
   myChar.currentJunction = map->GetStart();
@@ -206,7 +210,6 @@ void ServerGame::Start() {
   for (uint8_t i = 0; i < 2; i++) {
     devices[i].begin();
   }
-  Pellet::GeneratePellets(pellets, map);
 
   GameState = WAIT_FOR_CONNECTION;
 }
