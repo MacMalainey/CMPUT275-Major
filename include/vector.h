@@ -76,12 +76,12 @@ T &Vector<T>::Get() {
 
 template <typename T>
 T &Vector<T>::Get(size_t index) {
-  return &array[index];
+  return array[index];
 }
 
 template <typename T>
 T &Vector<T>::Pop() {
-  return &array[count--];
+  return array[count--];
 }
 
 template <typename T>

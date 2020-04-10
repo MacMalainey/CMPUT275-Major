@@ -35,18 +35,15 @@ class Game {
   uint8_t current_lives = 3;
   uint16_t score = 0;
 
-  Junction *currentJunction;
-
-  Orientation currentDirection = Orientation::EAST;
-  Orientation nextDirection;
-
   void updateScore();
   void drawLives();
   void decrementLives();
   void testGrid();
-  bool isValidDirection(Orientation direction);
-  // void moveInTunnel(Orientation direction, uint8_t opposite);
 
+  uint16_t distUntilDeadEnd(Point gLocation, Junction *junction, 
+                            Orientation orientation);
+  void canSeePacman(PlayerCharacter ghost);
+  
   Map *map;
   uint16_t map_color;
 
