@@ -29,7 +29,6 @@ ServerGame::ServerGame() : characters(3) {
     devices[i]->builder = new MapBuilder();
     devices[i]->builder->Debuild(map);
   }
-
 }
 
 void ServerGame::updateScore() {
@@ -66,26 +65,90 @@ void ServerGame::testGrid() {
   // Serial.println(grid.getRowIndex(300));
   // Serial.println(grid.getRowIndex(480));
 
-  num_pellets = 100;
-  uint16_t k = 0;
+  // num_pellets = 100;
+  // uint16_t k = 0;
 
-  for (uint16_t i = 0; i < num_pellets / 10; i++) {
-    for (uint16_t j = 0; j < num_pellets / 10; j++) {
-      Pellet newPellet;
-      newPellet.location.x = i * Screen::DISPLAY_WIDTH / 10 + 25;
-      newPellet.location.y = j * Screen::DISPLAY_HEIGHT / 10 + 15;
+  // for (uint16_t i = 0; i < num_pellets / 10; i++) {
+  //   for (uint16_t j = 0; j < num_pellets / 10; j++) {
+  //     Pellet newPellet;
+  //     newPellet.location.x = i * Screen::DISPLAY_WIDTH / 10 + 25;
+  //     newPellet.location.y = j * Screen::DISPLAY_HEIGHT / 10 + 15;
 
-      newPellet.Draw(screen);
+  //     newPellet.Draw(screen);
 
-      grid.addPellet(newPellet);
+  //     grid.addPellet(newPellet);
 
-      pellets[k++] = newPellet;
-    }
-  }
+  //     pellets[k++] = newPellet;
+  //   }
+  // }
 
   // for (uint16_t i = 0; i < num_pellets; i++) {
   //   grid.removePellet(pellets[i]);
   // }
+}
+
+Orientation reverseOrien(Orientation orientation) {
+  if (orientation == N_ORIENT) { return N_ORIENT; }
+  if (orientation == NORTH) { return SOUTH; }
+  if (orientation == SOUTH ) { return NORTH; }
+  if (orientation == EAST ) { return WEST; }
+  return EAST; 
+}
+
+uint16_t ServerGame::distUntilDeadEnd(Point gLocation, 
+Junction *junction, Orientation orientation) {
+
+  Junction *current = junction;
+
+  // get the farthest junction in current direction
+  while (current->next(orientation) != nullptr) {
+    current = current->next(orientation);
+  }
+
+  return (map->getXY(current) - gLocation);
+}
+
+void ServerGame::canSeePacman(PlayerCharacter ghost) {
+  Point pLocation = characters.Get(0).location;
+  Point gLocation = ghost.location;
+  
+  if (pLocation.x == gLocation.x || pLocation.y == gLocation.y) {
+    // We now need to check there is a straight line.
+
+    uint16_t distPac = pLocation - gLocation; // Manhattan distance
+    Orientation orien = ghost.orientation;
+    Junction *currentJunc = ghost.currentJunction;
+
+    // Ghost is at a junction, check all valid junction directions.
+    if (map->getXY(currentJunc) == gLocation) {
+      for (uint8_t i = 0; i < N_ORIENT; i++) {
+        if (currentJunc->next((Orientation)i) != nullptr) {
+          uint16_t dist = distUntilDeadEnd(gLocation, currentJunc, (Orientation)i);
+
+          if (dist >= distPac) {
+            ghost.canSeePacman = true;
+            return;
+          }
+        }
+      }
+
+      ghost.canSeePacman = false;
+    } 
+
+    // Ghost is in a corridor, check orientation and opposite orientation.
+    else {
+      uint16_t dist = distUntilDeadEnd(gLocation, currentJunc, orien);
+      uint16_t distR = distUntilDeadEnd(gLocation, currentJunc, reverseOrien(orien));
+
+      if (dist >= distPac || distR >= distPac) {
+        ghost.canSeePacman = true;
+        return;
+      } else {
+        ghost.canSeePacman = false;
+      }
+    }
+
+  }
 }
 
 void ServerGame::drawLives() {
@@ -100,12 +163,11 @@ void ServerGame::drawLives() {
 }
 
 void ServerGame::Loop() {
-
   for (uint8_t i = 0; i < 3; i++) {
     devices[i]->handle();
   }
 
-  switch(gameState) {
+  switch (gameState) {
     case WAIT_FOR_CONNECTION:
 
       // Assume true
@@ -134,6 +196,11 @@ void ServerGame::Loop() {
   // handle movement
   pacman.handleMovement(screen, input, map);
 
+  // handle line of sight for ghosts
+  for (uint8_t i = 1; i < characters.Size(); i++) {
+    canSeePacman(characters.Get(i));
+  }
+
   // handle collisions between pacman and pellets
   bool collected = grid.update(pacman);
 
@@ -144,8 +211,9 @@ void ServerGame::Loop() {
 
   delay(20);
 }
-
+        
 void ServerGame::Start() {
+  Serial.println("yeet");
   screen.DrawMap(map, map_color);
   screen.drawLine(0, 30, 480, 30, map_color);
   startingPoint = map->getXY(map->GetStart());
@@ -155,6 +223,7 @@ void ServerGame::Start() {
   for (uint8_t i = 0; i < 3; i++) {
     devices[i]->begin();
   }
+  Pellet::GeneratePellets(pellets, map);
 
   gameState = WAIT_FOR_CONNECTION;
 
@@ -175,10 +244,9 @@ void ClientGame::Start() {
 }
 
 void ClientGame::Loop() {
-
   device->handle();
 
-  switch(gameState) {
+  switch (gameState) {
     case WAIT_FOR_CONNECTION:
       if (device->getState() == LOOP) {
         map = device->builder->Build();

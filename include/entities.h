@@ -38,18 +38,23 @@ struct Pellet : public Drawable {
   void Clear(Screen &screen) final;
 
   bool isPowerUp = false;
+
+  static void GeneratePellets(Vector<Pellet> &pellets, const Map *map);
 };
 
 struct PlayerCharacter : public Drawable {
   PlayerCharacter();
   PlayerCharacter(Point startPoint);
+  
+  bool isPacman = true;
+  bool canSeePacman = false;
 
-  Orientation orientation = EAST;
+  Orientation orientation = N_ORIENT;
   Orientation nextDirection = N_ORIENT;
   Junction *currentJunction;
 
   void handleMovement(Screen &screen, uint8_t input, Map *map);
-  void Move(Screen &screen, uint8_t speed);
+  void Move(Screen &screen, uint8_t speed = 1);
 
   bool isValidDirection(Orientation direction);
   void SetOrientation(uint8_t newOrientation);
@@ -61,6 +66,4 @@ struct PlayerCharacter : public Drawable {
   void Draw(Screen &screen) final;
   void Clear(Screen &screen) final;
   void DrawGhostBody(Screen &screen);
-
-  bool isPacman = true;
 };

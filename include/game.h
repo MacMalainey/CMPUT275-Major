@@ -13,14 +13,11 @@
 #include "grid.h"
 #include "input.h"
 #include "map.h"
+#include "multi.h"
 #include "screen.h"
 #include "vector.h"
-#include "multi.h"
 
-enum State {
-  WAIT_FOR_CONNECTION,
-  READY
-};
+enum State { WAIT_FOR_CONNECTION, READY };
 
 class ServerGame {
  public:
@@ -32,11 +29,6 @@ class ServerGame {
   uint8_t current_lives = 3;
   uint16_t score = 0;
 
-  Junction *currentJunction;
-
-  Orientation currentDirection = Orientation::EAST;
-  Orientation nextDirection;
-
   void updateScore();
   void drawLives();
   void decrementLives();
@@ -45,6 +37,10 @@ class ServerGame {
   void handleClientUpdate(PlayerPayload* p);
   // void moveInTunnel(Orientation direction, uint8_t opposite);
 
+  uint16_t distUntilDeadEnd(Point gLocation, Junction *junction, 
+                            Orientation orientation);
+  void canSeePacman(PlayerCharacter ghost);
+  
   Map *map;
   uint16_t map_color;
 
@@ -56,13 +52,12 @@ class ServerGame {
   PlayerCharacter pacman;
   PlayerCharacter ghost;
 
-  uint16_t num_pellets = 0;
-  Pellet pellets[100];
+  Vector<Pellet> pellets;
 
   // characters[0] should be PacMan.
   Vector<PlayerCharacter> characters;
 
-  Server* devices[3];
+  Server *devices[3];
   State gameState;
   Point startingPoint;
 
@@ -70,16 +65,15 @@ class ServerGame {
 };
 
 class ClientGame {
-public:
-
+ public:
   ClientGame();
 
   void Start();
   void Loop();
 
-private:
+ private:
   State gameState;
-  Client* device;
+  Client *device;
 
   Screen screen;
   Joystick joy;

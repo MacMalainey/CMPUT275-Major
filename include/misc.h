@@ -18,8 +18,14 @@ struct Point {
   uint16_t x;
   uint16_t y;
 
+  // Equality operator.
   bool operator==(const Point &other) const {
     return (this->x == other.x) && (this->y == other.y);
+  }
+
+  // Manhanttan distance between two points.
+  uint16_t operator-(const Point &other) const {
+    return (abs(this->x - other.x) + abs(this->y - other.y));
   }
 };
 
@@ -216,19 +222,19 @@ uint16_t genNeonColor();
 // Data payloads are stored here to stop any circular dependency issues
 
 struct StatePayload {
-    uint8_t state;
+  uint8_t state;
 };
 
 struct PlayerPayload {
-    uint8_t id;
-    uint16_t x;
-    uint16_t y;
+  uint8_t id;
+  uint16_t x;
+  uint16_t y;
 };
 
-#define INVALID_JID 255 // We will never have 255 ids so this won't happen
+#define INVALID_JID 255  // We will never have 255 ids so this won't happen
 
 struct MapPayload {
-    uint8_t id; // Guaranteed to be > 0;
-    uint8_t neighbours[4]; // TODO: Don't hardcode this value
-    uint16_t x, y;
+  uint8_t id;             // Guaranteed to be > 0;
+  uint8_t neighbours[4];  // TODO: Don't hardcode this value
+  uint16_t x, y;
 };
