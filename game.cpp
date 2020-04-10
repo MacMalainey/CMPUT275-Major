@@ -9,7 +9,7 @@
 
 #include "include/game.h"
 
-Game::Game(bool isServer) : isServer(isServer), characters(3) {
+ServerGame::ServerGame() : characters(3) {
   // Draw UI
   screen.setCursor(14, 6);
   screen.print("Score:");
@@ -20,27 +20,30 @@ Game::Game(bool isServer) : isServer(isServer), characters(3) {
   mb.TestGen();
   map = mb.Build();
   map_color = genNeonColor();
-  screen.drawLine(0, 30, 480, 30, map_color);
 
   // Spatial partitioning
   grid.Generate(10);  // 10 is the number of divisions
 
-  GameState = SETUP;
+  for (uint8_t i = 0; i < 3; i++) {
+    devices[i] = new Server(i + 1);
+    devices[i]->builder = new MapBuilder();
+    Serial.println("yeetA");
+    devices[i]->builder->Debuild(map);
+    Serial.println("yeetB");
+    devices[i]->pCallback = new PlayerCallback();
+    devices[i]->sCallback = new StateCallback();
+  }
+  Serial.println("yeet3");
 
-  // if (isServer) {
-  //   GameState = WAIT_FOR_CLIENT;
-  // } else {
-  //   GameState = WAIT_FOR_SERVER;
-  // }
 }
 
-void Game::updateScore() {
+void ServerGame::updateScore() {
   screen.fillRect(90, 6, screen.DISPLAY_WIDTH / 4, 18, TFT_BLACK);
   screen.setCursor(90, 6);
   screen.print(score);
 }
 
-void Game::decrementLives() {
+void ServerGame::decrementLives() {
   if (current_lives == 3) {
     screen.fillRect(390, 0, 30, 30, TFT_BLACK);
   } else if (current_lives == 2) {
@@ -50,7 +53,7 @@ void Game::decrementLives() {
   }
 }
 
-void Game::testGrid() {
+void ServerGame::testGrid() {
   // for (uint8_t i = 0; i < grid.divisions; i++) {
   //     for (uint8_t j = 0; j < grid.divisions; j++) {
   //         Row *row_i = grid.getRow(i);
@@ -98,7 +101,7 @@ Orientation reverseOrien(Orientation orientation) {
   return EAST; 
 }
 
-uint16_t Game::distUntilDeadEnd(Point gLocation, 
+uint16_t ServerGame::distUntilDeadEnd(Point gLocation, 
 Junction *junction, Orientation orientation) {
 
   Junction *current = junction;
@@ -111,8 +114,8 @@ Junction *junction, Orientation orientation) {
   return (map->getXY(current) - gLocation);
 }
 
-void Game::canSeePacman(PlayerCharacter ghost) {
-  Point pLocation = pacman.location;
+void ServerGame::canSeePacman(PlayerCharacter ghost) {
+  Point pLocation = characters.Get(0).location;
   Point gLocation = ghost.location;
   
   if (pLocation.x == gLocation.x || pLocation.y == gLocation.y) {
@@ -130,7 +133,6 @@ void Game::canSeePacman(PlayerCharacter ghost) {
 
           if (dist >= distPac) {
             ghost.canSeePacman = true;
-            Serial.println("Visible1");
             return;
           }
         }
@@ -146,7 +148,6 @@ void Game::canSeePacman(PlayerCharacter ghost) {
 
       if (dist >= distPac || distR >= distPac) {
         ghost.canSeePacman = true;
-        Serial.println("Visible2");
         return;
       } else {
         ghost.canSeePacman = false;
@@ -156,7 +157,7 @@ void Game::canSeePacman(PlayerCharacter ghost) {
   }
 }
 
-void Game::drawLives() {
+void ServerGame::drawLives() {
   screen.fillCircle(400, 15, 8, TFT_YELLOW);
   screen.fillTriangle(400, 15, 408, 19, 408, 11, TFT_BLACK);
 
@@ -167,12 +168,40 @@ void Game::drawLives() {
   screen.fillTriangle(460, 15, 468, 19, 468, 11, TFT_BLACK);
 }
 
-void Game::Loop() {
+void ServerGame::Loop() {
+  Serial.println("1");
+  for (uint8_t i = 0; i < 3; i++) {
+    devices[i]->handle();
+  }
+  Serial.println("2");
+  switch(gameState) {
+    case WAIT_FOR_CONNECTION:
+
+      // Assume true
+      bool allCon = true;
+
+      // If true then for each the following should be true
+      for (uint8_t i = 0; i < 3; i++) {
+        ComState ds = devices[i]->getState();
+
+        // If true then that means our assumption is false
+        if (ds != LOOP && ds != DISCONNECTED) allCon = false;
+      }
+
+      // And that my friends is how you do a proof by contradiction
+
+      // Handle state change
+      if (allCon) {
+        Serial.println("WE CONNECTED OK?");
+      }
+
+      break;
+  }
   // get joystick input
   uint8_t input = joy.ReadInput();
 
   // handle movement
-  pacman.handleMovement(screen, input, map);
+  myChar.handleMovement(screen, input, map);
 
   // handle line of sight for ghosts
   for (uint8_t i = 1; i < characters.Size(); i++) {
@@ -180,7 +209,7 @@ void Game::Loop() {
   }
 
   // handle collisions between pacman and pellets
-  bool collected = grid.update(pacman);
+  bool collected = grid.update(myChar);
 
   if (collected) {
     score += 10;
@@ -189,37 +218,89 @@ void Game::Loop() {
 
   delay(20);
 }
+        
+void ServerGame::Start() {
+  Serial.println("yeet");
+  screen.DrawMap(map, map_color);
+  screen.drawLine(0, 30, 480, 30, map_color);
+  startingPoint = map->getXY(map->GetStart());
+  myChar = PlayerCharacter(startingPoint);
+  myChar.currentJunction = map->GetStart();
 
-void Game::Start() {
-  GameState = SETUP;
-
-  while (GameState != READY) {
-    switch (GameState) {
-      case WAIT_FOR_SERVER:
-        // We client
-        break;
-      case WAIT_FOR_CLIENT:
-        // We server
-        break;
-      case SETUP:
-        screen.DrawMap(map, map_color);
-        startingPoint = map->getXY(map->GetStart());
-
-        pacman = PlayerCharacter(startingPoint);
-        pacman.currentJunction = map->GetStart();
-        characters.Push(pacman);
-
-        // Test code for spawning in a ghost 
-        Point startingPoint2 = map->getXY(map->GetStart()->next(EAST));
-        characters.Push(PlayerCharacter(startingPoint2));
-        characters.Get(1).isPacman = false;
-        characters.Get(1).currentJunction = map->GetStart()->next(EAST);
-        characters.Get(1).Draw(screen);
-
-        GameState = READY;
-        break;
-    }
+  for (uint8_t i = 0; i < 3; i++) {
+    devices[i]->begin();
   }
 
+  gameState = WAIT_FOR_CONNECTION;
+
   testGrid();
+}
+
+ClientGame::ClientGame() {
+  map_color = genNeonColor();
+
+  device = new Client();
+  device->builder = new MapBuilder();
+}
+
+void ClientGame::Start() {
+  device->begin();
+
+  gameState = WAIT_FOR_CONNECTION;
+}
+
+void ClientGame::Loop() {
+
+  device->handle();
+
+  switch(gameState) {
+    case WAIT_FOR_CONNECTION:
+      if (device->getState() == LOOP) {
+        map = device->builder->Build();
+
+        // Draw UI
+        screen.setCursor(14, 6);
+        screen.print("Score:");
+        updateScore();
+        drawLives();
+
+        screen.drawLine(0, 30, 480, 30, map_color);
+        screen.DrawMap(map, map_color);
+
+        delete device->builder;
+
+        gameState = READY;
+      }
+      break;
+    case READY:
+      Serial.println("WE HAVE A CONNECTION");
+      break;
+  }
+}
+
+void ClientGame::updateScore() {
+  screen.fillRect(90, 6, screen.DISPLAY_WIDTH / 4, 18, TFT_BLACK);
+  screen.setCursor(90, 6);
+  screen.print(score);
+}
+
+void ClientGame::decrementLives() {
+  if (current_lives == 3) {
+    screen.fillRect(390, 0, 30, 30, TFT_BLACK);
+  } else if (current_lives == 2) {
+    screen.fillRect(420, 0, 30, 30, TFT_BLACK);
+  } else {
+    screen.fillRect(450, 0, 30, 30, TFT_BLACK);
+  }
+}
+
+void ClientGame::drawLives() {
+  screen.fillCircle(400, 15, 8, TFT_YELLOW);
+  screen.fillTriangle(400, 15, 408, 19, 408, 11, TFT_BLACK);
+
+  screen.fillCircle(430, 15, 8, TFT_YELLOW);
+  screen.fillTriangle(430, 15, 438, 19, 438, 11, TFT_BLACK);
+
+  screen.fillCircle(460, 15, 8, TFT_YELLOW);
+  screen.fillTriangle(460, 15, 468, 19, 468, 11, TFT_BLACK);
 }

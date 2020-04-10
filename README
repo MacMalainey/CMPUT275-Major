@@ -24,7 +24,7 @@ Included files:
     * map.cpp
     * multi.cpp
     * screen.cpp
-    
+
     * include/comm.h
     * include/entities.h
     * include/game.h
@@ -56,9 +56,8 @@ Wiring Instructions:
 
 
 Compiling and Running Instructions:
-    1. Open the terminal in client/.
+    1. Open the terminal in the root of the project
     2. Compile and upload the files by running "make upload".
-
 
 References:
     * Some of the code in this assignment was provided in the assignment template

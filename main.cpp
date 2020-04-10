@@ -89,11 +89,21 @@ int main() {
   //   }
   // }
 
-  Game game(false);
-  game.Start();
+  if (digitalRead(SERVER_SELECT_PIN) == HIGH) {
+    ServerGame game;
+    Serial.println("111111111111111111111111111");
+    game.Start();
+    Serial.println("222222222222222222222222222");
+    while (true) {
+      game.Loop();
+    }
+  } else {
+    ClientGame game;
+    game.Start();
 
-  while (true) {
-    game.Loop();
+    while (true) {
+      game.Loop();
+    }
   }
 
   Serial.end();
