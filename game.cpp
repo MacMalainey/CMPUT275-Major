@@ -82,31 +82,63 @@ void ServerGame::Loop() {
   uint8_t input = joy.ReadInput();
 
   for(uint8_t i = 0; i < 2; i++) {
-    if (devices[i].getState() != DISCONNECTED) {}
+    if (devices[i].getState() != DISCONNECTED)
         devices[i].handle();
   }
 
   switch(GameState) {
     case SETUP: // Make the compiler happy
       break;
-    case WAIT_FOR_CONNECTION:
+    case WAIT_FOR_CONNECTION: {
+        // Assume true
+        bool allCon = true;
+
+        // If true then for each the following should be true
+        for (uint8_t i = 0; i < 2; i++) {
+          ComState ds = devices[i].getState();
+
+          // If true then that means our assumption is false
+          if (ds != LOOP && ds != DISCONNECTED) allCon = false;
+        }
+
+        // And that my friends is how you do a proof by contradiction
+        // Technically it is by exhaustion but that ruins the joke
+        if (allCon) {
+          GameState = READY;
+        }
+      }
       break;
     case READY:
+      // handle movement
+      myChar.handleMovement(screen, input, map);
+
+      PlayerPayload p;
+      p.id = 0;
+      p.x = myChar.location.x;
+      p.y = myChar.location.y;
+
+      for(uint8_t i = 0; i < 2; i++) {
+        if (devices[i].getState() != DISCONNECTED) {
+            devices[i].sendEntityLocation(p);
+            if(devices[i].pCallback.hasData) {
+              devices[i].pCallback.hasData = false;
+              // TODO other player's movement
+            }
+        }
+      }
+
+      // handle collisions between pacman and pellets
+      bool collected = grid.update(myChar);
+
+      if (collected) {
+        score += 10;
+        updateScore();
+      }
+
       break;
   }
-
-  // handle movement
-  myChar.handleMovement(screen, input, map);
-
-  // handle collisions between pacman and pellets
-  bool collected = grid.update(myChar);
-
-  if (collected) {
-    score += 10;
-    updateScore();
-  }
-
   delay(20);
+
 }
 
 void ServerGame::Start() {
@@ -145,6 +177,9 @@ void ClientGame::Start() {
 void ClientGame::Loop() {
   if (GameState == SETUP) return; // We need to call setup first
 
+  // get joystick input
+  uint8_t input = joy.ReadInput();
+
   device.handle();
 
   switch(GameState) {
@@ -168,8 +203,23 @@ void ClientGame::Loop() {
       }
       break;
     case READY:
+      // handle movement
+      myChar.handleMovement(screen, input, map);
+
+      PlayerPayload p;
+      p.id = 0;
+      p.x = myChar.location.x;
+      p.y = myChar.location.y;
+
+      device.sendEntityLocation(p);
+      if(device.pCallback.hasData) {
+        device.pCallback.hasData = false;
+        // TODO other player's movement
+      }
+
       break;
   }
+  delay(20);
 }
 
 void ClientGame::drawLives() {

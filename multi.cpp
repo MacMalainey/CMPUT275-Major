@@ -65,7 +65,7 @@ ComState Device::getState() { return state; }
 
 Device::Device(uint8_t port) : buffer(port) {}
 
-Server::Server(uint8_t id) : Device(id) {}
+Server::Server(uint8_t id) : Device(id) {this->id = id;}
 
 Server::Server() : Device(1) {};
 
@@ -113,7 +113,6 @@ void Server::handle() {
         timeout = millis();
         waitingForAck = true;
       } else if (checkForAck()) {
-        Serial.println("Transitioning to Map");
         beginMap();
       }
       break;
@@ -136,7 +135,6 @@ void Server::handle() {
         if (index <= num_elements) {
           index++;
         } else {
-          Serial.println("Transitioning to Loop");
           beginLoop();
         }
       }
@@ -145,6 +143,7 @@ void Server::handle() {
       if (buffer.hasMessage()) {
         Message* msg = buffer.getMessage();
         if (msg->type == PLAYER) {
+          pCallback.hasData = true;
           pCallback.load = *(PlayerPayload*)((msg->payload));
         }
         delete msg;
@@ -160,13 +159,13 @@ void Server::handle() {
 void Server::beginMap() {
   index = 0;
   num_elements = mCallback.junctionCount;
-  Serial.print("Element count: ");
-  Serial.println(num_elements);
+  Serial.println("Transitioning to Map");
 
   state = MAP;
 }
 
 void Server::beginLoop() {
+  Serial.println("Transitioning to Loop");
   state = LOOP;
 }
 
@@ -179,9 +178,9 @@ void Client::handle() {
       if (buffer.hasMessage()) {
         Message* msg = buffer.getMessage();
         if (msg->type == INIT) {
-          buffer.send(ACK, &id, 0);
+          id = *(uint8_t*)(msg->payload);
+          buffer.send(ACK, nullptr, 0);
           beginMap();
-          Serial.println("Transitioning to Map");
         }
         delete msg;
       }
@@ -210,8 +209,10 @@ void Client::handle() {
       if (buffer.hasMessage()) {
         Message* msg = buffer.getMessage();
         if (msg->type == STATE) {
+          sCallback.hasData = true;
           sCallback.load = *(StatePayload*)(msg->payload);
         } else if (msg->type == PLAYER) {
+          pCallback.hasData = true;
           pCallback.load = *(PlayerPayload*)(msg->payload);
         }
         delete msg;
@@ -225,10 +226,12 @@ void Client::handle() {
 }
 
 void Client::beginMap() {
+  Serial.println("Transitioning to Map");
   state = MAP;
 }
 
 void Client::beginLoop() {
+  Serial.println("Transitioning to Loop");
   state = LOOP;
 }
 
