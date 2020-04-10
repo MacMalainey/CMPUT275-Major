@@ -10,10 +10,10 @@
 #include "include/input.h"
 
 Joystick::Joystick() {
-  pinMode(Joystick::DOWN_PIN, INPUT);
-  pinMode(Joystick::UP_PIN, INPUT);
-  pinMode(Joystick::LEFT_PIN, INPUT);
-  pinMode(Joystick::RIGHT_PIN, INPUT);
+  pinMode(Joystick::DOWN_PIN, INPUT_PULLUP);
+  pinMode(Joystick::UP_PIN, INPUT_PULLUP);
+  pinMode(Joystick::LEFT_PIN, INPUT_PULLUP);
+  pinMode(Joystick::RIGHT_PIN, INPUT_PULLUP);
 }
 
 Orientation Joystick::ReadInput() {
