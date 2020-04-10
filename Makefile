@@ -23,7 +23,7 @@ endif
 
 # Arduino Included Libraries
 ifndef ARDUINO_LIBS
-ARDUINO_LIBS = SD SPI Adafruit_GFX MCUFRIEND_kbv TouchScreen
+ARDUINO_LIBS = Adafruit_GFX MCUFRIEND_kbv
 endif
 
 # User Installed Library Location
