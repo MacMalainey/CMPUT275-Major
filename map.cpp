@@ -81,7 +81,7 @@ Point Map::getXY(Junction *node) {
 void MapBuilder::SetJunctionCount(uint8_t count) {
   junctionCount = count;
   copy_arr = new Junction *[count];
-  if (links != nullptr) delete[] links;
+  // if (links != nullptr) delete[] links;
   links = new Point[count * 4];
 }
 
