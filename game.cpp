@@ -9,6 +9,7 @@
 
 #include "include/game.h"
 
+
 ServerGame::ServerGame() {
   MapBuilder mb;
   mb.TestGen();
@@ -16,7 +17,6 @@ ServerGame::ServerGame() {
   map_color = genNeonColor();
 
   myChar = characters[0];
-
   // Spatial partitioning
   grid.Generate(10);  // 10 is the number of divisions
   for (uint8_t i = 0; i < 2; i++) {
@@ -27,11 +27,13 @@ ServerGame::ServerGame() {
   GameState = SETUP;
 }
 
+
 void ServerGame::updateScore() {
   screen.fillRect(90, 6, screen.DISPLAY_WIDTH / 4, 18, TFT_BLACK);
   screen.setCursor(90, 6);
   screen.print(score);
 }
+
 
 void ServerGame::decrementLives() {
   if (current_lives == 3) {
@@ -44,6 +46,7 @@ void ServerGame::decrementLives() {
 
   current_lives--;
 }
+
 
 Orientation reverseOrien(Orientation orientation) {
   if (orientation == N_ORIENT) {
@@ -60,6 +63,9 @@ Orientation reverseOrien(Orientation orientation) {
   }
   return EAST;
 }
+
+
+
 
 uint16_t ClientGame::distUntilDeadEnd(Point gLocation, Junction *junction,
                                       Orientation orientation) {
@@ -119,6 +125,7 @@ void ClientGame::canSeePacman(PlayerCharacter ghost) {
   }
 }
 
+
 void ServerGame::drawLives() {
   screen.fillCircle(400, 15, 8, TFT_YELLOW);
   screen.fillTriangle(400, 15, 408, 19, 408, 11, TFT_BLACK);
@@ -163,7 +170,7 @@ void ServerGame::Loop() {
     } break;
     case READY:
       // handle movement
-      myChar.handleMovement(screen, input, map);    
+      myChar.handleMovement(screen, input, map);
 
       PlayerPayload p;
       p.id = 0;
@@ -216,10 +223,10 @@ void ServerGame::Loop() {
           // for (uint8_t i = 0; i < player_count; i++) {
           //   devices[i].sendGameState(newState);
           // }
-          
+
           break;
-        }        
-      } 
+        }
+      }
 
       break;
     // case PACMAN_DEATH:
@@ -240,7 +247,7 @@ void ServerGame::Loop() {
     //   for (uint8_t i = 0; i < player_count; i++) {
     //     devices[i].sendGameState(newState);
     //   }
-      
+
     //   break;
     case GAME_END:
       Serial.println("Game over.");
@@ -257,8 +264,9 @@ void ServerGame::Start() {
   updateScore();
   drawLives();
 
-  screen.DrawMap(map, map_color);
+  screen.DrawMap(map, map_color); //draws map
 
+  //generates and draws all the pellets
   Pellet::GeneratePellets(pellets, map->GetStart(), map->GetNodeCount());
   for (size_t i = 0; i < 70; i++) {
     if (i != 31 && i != 36 && i != 37) {
@@ -266,6 +274,8 @@ void ServerGame::Start() {
       grid.addPellet(pellets[i]);
     }
   }
+
+  //sets starting point
   startingPoint = map->getXY(map->GetStart());
   myChar = PlayerCharacter(startingPoint);
   myChar.currentJunction = map->GetStart();
@@ -281,13 +291,16 @@ void ServerGame::Start() {
   GameState = WAIT_FOR_CONNECTION;
 }
 
+
 ClientGame::ClientGame() { map_color = genNeonColor(); }
+
 
 void ClientGame::Start() {
   device.begin();
 
   GameState = WAIT_FOR_CONNECTION;
 }
+
 
 void ClientGame::Loop() {
   if (GameState == SETUP) return;  // We need to call setup first
@@ -311,6 +324,7 @@ void ClientGame::Loop() {
         updateScore();
         drawLives();
 
+        //draw map
         screen.DrawMap(map, map_color);
         myChar = PlayerCharacter(map->getXY(map->GetStart()));
         myChar.currentJunction = map->GetStart();
@@ -337,6 +351,7 @@ void ClientGame::Loop() {
   }
   delay(20);
 }
+
 
 void ClientGame::drawLives() {
   screen.fillCircle(400, 15, 8, TFT_YELLOW);

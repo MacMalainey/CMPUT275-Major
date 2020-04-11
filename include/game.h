@@ -20,18 +20,44 @@ enum State { SETUP, WAIT_FOR_CONNECTION, READY, PACMAN_DEATH, GAME_END };
 
 class ServerGame {
  public:
+   /**
+    * @brief Construct a new ServerGame:: ServerGame object
+    *
+    */
   ServerGame();
+
+
+  /**
+   * @brief Initial things that the server runs once before the game starts
+   */
   void Start();
+
+  /**
+   * @brief The game loop for the server
+   */
   void Loop();
 
  private:
   uint8_t current_lives = 3;
   uint16_t score = 0;
-
   uint8_t player_count = 0;
 
+  /**
+   * @brief Updates the score in the top left corner of screen
+   */
   void updateScore();
+
+  /**
+   * @brief Draws the intial three pacman lives in the top right corner for the server
+   *
+   */
   void drawLives();
+
+
+  /**
+   * @brief Decrements the life counter in the top right corner of the screen
+   *        depending on how many lives pacman currently has for the SERVER
+   */
   void decrementLives();
 
   Map *map;
@@ -54,14 +80,41 @@ class ServerGame {
 
 class ClientGame {
  public:
+   /**
+    * @brief Construct a new ClientGame:: ClientGame object
+    *
+    */
   ClientGame();
+
+  /**
+   * @brief Initial things that the server runs once before the game starts
+   */
   void Start();
+
+  /**
+   * @brief The game loop for the server
+   */
   void Loop();
 
  private:
-  void updateScore();
-  void drawLives();
-  void decrementLives();
+
+   /**
+    * @brief Updates the score in the top left corner of screen
+    */
+   void updateScore();
+
+   /**
+    * @brief Draws the intial three pacman lives in the top right corner for the server
+    *
+    */
+   void drawLives();
+
+
+   /**
+    * @brief Decrements the life counter in the top right corner of the screen
+    *        depending on how many lives pacman currently has for the SERVER
+    */
+   void decrementLives();
 
   uint16_t distUntilDeadEnd(Point gLocation, Junction *junction,
                             Orientation orientation);
