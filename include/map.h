@@ -30,7 +30,7 @@ class Junction {
 };
 
 class Map {
- friend class MapBuilder;
+ friend struct MapBuilder;
  private:
   Junction **nodes = nullptr;
   uint8_t n = 0;
