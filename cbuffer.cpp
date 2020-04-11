@@ -88,12 +88,11 @@ void CommBuffer::send(uint8_t type, void* payload, uint8_t length) {
   uint8_t wBuffer[length + HEADER_LENGTH];
   uint8_t size = serialize(type, payload, length, wBuffer);
 
-  Serial.println("Sending:");
-
   // Sadly we do have to write byte by byte
   for (uint8_t i = 0; i < size; i++) {
     serial->write(wBuffer[i]);
     Serial.print(wBuffer[i]);
+    Serial.print(",");
   }
   Serial.println();
 }
@@ -109,25 +108,24 @@ void CommBuffer::recieve() {
         isWaiting = false;  // Signify that we are actively reading a message
         buffer[START_BYTE] = byte;
         bytes++;
-        Serial.println("Getting:");
       }
     } else {
       buffer[bufferLen + bytes] = serial->read();
-      Serial.print(buffer[bufferLen + bytes]);
       bytes++;
       if (!msgReady && bufferLen + bytes >= buffer[SIZE_BYTE] + HEADER_LENGTH) {
         if (validate()) {
           msgReady = true;
         } else {  // Our validate call failed and a message wasn't already
                   // prepared so we should drop what we currently have
+          bytes = 0;
           cleanBuffer();
+          return;
         }
       }
     }
   }
   bufferLen += bytes;
 
-  Serial.println();
 }
 
 void CommBuffer::begin() { serial->begin(9600); }

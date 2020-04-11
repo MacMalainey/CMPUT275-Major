@@ -203,6 +203,12 @@ void PlayerCharacter::MoveTunnel(uint8_t input, Screen &screen, Map *map) {
  * @param screen The screen (drawing, etc.).
  */
 void PlayerCharacter::Draw(Screen &screen) {
+  Serial.print("Drawing at: ");
+  Serial.print("x = ");
+  Serial.print(location.x);
+  Serial.print(" y = ");
+  Serial.println(location.y);
+
   if (isPacman) {
     screen.fillCircle(location.x, location.y, 4, color);
 
@@ -272,12 +278,12 @@ void PlayerCharacter::Draw(Screen &screen) {
  * @param screen The screen (drawing, etc.).
  */
 void PlayerCharacter::DrawGhostBody(Screen &screen) {
-  screen.fillRect(location.x - 3, location.y - 3, 6, 6, TFT_RED);
-  screen.fillRect(location.x - 4, location.y - 1, 1, 5, TFT_RED);
-  screen.fillRect(location.x + 3, location.y - 1, 1, 5, TFT_RED);
-  screen.fillRect(location.x - 2, location.y - 4, 4, 1, TFT_RED);
-  screen.fillRect(location.x - 2, location.y + 3, 1, 1, TFT_RED);
-  screen.fillRect(location.x + 1, location.y + 3, 1, 1, TFT_RED);
+  screen.fillRect(location.x - 3, location.y - 3, 6, 6, color);
+  screen.fillRect(location.x - 4, location.y - 1, 1, 5, color);
+  screen.fillRect(location.x + 3, location.y - 1, 1, 5, color);
+  screen.fillRect(location.x - 2, location.y - 4, 4, 1, color);
+  screen.fillRect(location.x - 2, location.y + 3, 1, 1, color);
+  screen.fillRect(location.x + 1, location.y + 3, 1, 1, color);
 }
 
 /**

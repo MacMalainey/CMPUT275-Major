@@ -175,6 +175,10 @@ void ServerGame::Loop() {
             characters[id].Clear(screen);
             characters[id].location.x = devices[i].pCallback.load.x;
             characters[id].location.y = devices[i].pCallback.load.y;
+            Serial.print("x = ");
+            Serial.print(characters[id].location.x);
+            Serial.print(" y = ");
+            Serial.println(characters[id].location.y);
             characters[id].Draw(screen);
           }
         }
@@ -190,7 +194,7 @@ void ServerGame::Loop() {
 
       break;
   }
-  delay(20);
+  delay(30);
 }
 
 void ServerGame::Start() {
@@ -217,8 +221,8 @@ void ServerGame::Start() {
     devices[i].begin();
   }
 
-  characters[1].color = genNeonColor();
-  characters[2].color = genNeonColor();
+  // characters[1].isPacman = false;
+  // characters[2].isPacman = false;
 
   GameState = WAIT_FOR_CONNECTION;
 }
@@ -257,6 +261,7 @@ void ClientGame::Loop() {
         myChar = PlayerCharacter(map->getXY(map->GetStart()));
         myChar.currentJunction = map->GetStart();
         myChar.color = genNeonColor();
+        myChar.isPacman = false;
         characters[0].color = TFT_YELLOW;
         GameState = READY;
       }
@@ -278,7 +283,7 @@ void ClientGame::Loop() {
 
       break;
   }
-  delay(20);
+  delay(10);
 }
 
 void ClientGame::drawLives() {

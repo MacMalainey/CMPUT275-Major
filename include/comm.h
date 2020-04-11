@@ -24,9 +24,9 @@ struct Message {
 class CommBuffer {
  private:
   static const uint8_t MAX_READ =
-      30;  // Maximum number of bytes to read per call to recieve
+      40;  // Maximum number of bytes to read per call to recieve
   static const uint8_t MAX_BUFFER_LENGTH =
-      100;  // We should never send more than 100 bytes in one message
+      126;  // We should never send more than 100 bytes in one message
 
   static const uint8_t START_FLAG = 'S';
 
@@ -43,6 +43,8 @@ class CommBuffer {
   bool msgReady;
 
   uint8_t bufferLen;
+
+  uint8_t randomChar;
 
   uint8_t buffer[MAX_BUFFER_LENGTH];
 
