@@ -143,7 +143,7 @@ LNode<T> *LinkedList<T>::getFront() {
 
 template <class T>
 void LinkedList<T>::insert(const T &item) {
-  LNode<T> *node = new LNode<T>{item, nullptr, first};
+  LNode<T> *node = new LNode<T>{item, first, nullptr};
 
   if (first != nullptr) {
     first->prev = node;

@@ -30,7 +30,8 @@ class Junction {
 };
 
 class Map {
- friend class MapBuilder;
+  friend struct MapBuilder;
+
  private:
   Junction **nodes = nullptr;
   uint8_t n = 0;
@@ -63,9 +64,9 @@ struct MapBuilder {
 
   void Debuild(Map *map) {  // Cause the hardest part of programming is naming
 
-  copy_arr = map->nodes;
+    copy_arr = map->nodes;
 
-  junctionCount = map->GetNodeCount();
+    junctionCount = map->GetNodeCount();
 
     // bool touched[map->GetNodeCount()] = {false};
 
