@@ -26,12 +26,6 @@ uint16_t Cell::getID() { return this->id; }
 // Row class
 ///////////////////////////////////////////////////////////////////////////////
 
-/**
- * @brief Construct a new Row:: Row object
- *
- * @param divisions The number of divisions for the grid.
- * @param num_cells The number of cells in the grid so far.
- */
 Row::Row(uint8_t divisions, uint16_t num_cells) {
   this->divisions = divisions;
   this->cells = new Cell *[divisions];

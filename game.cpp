@@ -27,13 +27,11 @@ ServerGame::ServerGame() {
   GameState = SETUP;
 }
 
-
 void ServerGame::updateScore() {
   screen.fillRect(90, 6, screen.DISPLAY_WIDTH / 4, 18, TFT_BLACK);
   screen.setCursor(90, 6);
   screen.print(score);
 }
-
 
 void ServerGame::decrementLives() {
   if (current_lives == 3) {
@@ -46,7 +44,6 @@ void ServerGame::decrementLives() {
 
   current_lives--;
 }
-
 
 Orientation reverseOrien(Orientation orientation) {
   if (orientation == N_ORIENT) {
@@ -63,9 +60,6 @@ Orientation reverseOrien(Orientation orientation) {
   }
   return EAST;
 }
-
-
-
 
 uint16_t ClientGame::distUntilDeadEnd(Point gLocation, Junction *junction,
                                       Orientation orientation) {
@@ -124,7 +118,6 @@ void ClientGame::canSeePacman(PlayerCharacter ghost) {
     }
   }
 }
-
 
 void ServerGame::drawLives() {
   screen.fillCircle(400, 15, 8, TFT_YELLOW);
@@ -295,16 +288,13 @@ void ServerGame::Start() {
   GameState = WAIT_FOR_CONNECTION;
 }
 
-
 ClientGame::ClientGame() { map_color = genNeonColor(); }
-
 
 void ClientGame::Start() {
   device.begin();
 
   GameState = WAIT_FOR_CONNECTION;
 }
-
 
 void ClientGame::Loop() {
   if (GameState == SETUP) return;  // We need to call setup first
@@ -356,7 +346,6 @@ void ClientGame::Loop() {
   }
   delay(10);
 }
-
 
 void ClientGame::drawLives() {
   screen.fillCircle(400, 15, 8, TFT_YELLOW);
