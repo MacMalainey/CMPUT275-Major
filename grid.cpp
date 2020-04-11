@@ -175,7 +175,7 @@ bool Grid::update(PlayerCharacter pacman) {
 
     if (pellet.location - pacman.location <= 4) {
       // remove the pellet from the grid
-      //removePellet(pellet);
+      removePellet(pellet);
 
       return true;
     }

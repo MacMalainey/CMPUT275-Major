@@ -41,6 +41,8 @@ void ServerGame::decrementLives() {
   } else {
     screen.fillRect(450, 0, 30, 30, TFT_BLACK);
   }
+
+  current_lives--;
 }
 
 Orientation reverseOrien(Orientation orientation) {
@@ -161,10 +163,7 @@ void ServerGame::Loop() {
     } break;
     case READY:
       // handle movement
-      myChar.handleMovement(screen, input, map);
-
-      // redraw pellets ghosts may have possibly moved over
-      grid.redrawPellets(screen, myChar);
+      myChar.handleMovement(screen, input, map);    
 
       PlayerPayload p;
       p.id = 0;
@@ -185,16 +184,6 @@ void ServerGame::Loop() {
         }
       }
 
-      // Handle ghost and pacman collisions
-      for (auto i = 0; i < 2; i++) {
-        // Pacman and ghost radius is 4, but just let them get to know
-        // each other a little better ;)
-        if ((characters[0].location - characters[i].location) <= 6) {
-          GameState = PACMAN_DEATH;
-          break;
-        }
-      }
-
       // handle collisions between pacman and pellets
       bool collected = grid.update(myChar);
 
@@ -203,25 +192,58 @@ void ServerGame::Loop() {
         updateScore();
       }
 
-      break;
-    case PACMAN_DEATH:
-      decrementLives();
+      // Handle ghost and pacman collisions
+      // Also redraw pellets ghosts may have possibly moved over
+      for (uint8_t i = 0; i < 2; i++) {
+        grid.redrawPellets(screen, characters[i]);
 
-      StatePayload newState;
-      if (current_lives != 0) {
-        characters[0].location = startingPoint;
-        newState = {GameState};
-      } else {
-        GameState = State::GAME_END;
-        newState = {GameState};
-        break;
-      }
-      for (uint8_t i = 0; i < player_count; i++) {
-        devices[i].sendGameState(newState);
-      }
-      GameState = State::READY;
+        // Pacman and ghost radius is 4, but just let them get to know
+        // each other a little better ;)
+        if ((characters[0].location - characters[i].location) <= 6) {
+          // Serial.println("You died!");
+          // decrementLives();
+
+          // StatePayload newState;
+
+          // if (current_lives != 0) {
+          //   characters[0].location = startingPoint;
+          //   newState = {GameState};
+          // } else {
+          //   GameState = GAME_END;
+          //   newState = {GameState};
+          // }
+
+          // for (uint8_t i = 0; i < player_count; i++) {
+          //   devices[i].sendGameState(newState);
+          // }
+          
+          break;
+        }        
+      } 
+
       break;
+    // case PACMAN_DEATH:
+    //   Serial.println("death");
+    //   decrementLives();
+
+    //   StatePayload newState;
+
+    //   if (current_lives != 0) {
+    //     characters[0].location = startingPoint;
+    //     newState = {GameState};
+    //   } else {
+    //     GameState = State::GAME_END;
+    //     newState = {GameState};
+    //     break;
+    //   }
+
+    //   for (uint8_t i = 0; i < player_count; i++) {
+    //     devices[i].sendGameState(newState);
+    //   }
+      
+    //   break;
     case GAME_END:
+      Serial.println("Game over.");
       break;
   }
   delay(20);
