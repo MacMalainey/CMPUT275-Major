@@ -44,8 +44,8 @@ Message* CommBuffer::deserialize() {
 
 bool CommBuffer::validate() {
   uint16_t checksum = genChecksum(buffer + HEADER_LENGTH, buffer[SIZE_BYTE]);
-  // The checksum is stored in two bytes so we need to combine two individual bytes
-  // into one 16 bit integer to be able to test it
+  // The checksum is stored in two bytes so we need to combine two individual
+  // bytes into one 16 bit integer to be able to test it
   uint16_t valid = buffer[CHECKSUM_BYTE + 1];
   valid <<= 8;
   valid += buffer[CHECKSUM_BYTE];
@@ -80,7 +80,7 @@ CommBuffer::CommBuffer(uint8_t select) {
       serial = &Serial3;
       break;
     default:
-      break; // We should throw an exception here but didn't have time
+      break;  // We should throw an exception here but didn't have time
   }
 }
 
@@ -88,32 +88,31 @@ void CommBuffer::send(uint8_t type, void* payload, uint8_t length) {
   uint8_t wBuffer[length + HEADER_LENGTH];
   uint8_t size = serialize(type, payload, length, wBuffer);
 
-  //Serial.println("Sending:");
+  // Serial.println("Sending:");
 
   // Sadly we do have to write byte by byte
   for (uint8_t i = 0; i < size; i++) {
     serial->write(wBuffer[i]);
-    //Serial.print(wBuffer[i]);
+    // Serial.print(wBuffer[i]);
   }
-  //Serial.println();
+  // Serial.println();
 }
 
 void CommBuffer::recieve() {
   uint8_t bytes = 0;
 
-  while (serial->available() > 0 &&
-         bytes < MAX_READ && !msgReady) {
+  while (serial->available() > 0 && bytes < MAX_READ && !msgReady) {
     if (isWaiting) {
       uint8_t byte = serial->read();
       if (byte == START_FLAG) {
         isWaiting = false;  // Signify that we are actively reading a message
         buffer[START_BYTE] = byte;
         bytes++;
-        //Serial.println("Getting:");
+        // Serial.println("Getting:");
       }
     } else {
       buffer[bufferLen + bytes] = serial->read();
-      //Serial.print(buffer[bufferLen + bytes]);
+      // Serial.print(buffer[bufferLen + bytes]);
       bytes++;
       if (!msgReady && bufferLen + bytes >= buffer[SIZE_BYTE] + HEADER_LENGTH) {
         if (validate()) {
@@ -127,7 +126,7 @@ void CommBuffer::recieve() {
   }
   bufferLen += bytes;
 
-  //Serial.println();
+  // Serial.println();
 }
 
 void CommBuffer::begin() { serial->begin(9600); }

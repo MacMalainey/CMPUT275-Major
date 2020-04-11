@@ -65,7 +65,6 @@ class CommBuffer {
    */
   uint8_t serialize(uint8_t type, void* payload, uint8_t size, uint8_t* buffer);
 
-
   /**
    * Description:
    * Generates a checksum for the given payload
@@ -101,7 +100,6 @@ class CommBuffer {
   void cleanBuffer();
 
  public:
-
   /**
    * Description:
    * Communications Buffer Constructor
@@ -122,7 +120,6 @@ class CommBuffer {
    * length (uint8_t): Length of payload
    */
   void send(uint8_t type, void* payload, uint8_t length);
-
 
   /**
    * Description:

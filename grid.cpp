@@ -26,6 +26,12 @@ uint16_t Cell::getID() { return this->id; }
 // Row class
 ///////////////////////////////////////////////////////////////////////////////
 
+/**
+ * @brief Construct a new Row:: Row object
+ *
+ * @param divisions The number of divisions for the grid.
+ * @param num_cells The number of cells in the grid so far.
+ */
 Row::Row(uint8_t divisions, uint16_t num_cells) {
   this->divisions = divisions;
   this->cells = new Cell *[divisions];
@@ -120,7 +126,7 @@ void Grid::redrawClosePelletsInCell(Screen &screen, PlayerCharacter ghost,
     }
 
     current = current->next;
-  }                              
+  }
 }
 
 void Grid::redrawPellets(Screen &screen, PlayerCharacter ghost) {
@@ -129,48 +135,48 @@ void Grid::redrawPellets(Screen &screen, PlayerCharacter ghost) {
 
   // Check first grid
   LNode<Pellet> *current = rows[rowIndex]->cells[cellIndex]->pellets.getFront();
-  redrawClosePelletsInCell(screen, ghost, current); 
+  redrawClosePelletsInCell(screen, ghost, current);
 
   // Check the eight adjacent grids (horizontals, verticals, and diagonals)
 
   // LEFT
   if (rowIndex > 0) {
     current = rows[rowIndex - 1]->cells[cellIndex]->pellets.getFront();
-    redrawClosePelletsInCell(screen, ghost, current); 
+    redrawClosePelletsInCell(screen, ghost, current);
   }
   // RIGHT
   if (rowIndex < divisions - 1) {
     current = rows[rowIndex + 1]->cells[cellIndex]->pellets.getFront();
-    redrawClosePelletsInCell(screen, ghost, current); 
+    redrawClosePelletsInCell(screen, ghost, current);
   }
   // DOWN
   if (cellIndex > 0) {
     current = rows[rowIndex]->cells[cellIndex - 1]->pellets.getFront();
-    redrawClosePelletsInCell(screen, ghost, current); 
+    redrawClosePelletsInCell(screen, ghost, current);
   }
   // UP
   if (cellIndex < divisions - 1) {
     current = rows[rowIndex]->cells[cellIndex + 1]->pellets.getFront();
-    redrawClosePelletsInCell(screen, ghost, current); 
+    redrawClosePelletsInCell(screen, ghost, current);
   }
   // LEFT & UP
   if (rowIndex > 0 && cellIndex > 0) {
     current = rows[rowIndex - 1]->cells[cellIndex - 1]->pellets.getFront();
-    redrawClosePelletsInCell(screen, ghost, current);    
+    redrawClosePelletsInCell(screen, ghost, current);
   }
   // RIGHT & DOWN
   if (rowIndex < divisions - 1 && cellIndex < divisions - 1) {
     current = rows[rowIndex + 1]->cells[cellIndex + 1]->pellets.getFront();
-    redrawClosePelletsInCell(screen, ghost, current);    
+    redrawClosePelletsInCell(screen, ghost, current);
   }
   // RIGHT & UP
   if (rowIndex < divisions - 1 && cellIndex > 0) {
     current = rows[rowIndex + 1]->cells[cellIndex - 1]->pellets.getFront();
-    redrawClosePelletsInCell(screen, ghost, current);    
+    redrawClosePelletsInCell(screen, ghost, current);
   }
   // LEFT & DOWN
   if (rowIndex > 0 && cellIndex < divisions - 1) {
     current = rows[rowIndex - 1]->cells[cellIndex + 1]->pellets.getFront();
-    redrawClosePelletsInCell(screen, ghost, current);    
+    redrawClosePelletsInCell(screen, ghost, current);
   }
 }
