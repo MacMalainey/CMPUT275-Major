@@ -19,7 +19,6 @@ class Drawable {
  public:
   /**
    * @brief Construct a new Drawable:: Drawable object
-   *
    */
   Drawable();
   Drawable(Point startPoint);
@@ -45,7 +44,6 @@ class Drawable {
 struct Pellet : public Drawable {
   /**
    * @brief Construct a new Pellet:: Pellet object
-   *
    */
   Pellet();
   Pellet(Point startPoint);
@@ -83,7 +81,6 @@ struct Pellet : public Drawable {
 struct PlayerCharacter : public Drawable {
   /**
    * @brief Construct a new Player Character:: Player Character object
-   *
    */
   PlayerCharacter();
   PlayerCharacter(Point startPoint);

@@ -84,13 +84,11 @@ class Grid {
  public:
   /**
    * @brief Construct a new Grid:: Grid object
-   * 
    */
   Grid();
 
   /**
    * @brief Destroy the Grid object
-   * 
    */
   ~Grid();
 
@@ -135,8 +133,8 @@ class Grid {
   void removePellet(Pellet pellet);
 
   /**
-   * @brief Iterates through the pellets in the current grid and checks if pacman
-   *        is close.
+   * @brief Iterates through the pellets in the current grid and checks 
+   *        if pacman is close.
    *
    * @param pacman The player.
    * @return true if there was a collision.
