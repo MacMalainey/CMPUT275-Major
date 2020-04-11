@@ -13,6 +13,7 @@
 #include <Arduino.h>
 #include <stdint.h>
 
+// Point struct, stores two integers together, usually used for x,y cords
 struct Point {
   uint16_t x;
   uint16_t y;
@@ -28,8 +29,10 @@ struct Point {
   }
 };
 
+// Cardinal directions used for map navigation
 enum Orientation { NORTH = 0, SOUTH, EAST, WEST, N_ORIENT };
 
+// Container for a node in a linked list or the queue implementation
 template <class T>
 struct LNode {
   T item;
@@ -37,20 +40,48 @@ struct LNode {
   LNode<T> *prev;
 };
 
-// Implement queue interface using linked list
+// Implementation of queue using linked nodes
 template <class T>
 class Queue {
  private:
+  // Number of objects in queue
   uint16_t num = 0;
 
+  // Front node
   LNode<T> *front;
+  // Back node
   LNode<T> *back;
 
  public:
+
+  /**
+   * Description:
+   * Place an item at the back of the queue
+   *
+   * Parameters:
+   * item (type T): item to add to queue
+   *
+   * Returns:
+   * n (uint16_t): number of elements in queue
+   */
   uint16_t push(T item);
 
+  /**
+   * Description:
+   * Remove and return the front element
+   *
+   * Returns:
+   * item (type T): front of queue
+   */
   T pop();
 
+  /**
+   * Description:
+   * Returns number of elements in queue
+   *
+   * Returns:
+   * size (uint16_t): size of queue
+   */
   uint16_t size() { return num; }
 };
 
@@ -72,6 +103,7 @@ T Queue<T>::pop() {
   LNode<T> *n = front;
   num--;
 
+  // Check if there are more items and relink if there are
   if (n > 0) {
     front = front->next;
   } else {
@@ -216,25 +248,42 @@ uint16_t LinkedList<T>::size() {
   return listSize;
 }
 
+/**
+ * Description:
+ * Generates a random neon color
+ *
+ * Returns:
+ * color (uint16_t): 16 bit neon color code
+ */
 uint16_t genNeonColor();
 
 // Data payloads are stored here to stop any circular dependency issues
 
+// Game State payload
 struct StatePayload {
   uint8_t state;
 };
 
+// Player location payload
 struct PlayerPayload {
+  // id of player (usually 0 for pacman or the port number of the client)
   uint8_t id;
+  // x and y cords
   uint16_t x;
   uint16_t y;
 };
 
 #define INVALID_JID 255  // We will never have 255 ids so this won't happen
 
+// Map node payload
 struct MapPayload {
-  uint8_t id;             // Guaranteed to be > 0;
-  uint8_t neighbours[4];  // TODO: Don't hardcode this value
+  // Node id
+  uint8_t id;
+
+  // ids of linked neighbours
+  uint8_t neighbours[N_ORIENT];
+
+  // cords
   uint16_t x, y;
 };
 

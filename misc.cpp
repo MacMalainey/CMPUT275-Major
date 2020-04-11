@@ -12,7 +12,21 @@
 #include <Arduino.h>
 #include <math.h>
 
-// https://gist.github.com/kuathadianto/200148f53616cbd226d993b400214a7fs
+/** Description:
+ * 24 bit HSV to 16 bit RGB colour converter
+ *
+ * Parameters:
+ * H (int): hue
+ * S (int): saturation
+ * V (int): value
+ *
+ * Returns:
+ * color (uint16_t): 16 bit TFT display compatible RGB color code
+ *
+ * Note:
+ * Code was provided from here (16 bit adaptation was done by us)
+ * https://gist.github.com/kuathadianto/200148f53616cbd226d993b400214a7fs
+ */
 uint16_t HSVtoRGB(int H, double S, double V) {
   double C = S * V;
   double X = C * (1 - abs(fmod(H / 60.0, 2) - 1));
