@@ -20,7 +20,18 @@ struct Joystick {
   const uint8_t DOWN_PIN = 49;
   const uint8_t RIGHT_PIN = 51;
 
+  /**
+   * @brief Construct a new Joystick object. 
+   * 
+   *        Note that the joystick is actually four buttons. Possible inputs
+   *        are NORTH, SOUTH, EAST, WEST, and N_ORIENT.
+   */
   Joystick();
 
+  /**
+   * @brief Reads what buttons are pressed and returns the orientation.
+   * 
+   * @return Orientation The current orientation of the joystick.
+   */
   Orientation ReadInput();
 };

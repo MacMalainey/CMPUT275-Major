@@ -31,6 +31,7 @@ Junction::Junction(uint16_t x, uint16_t y) {
 
 Junction *Junction::next(Orientation d) { return adjacent[d]; }
 
+// Link this junction with another one. Bidirectional.
 Orientation Junction::link(Junction *j) {
   int16_t dx = j->x - x;
   int16_t dy = j->y - y;
@@ -67,27 +68,36 @@ Orientation Junction::link(Junction *j) {
   return d;
 }
 
+// Map destructor
 Map::~Map() { delete[] nodes; }
 
+// Get coordinates of junction
 Point Map::getXY(Junction *node) {
   Point startingPoint = {node->x, node->y};
   return startingPoint;
 }
 
+// Must be called first. creates an array to store junctions
 void MapBuilder::SetJunctionCount(uint8_t count) {
   junctionCount = count;
   copy_arr = new Junction *[count];
   links = new Point[count * 4];
   // TODO: handle potential memory leak
 }
+
+// Set junction locations in the map.
 void MapBuilder::SetJunctionLocations(uint8_t id, uint16_t x, uint16_t y) {
   auto newJunction = new Junction(x, y);
   newJunction->id = id;
   copy_arr[id] = newJunction;
 }
+
+// Link two junctions together
 void MapBuilder::LinkJunctions(uint8_t junctionID1, uint8_t junctionID2) {
   links[linkCount++] = Point{.x = junctionID1, .y = junctionID2};
 }
+
+// Hardcoded map for testing
 void MapBuilder::TestGen() {
   int16_t center_x = 240;
 
@@ -274,6 +284,7 @@ void MapBuilder::TestGen() {
   LinkJunctions(69, 67);
 }
 
+// Emit Map* from built up map.
 Map *MapBuilder::Build() {
   for (uint16_t i = 0; i < linkCount; i++) {
     auto currentLink = links[i];

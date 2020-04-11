@@ -9,6 +9,7 @@
 
 #include "include/screen.h"
 
+// Grouped up all the usual setup code for tft into the constructor.
 Screen::Screen() {
   uint16_t ID = this->readID();
   this->begin(ID);
@@ -17,6 +18,7 @@ Screen::Screen() {
   this->setTextSize(2);
 }
 
+// Draw the pacman map using DFS.
 void Screen::DrawMap(Map *map, uint16_t color) {
   uint16_t c_width = 10;
   uint16_t c_width_half = c_width / 2;
@@ -26,9 +28,6 @@ void Screen::DrawMap(Map *map, uint16_t color) {
   Queue<Junction *> events;
   events.push(map->GetStart());
   touched[0] = true;
-
-  // canvas.setTextColor(color);
-  // canvas.setTextSize(3);
 
   while (events.size() > 0) {
     Junction *j = events.pop();
