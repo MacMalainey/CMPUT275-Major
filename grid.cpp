@@ -50,8 +50,6 @@ Row::~Row() { delete[] cells; }
 Grid::Grid() {
   divisions = 0;
   rows = nullptr;
-  sizeX = DISPLAY_WIDTH;
-  sizeY = DISPLAY_HEIGHT;
 }
 
 Grid::~Grid() { delete[] rows; }

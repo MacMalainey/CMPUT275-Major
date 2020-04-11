@@ -94,10 +94,8 @@ class Grid {
    */
   ~Grid();
 
-  uint16_t sizeX;
-  uint16_t sizeY;
-  uint8_t divisions;
-  uint16_t num_cells = 0;
+  uint8_t divisions; // The number of divisions.
+  uint16_t num_cells = 0; // The number of cells in the grid so far.
 
   /**
    * @brief Generates the grid with the desired number of rows and columns.
