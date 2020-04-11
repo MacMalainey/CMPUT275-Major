@@ -56,9 +56,12 @@ Wiring Instructions:
 
 
 Compiling and Running Instructions:
-    1. Open the terminal in client/.
+    1. Open the terminal in root folder.
     2. Compile and upload the files by running "make upload".
+    3. Ensure clients are running before server starts (otherwise the server will timeout the clients)
 
 
 References:
     * Some of the code in this assignment was provided in the assignment template
+    * HSVtoRGB function (misc.cpp) was adapted from:
+        https://gist.github.com/kuathadianto/200148f53616cbd226d993b400214a7fs
