@@ -89,24 +89,71 @@ T Queue<T>::pop() {
 template <class T>
 class LinkedList {
  public:
+  /**
+   * @brief Construct a new Linked List object
+   */
   LinkedList();
+
+  /**
+   * @brief Destroy the Linked List object
+   */
   ~LinkedList();
 
+  /**
+   * @brief Attempts to find an item in the linked list.
+   * 
+   * @param item The item we're searching for.
+   * @return LNode<T>* The node containing the item we're looking for.
+   */
   LNode<T> *find(const T &item);
 
+  /**
+   * @brief Insert an item into the linked list.
+   * 
+   * @param item The item to insert.
+   */
   void insert(const T &item);
+
+  /**
+   * @brief Remove an item from the linked list.
+   * 
+   * @param item The item to remove.
+   */
   void remove(const T &item);
 
+  /**
+   * @brief Remove a node from the linked list.
+   * 
+   * @param node The node to remove.
+   */
   void removeNode(LNode<T> *node);
+
+  /**
+   * @brief Remove the first node from the linked list.
+   */
   void removeFront();
+
+  /**
+   * @brief Remove the last node from the linked list.
+   */
   void removeBack();
 
+  /**
+   * @brief Get the Front object
+   * 
+   * @return LNode<T>* 
+   */
   LNode<T> *getFront();
 
+  /**
+   * @brief Return the number of items in the linked list.
+   * 
+   * @return uint16_t The size.
+   */
   uint16_t size();
 
  private:
-  LNode<T> *first;
+  LNode<T> *first; 
   LNode<T> *last;
   uint16_t listSize;
 };
