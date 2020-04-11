@@ -20,14 +20,14 @@
 
 /**
  * @brief Construct a new Cell:: Cell object
- * 
+ *
  * @param id The number of cells so far.
  */
 Cell::Cell(uint16_t id) { this->id = id; }
 
 /**
  * @brief returns the ID of the cell.
- * 
+ *
  * @return uint16_t The ID of the cell.
  */
 uint16_t Cell::getID() { return this->id; }
@@ -38,7 +38,7 @@ uint16_t Cell::getID() { return this->id; }
 
 /**
  * @brief Construct a new Row:: Row object
- * 
+ *
  * @param divisions The number of divisions for the grid.
  * @param num_cells The number of cells in the grid so far.
  */
@@ -53,13 +53,13 @@ Row::Row(uint8_t divisions, uint16_t num_cells) {
 
 /**
  * @brief Destroy the Row:: Row object
- * 
+ *
  */
 Row::~Row() { delete[] cells; }
 
 /**
  * @brief Given the index, return the respective cell in the row.
- * 
+ *
  * @param index Index of the cell we're interested in.
  * @return Cell* The cell we're looking for.
  */
@@ -71,7 +71,7 @@ Cell *Row::getCell(uint8_t index) { return this->cells[index]; }
 
 /**
  * @brief Construct a new Grid:: Grid object
- * 
+ *
  */
 Grid::Grid() {
   divisions = 0;
@@ -82,23 +82,23 @@ Grid::Grid() {
 
 /**
  * @brief Destroy the Grid:: Grid object
- * 
+ *
  */
 Grid::~Grid() { delete[] rows; }
 
 /**
- * @brief 
- * 
- * @param index 
- * @return Row* 
+ * @brief
+ *
+ * @param index
+ * @return Row*
  */
 Row *Grid::getRow(uint8_t index) { return this->rows[index]; }
 
 /**
- * @brief 
- * 
- * @param x 
- * @return uint8_t 
+ * @brief
+ *
+ * @param x
+ * @return uint8_t
  */
 uint8_t Grid::getRowIndex(uint16_t x) {
   uint8_t index = floor((divisions * x) / DISPLAY_WIDTH);
@@ -106,10 +106,10 @@ uint8_t Grid::getRowIndex(uint16_t x) {
 }
 
 /**
- * @brief 
- * 
- * @param y 
- * @return uint8_t 
+ * @brief
+ *
+ * @param y
+ * @return uint8_t
  */
 uint8_t Grid::getCellIndex(uint16_t y) {
   uint8_t index = floor((divisions * y) / DISPLAY_HEIGHT);
@@ -117,9 +117,9 @@ uint8_t Grid::getCellIndex(uint16_t y) {
 }
 
 /**
- * @brief 
- * 
- * @param pellet 
+ * @brief
+ *
+ * @param pellet
  */
 void Grid::addPellet(Pellet pellet) {
   uint8_t rowIndex = getRowIndex(pellet.location.x);
@@ -129,9 +129,9 @@ void Grid::addPellet(Pellet pellet) {
 }
 
 /**
- * @brief 
- * 
- * @param pellet 
+ * @brief
+ *
+ * @param pellet
  */
 void Grid::removePellet(Pellet pellet) {
   uint8_t rowIndex = getRowIndex(pellet.location.x);
@@ -141,9 +141,9 @@ void Grid::removePellet(Pellet pellet) {
 }
 
 /**
- * @brief 
- * 
- * @param divisions 
+ * @brief
+ *
+ * @param divisions
  */
 void Grid::Generate(uint8_t divisions) {
   this->divisions = divisions;
@@ -188,7 +188,7 @@ bool Grid::update(PlayerCharacter pacman) {
 
 /**
  * @brief Redraws pellets close to the ghost in the given cell.
- * 
+ *
  * @param screen The screen (drawing, etc.).
  * @param ghost The ghost.
  * @param current The first item in the cell. We iterate through this.
@@ -206,13 +206,13 @@ void Grid::redrawClosePelletsInCell(Screen &screen, PlayerCharacter ghost,
     }
 
     current = current->next;
-  }                              
+  }
 }
 
 /**
- * @brief Redraw pellets in the nearby cells a ghost is in (ghosts might draw 
- *        over pellets, so we need to redraw those pellets). 
- * 
+ * @brief Redraw pellets in the nearby cells a ghost is in (ghosts might draw
+ *        over pellets, so we need to redraw those pellets).
+ *
  * @param screen The screen (drawing, etc.).
  * @param ghost The ghost.
  */
@@ -222,48 +222,48 @@ void Grid::redrawPellets(Screen &screen, PlayerCharacter ghost) {
 
   // Check first grid
   LNode<Pellet> *current = rows[rowIndex]->cells[cellIndex]->pellets.getFront();
-  redrawClosePelletsInCell(screen, ghost, current); 
+  redrawClosePelletsInCell(screen, ghost, current);
 
   // Check the eight adjacent grids (horizontals, verticals, and diagonals)
 
   // LEFT
   if (rowIndex > 0) {
     current = rows[rowIndex - 1]->cells[cellIndex]->pellets.getFront();
-    redrawClosePelletsInCell(screen, ghost, current); 
+    redrawClosePelletsInCell(screen, ghost, current);
   }
   // RIGHT
   if (rowIndex < divisions - 1) {
     current = rows[rowIndex + 1]->cells[cellIndex]->pellets.getFront();
-    redrawClosePelletsInCell(screen, ghost, current); 
+    redrawClosePelletsInCell(screen, ghost, current);
   }
   // DOWN
   if (cellIndex > 0) {
     current = rows[rowIndex]->cells[cellIndex - 1]->pellets.getFront();
-    redrawClosePelletsInCell(screen, ghost, current); 
+    redrawClosePelletsInCell(screen, ghost, current);
   }
   // UP
   if (cellIndex < divisions - 1) {
     current = rows[rowIndex]->cells[cellIndex + 1]->pellets.getFront();
-    redrawClosePelletsInCell(screen, ghost, current); 
+    redrawClosePelletsInCell(screen, ghost, current);
   }
   // LEFT & UP
   if (rowIndex > 0 && cellIndex > 0) {
     current = rows[rowIndex - 1]->cells[cellIndex - 1]->pellets.getFront();
-    redrawClosePelletsInCell(screen, ghost, current);    
+    redrawClosePelletsInCell(screen, ghost, current);
   }
   // RIGHT & DOWN
   if (rowIndex < divisions - 1 && cellIndex < divisions - 1) {
     current = rows[rowIndex + 1]->cells[cellIndex + 1]->pellets.getFront();
-    redrawClosePelletsInCell(screen, ghost, current);    
+    redrawClosePelletsInCell(screen, ghost, current);
   }
   // RIGHT & UP
   if (rowIndex < divisions - 1 && cellIndex > 0) {
     current = rows[rowIndex + 1]->cells[cellIndex - 1]->pellets.getFront();
-    redrawClosePelletsInCell(screen, ghost, current);    
+    redrawClosePelletsInCell(screen, ghost, current);
   }
   // LEFT & DOWN
   if (rowIndex > 0 && cellIndex < divisions - 1) {
     current = rows[rowIndex - 1]->cells[cellIndex + 1]->pellets.getFront();
-    redrawClosePelletsInCell(screen, ghost, current);    
+    redrawClosePelletsInCell(screen, ghost, current);
   }
 }

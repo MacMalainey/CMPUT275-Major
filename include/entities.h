@@ -23,6 +23,7 @@ class Drawable {
   virtual void Draw(Screen &screen) = 0;
   virtual void Clear(Screen &screen) = 0;
 
+  // Properties that can get reused by base classes
   Point location;
   uint16_t color;
 
@@ -37,8 +38,10 @@ struct Pellet : public Drawable {
   void Draw(Screen &screen) final;
   void Clear(Screen &screen) final;
 
+  // For powerup pellet
   bool isPowerUp = false;
 
+  // Pellet generator
   static void GeneratePellets(Pellet *pellets, Junction *startJunction,
                               uint8_t junctionCount);
 };
@@ -67,6 +70,4 @@ struct PlayerCharacter : public Drawable {
   void Draw(Screen &screen) final;
   void Clear(Screen &screen) final;
   void DrawGhostBody(Screen &screen);
-
-  uint16_t color;
 };

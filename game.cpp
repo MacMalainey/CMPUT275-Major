@@ -93,7 +93,7 @@ void ClientGame::canSeePacman(PlayerCharacter ghost) {
 
           if (dist >= distPac) {
             ghost.canSeePacman = true;
-            //Serial.println("Visible1");
+            // Serial.println("Visible1");
             return;
           }
         }
@@ -110,7 +110,7 @@ void ClientGame::canSeePacman(PlayerCharacter ghost) {
 
       if (dist >= distPac || distR >= distPac) {
         ghost.canSeePacman = true;
-        //Serial.println("Visible2");
+        // Serial.println("Visible2");
         return;
       } else {
         ghost.canSeePacman = false;
@@ -163,7 +163,7 @@ void ServerGame::Loop() {
     } break;
     case READY:
       // handle movement
-      myChar.handleMovement(screen, input, map);    
+      myChar.handleMovement(screen, input, map);
 
       PlayerPayload p;
       p.id = 0;
@@ -216,10 +216,10 @@ void ServerGame::Loop() {
           // for (uint8_t i = 0; i < player_count; i++) {
           //   devices[i].sendGameState(newState);
           // }
-          
+
           break;
-        }        
-      } 
+        }
+      }
 
       break;
     // case PACMAN_DEATH:
@@ -240,7 +240,7 @@ void ServerGame::Loop() {
     //   for (uint8_t i = 0; i < player_count; i++) {
     //     devices[i].sendGameState(newState);
     //   }
-      
+
     //   break;
     case GAME_END:
       Serial.println("Game over.");

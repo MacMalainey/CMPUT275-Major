@@ -13,13 +13,13 @@
 #include <stdint.h>
 
 #include "map.h"
-
-class Map;
+// Originally supposed to be a much larger class than this, but memory
+// limitations stopped us from implementing layered rendering
 struct Screen : public MCUFRIEND_kbv {
   static const uint16_t DISPLAY_WIDTH = 480;
   static const uint16_t DISPLAY_HEIGHT = 320;
 
   Screen();
-
+  // Function to draw the map on the screen
   void DrawMap(Map *map, uint16_t color);
 };

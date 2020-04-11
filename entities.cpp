@@ -294,8 +294,19 @@ void PlayerCharacter::Clear(Screen &screen) {
   }
 }
 
+/**
+ * Originally written to generate pellets every 10 pixels between junctions
+ * We didn't have enough SRAM to do that, so we opted to generate the pellets
+ * just at the junctions. Code is similar.
+ *
+ * @param pellets Pointer to array of pellets where it should be stored
+ * @param startJunction Junction to start generating at
+ * @param junctionCount number of junctions to generate pellets for
+ */
 void Pellet::GeneratePellets(Pellet *pellets, Junction *startJunction,
                              uint8_t junctionCount) {
+  // Basically DFS but we do more things during the search
+  // Array to keep track of which junctions have been visited
   bool touched[junctionCount] = {false};
   Queue<Junction *> events;
   events.push(startJunction);
@@ -304,7 +315,9 @@ void Pellet::GeneratePellets(Pellet *pellets, Junction *startJunction,
 
   while (events.size() > 0) {
     Junction *junct = events.pop();
+    // Special cases for the "ghost box"
     if (junct->id != 31 && junct->id != 36 && junct->id != 37) {
+      // Check each possible orientation
       for (uint8_t orient = 0; orient < N_ORIENT; orient++) {
         if (junct->next((Orientation)orient) != nullptr) {
           Junction *adj = junct->adjacent[orient];
